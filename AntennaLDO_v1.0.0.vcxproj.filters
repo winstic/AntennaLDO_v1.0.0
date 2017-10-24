@@ -1,0 +1,307 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Generated Files">
+      <UniqueIdentifier>{71ED8ED8-ACB9-4CE9-BBE1-E00B30144E11}</UniqueIdentifier>
+      <Extensions>moc;h;cpp</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Generated Files\Release">
+      <UniqueIdentifier>{b6b4cab4-7491-47bd-a30f-332ec2cd07ed}</UniqueIdentifier>
+      <Extensions>cpp;moc</Extensions>
+      <SourceControlFiles>False</SourceControlFiles>
+    </Filter>
+    <Filter Include="Global">
+      <UniqueIdentifier>{6904a6df-e0ff-483a-bad0-7428984d405a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Resources">
+      <UniqueIdentifier>{3273a376-0366-4bda-859a-657d284d6a52}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{8a2f40d8-7519-4b5f-8b4f-a521362c1cac}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Antenna">
+      <UniqueIdentifier>{10316684-8624-4a4f-950e-a77ff92d3c99}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Results">
+      <UniqueIdentifier>{008bd837-8ba9-4151-9e91-057a03efec06}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wizard">
+      <UniqueIdentifier>{5f180d15-9933-4ecf-a44f-3ebe816ce4e1}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Generated Files\Debug">
+      <UniqueIdentifier>{2c0a1efa-b077-4ccf-89a6-3257c77c76d9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TreeView">
+      <UniqueIdentifier>{b14bb710-8e4a-4bb9-88ec-381f2dfd5c2f}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Atnlibrary">
+      <UniqueIdentifier>{93318e59-baa0-41ed-9789-37a5ffc2f9a8}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="GeneratedFiles\qrc_mainwindow.cpp">
+      <Filter>Generated Files</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\problem.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\main.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\mainwindow.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeView\treeView.cpp">
+      <Filter>TreeView</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_treeView.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_treeView.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Atnlibrary\atnLibrary.cpp">
+      <Filter>Atnlibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_atnLibrary.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_atnLibrary.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Atnlibrary\antennaCell.cpp">
+      <Filter>Atnlibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_antennaCell.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_antennaCell.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\projectWizard.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_projectWizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_projectWizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardAddSetting.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardAddSetting.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardAddSetting.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardIntroduce.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardIntroduce.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardIntroduce.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\modelInfo.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_modeInfo.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_modeInfo.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\designWizard.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designWizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designWizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardDesignVariables.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardDesignVariables.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardDesignVariables.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\optimizeWizard.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_optimizeWizard.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_optimizeWizard.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardOptimizeAlg.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeAlg.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeAlg.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardOptimizeGainAxialLoss.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeGainAxialLoss.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeGainAxialLoss.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardOptimizeVariables.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeVariables.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeVariables.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardFreFarField.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardFreFarField.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardFreFarField.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeView\designtab.cpp">
+      <Filter>TreeView</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_designtab.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_designtab.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeView\optimizetab.cpp">
+      <Filter>TreeView</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_optimizetab.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_optimizetab.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\problemWidgetTemplate.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_problemWidgetTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_problemWidgetTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Resources\mainwindow.qrc">
+      <Filter>Resources</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\mainwindow.ui">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\mainwindow.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TreeView\treeView.h">
+      <Filter>TreeView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Atnlibrary\atnLibrary.h">
+      <Filter>Atnlibrary</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Atnlibrary\antennaCell.h">
+      <Filter>Atnlibrary</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\projectWizard.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardAddSetting.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardIntroduce.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\modeInfo.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\designWizard.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardDesignVariables.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\optimizeWizard.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardOptimizeAlg.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardOptimizeGainAxialLoss.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardOptimizeVariables.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardFreFarField.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TreeView\designtab.h">
+      <Filter>TreeView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TreeView\optimizetab.h">
+      <Filter>TreeView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\problemWidgetTemplate.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Utility\macrodefined.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\problem.h">
+      <Filter>Antenna</Filter>
+    </ClInclude>
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h">
+      <Filter>Generated Files</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\parseJson.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\global.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\initialization.h">
+      <Filter>Antenna</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\AntennaLDO_v1.0.0.ico">
+      <Filter>Resources</Filter>
+    </Image>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\AntennaLDO_v1.0.0.rc">
+      <Filter>Resources</Filter>
+    </ResourceCompile>
+  </ItemGroup>
+</Project>
