@@ -28,16 +28,9 @@ _atn_problem(atn_problem), _obj(obj), _temp_widget(atn_problem, obj){
 	v_layout.addWidget(&group_box_axial);
 	v_layout.addWidget(&group_box_loss);
 	setLayout(&v_layout);
-
-	registerField("gal_json_obj", this, "galJsonObj", SIGNAL(signal_galJsonObjChanged()));
 }
 
 
 bool wizardOptimizeAXL::isComplete() const{
     return true;
-}
-
-void wizardOptimizeAXL::initializePage() {
-	updateJsonObj();
-	emit signal_galJsonObjChanged();
 }
