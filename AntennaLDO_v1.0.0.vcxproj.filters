@@ -38,6 +38,9 @@
     <Filter Include="Atnlibrary">
       <UniqueIdentifier>{93318e59-baa0-41ed-9789-37a5ffc2f9a8}</UniqueIdentifier>
     </Filter>
+    <Filter Include="Templates">
+      <UniqueIdentifier>{34ead431-7339-4570-b0fb-5ace729da1a9}</UniqueIdentifier>
+    </Filter>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="GeneratedFiles\qrc_mainwindow.cpp">
@@ -202,38 +205,98 @@
     <ClCompile Include="GeneratedFiles\Release\moc_optimizetab.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Antenna\problemWidgetTemplate.cpp">
-      <Filter>Antenna</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_problemWidgetTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_frequencyTemplate.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_problemWidgetTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_frequencyTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Antenna\algorithmWidgetTemplate.cpp">
-      <Filter>Antenna</Filter>
+    <ClCompile Include="Templates\frequencyTemplate.cpp">
+      <Filter>Templates</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_algorithmWidgetTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_iTemplate.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_algorithmWidgetTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_iTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Antenna\parallelWidgetTemplate.cpp">
-      <Filter>Antenna</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_parallelWidgetTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_tableTemplate.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_parallelWidgetTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_tableTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_mTableWidget.cpp">
+    <ClCompile Include="Templates\thetaPhiTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_thetaPhiTemplate.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_mTableWidget.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_thetaPhiTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\gainTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_gainTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_gainTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\axialTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_axialTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_axialTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\lossTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_lossTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_lossTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\variablesTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_variablesTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_variablesTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_varsDefaultValueTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_varsDefaultValueTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\varsDefaultValueTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_algorithmTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_algorithmTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\algorithmTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_parallelTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_parallelTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\parallelTemplate.cpp">
+      <Filter>Templates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -294,17 +357,38 @@
     <CustomBuild Include="TreeView\optimizetab.h">
       <Filter>TreeView</Filter>
     </CustomBuild>
-    <CustomBuild Include="Antenna\problemWidgetTemplate.h">
-      <Filter>Antenna</Filter>
+    <CustomBuild Include="Templates\frequencyTemplate.h">
+      <Filter>Templates</Filter>
     </CustomBuild>
-    <CustomBuild Include="Antenna\algorithmWidgetTemplate.h">
-      <Filter>Antenna</Filter>
+    <CustomBuild Include="Templates\iTemplate.h">
+      <Filter>Templates</Filter>
     </CustomBuild>
-    <CustomBuild Include="Antenna\parallelWidgetTemplate.h">
-      <Filter>Antenna</Filter>
+    <CustomBuild Include="Templates\tableTemplate.h">
+      <Filter>Templates</Filter>
     </CustomBuild>
-    <CustomBuild Include="Antenna\mTableWidget.h">
-      <Filter>Antenna</Filter>
+    <CustomBuild Include="Templates\thetaPhiTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\gainTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\axialTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\lossTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\variablesTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\varsDefaultValueTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\algorithmTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\parallelTemplate.h">
+      <Filter>Templates</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

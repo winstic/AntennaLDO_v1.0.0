@@ -1,21 +1,28 @@
 #pragma once
 
-#include <QtWidgets>
 #include "../Utility/global.h"
-#include "mTableWidget.h"
+#include "iTemplate.h"
+#include "tableTemplate.h"
 
-class algorithmTemplate : public QDialog {
+class parallelTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	algorithmTemplate(QJsonObject& obj, QWidget *parent = 0);
-	~algorithmTemplate() {}
-	void initParallelWidget(QLayout* layout);
+	parallelTemplate(QJsonObject& obj, iTemplate *parent = 0);
+	~parallelTemplate() {}
+
+	QLayout* getLayout();
+	//update _obj
+	void updateJObj();
 
 public slots:
 	void slot_singleCheckBoxStateChange(const int state);
 	void slot_multiCheckBoxStateChange(const int state);
 	void slot_addNodeButton(/*bool check*/);
 	void slot_delNodeButton(/*bool check*/);
+
+private:
+	void initDefaultData();
+	void initLayout();
 
 private:
 	QJsonObject _obj;
@@ -27,7 +34,7 @@ private:
 	//nodes
 	QLabel* _node_label;
 	QLabel* _core_label;
-	mTable* _node_vars_table;
+	tableTemplate* _node_vars_table;
 	QLineEdit* _node_edit;
 	QLineEdit* _core_edit;
 	//button
@@ -36,4 +43,5 @@ private:
 	//group
 	QGroupBox* _single_group;
 	QGroupBox* _multi_group;
+	QLayout* _layout;
 };

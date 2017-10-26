@@ -1,17 +1,17 @@
 #pragma once
 #include <QtWidgets>
 
-class mTable : public QTableWidget{
+class tableTemplate : public QTableWidget{
 	Q_OBJECT
 public:
-	mTable(QTableWidget* parent = 0);
-	~mTable() {};
+	tableTemplate(QTableWidget* parent = 0);
+	~tableTemplate() {};
 	void insert2table(const int &row, const int &clomun, const QString &item_value);
 public:
 	QTableWidget* _table;
 };
 
-mTable::mTable(QTableWidget* parent) : QTableWidget(parent){
+tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent){
 	_table = new QTableWidget(this);
 	_table->horizontalHeader()->setSectionsClickable(false);
 	_table->verticalHeader()->setVisible(false);              //setting no vertical header
@@ -24,7 +24,7 @@ mTable::mTable(QTableWidget* parent) : QTableWidget(parent){
 	_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 }
 
-void mTable::insert2table(const int &row, const int &clomun, const QString &item_value) {
+void tableTemplate::insert2table(const int &row, const int &clomun, const QString &item_value) {
 	QTableWidgetItem *tableItem = new QTableWidgetItem(item_value);
 	tableItem->setTextAlignment(Qt::AlignCenter);
 	_table->setItem(row, clomun, tableItem);

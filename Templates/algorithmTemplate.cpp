@@ -1,49 +1,32 @@
-#include "algorithmWidgetTemplate.h"
-#include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "algorithmTemplate.h"
 
-algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QWidget *parent) : QDialog(parent),
+algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem){
-}
-
-void algorithmTemplate::initAlgorithmWidget(QLayout* layout) {
-	//initialize necessary parameters
 	_alg_label = new QLabel(tr("Ñ¡ÔñËã·¨:"), this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
-	_alg_vars_table = new mTable();
+	_alg_vars_table = new tableTemplate();
 	_alg_vars_table->setColumnCount(2);
 	_alg_vars_table->horizontalHeader()->setSectionResizeMode(valueFlag, QHeaderView::Stretch);
 	initAlgComboItem();
 	_alg_combox->setCurrentIndex(0);
 	_algorithm = dataPool::getAlgorithmByID(_alg_combox->currentData().toInt());
+	initDefaultData();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
-	//setting default data
-	setCurrAlgorithmParameters();
+}
 
-	//layout
+void algorithmTemplate::initLayout() {
 	QVBoxLayout v_layout;
 	QHBoxLayout h_layout;
-
 	h_layout.addWidget(_alg_label);
 	h_layout.addWidget(_alg_combox);
 	v_layout.addLayout(&h_layout);
 	v_layout.addWidget(_alg_vars_table);
-	layout = &v_layout;
+	_layout = &v_layout;
 }
 
-void algorithmTemplate::initAlgComboItem() {
-	int problem_id = _atn_problem->id;
-	QMap<alg4pro, unsigned int>::iterator iter;		//like((algid, proid), associateId) 
-	for (iter = dataPool::g_associates.begin(); iter != dataPool::g_associates.end(); ++iter) {
-		if (iter.key().second == problem_id) {
-			parsAlgorithm* algorithm = dataPool::getAlgorithmByID(iter.key().first);
-			_alg_combox->addItem(algorithm->name, algorithm->id);	//so you can get algorithm_id through _alg_combox->Data()
-		}
-	}
-}
-
-void algorithmTemplate::setCurrAlgorithmParameters() {
+void algorithmTemplate::initDefaultData() {
 	QString alg_json_path = QString("%1/%2_conf.json").arg(_algorithm->path).arg(_algorithm->name);
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
@@ -73,8 +56,42 @@ void algorithmTemplate::setCurrAlgorithmParameters() {
 	}
 }
 
+void algorithmTemplate::initAlgComboItem() {
+	int problem_id = _atn_problem->id;
+	QMap<alg4pro, unsigned int>::iterator iter;		//like((algid, proid), associateId) 
+	for (iter = dataPool::g_associates.begin(); iter != dataPool::g_associates.end(); ++iter) {
+		if (iter.key().second == problem_id) {
+			parsAlgorithm* algorithm = dataPool::getAlgorithmByID(iter.key().first);
+			_alg_combox->addItem(algorithm->name, algorithm->id);	//so you can get algorithm_id through _alg_combox->Data()
+		}
+	}
+}
+
+QLayout* algorithmTemplate::getLayout() {
+	return _layout;
+}
+//update _obj
+void algorithmTemplate::updateJObj() {
+	QJsonObject uglobal_obj, ualg_obj;
+	uglobal_obj.insert("ALGORITHM_NAME", _algorithm->name);
+	uglobal_obj.insert("PROBLEM_NAME", _atn_problem->name);
+	_gAlg_obj.insert("global", uglobal_obj);
+
+	QString varKey, varValue, varNote;
+	for (int i = 0; i < _alg_vars_table->rowCount(); ++i) {
+		varKey = _alg_vars_table->item(i, keyFlag)->whatsThis().trimmed();
+		varNote = _alg_vars_table->item(i, keyFlag)->text().trimmed();
+		varValue = QString("%1").arg(_alg_vars_table->item(i, valueFlag)->text().trimmed());
+		QJsonObject itemobj;
+		itemobj.insert(varKey, varValue);
+		itemobj.insert("note", varNote);
+		ualg_obj.insert(varKey, itemobj);
+	}
+	_gAlg_obj.insert("algorithm", ualg_obj);
+}
+
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
 	_algorithm = dataPool::getAlgorithmByID(_alg_combox->itemData(index).toInt());
-	setCurrAlgorithmParameters();
+	initDefaultData();
 }

@@ -1,12 +1,8 @@
-#include "parallelWidgetTemplate.h"
-#include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "parallelTemplate.h"
 
-algorithmTemplate::algorithmTemplate(QJsonObject& obj, QWidget *parent) : QDialog(parent), _obj(obj) {
-}
 
-void algorithmTemplate::initParallelWidget(QLayout* layout) {
-	//initialize necessary parameters
+parallelTemplate::parallelTemplate(QJsonObject& obj, iTemplate *parent) : iTemplate(parent), _obj(obj) {
 	_thread_label = new QLabel(tr("启动核数"), this);
 	_thread_label->setFixedWidth(80);
 	_thread_edit = new QLineEdit(this);
@@ -16,7 +12,7 @@ void algorithmTemplate::initParallelWidget(QLayout* layout) {
 	_multi_thread_checkbox->setCheckState(Qt::Unchecked);
 	_node_label = new QLabel(QString("node"), this);
 	_node_edit = new QLineEdit(this);
-	_node_vars_table = new mTable();
+	_node_vars_table = new tableTemplate();
 	_core_label = new QLabel(QString("cores"), this);
 	_core_edit = new QLineEdit(this);
 	_single_group = new QGroupBox(this);
@@ -28,19 +24,25 @@ void algorithmTemplate::initParallelWidget(QLayout* layout) {
 	header << "IP地址/主机名" << "启动核数";
 	_node_vars_table->setHorizontalHeaderLabels(header);
 
+	initDefaultData();
+	initLayout();
+	connect(_single_thread_checkbox, SIGNAL(stateChanged(int)), this, SLOT(slot_singleCheckBoxStateChange(int)));
+	connect(_multi_thread_checkbox, SIGNAL(stateChanged(int)), this, SLOT(slot_multiCheckBoxStateChange(int)));
+	connect(_add_button, SIGNAL(clicked(bool)), this, SLOT(slot_addNodeButton()));
+	connect(_del_button, SIGNAL(clicked(bool)), this, SLOT(slot_delNodeButton()));
+}
+
+void parallelTemplate::initDefaultData() {
 	//setting default data
 	//get thread num from global_conf.
 	//QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath());
 	//QJsonObject global_obj = parseJson::getJsonObj(global_json_path);
 	//_thread_edit->setText(QString::number(global_obj.value("ThreadNum").toString().trimmed().toInt() - 1));
 	_thread_edit->setText(QString::number(_obj.value("ThreadNum").toString().trimmed().toInt() - 1));
-	connect(_single_thread_checkbox, SIGNAL(stateChanged(int)), this, SLOT(slot_singleCheckBoxStateChange(int)));
-	connect(_multi_thread_checkbox, SIGNAL(stateChanged(int)), this, SLOT(slot_multiCheckBoxStateChange(int)));
-	connect(_add_button, SIGNAL(clicked(bool)), this, SLOT(slot_addNodeButton()));
-	connect(_del_button, SIGNAL(clicked(bool)), this, SLOT(slot_delNodeButton()));
 
-	//layout
-	//thread number	
+}
+
+void parallelTemplate::initLayout() {
 	QHBoxLayout h_layout1, h_layout2, h_layout3;
 	QVBoxLayout v_layout, v_layout1;
 	h_layout1.addWidget(_thread_label);
@@ -63,16 +65,23 @@ void algorithmTemplate::initParallelWidget(QLayout* layout) {
 	_single_group->setEnabled(true);
 	_multi_group->setEnabled(false);
 
-
 	v_layout.addWidget(_single_thread_checkbox);
 	v_layout.addWidget(_single_group);
 	v_layout.addWidget(_multi_thread_checkbox);
 	v_layout.addWidget(_multi_group);
-	layout = &v_layout;
+	_layout = &v_layout;
+}
+
+QLayout* parallelTemplate::getLayout() {
+	return _layout;
+}
+//update _obj
+void parallelTemplate::updateJObj() {
+
 }
 
 //slots function
-void algorithmTemplate::slot_singleCheckBoxStateChange(const int state) {
+void parallelTemplate::slot_singleCheckBoxStateChange(const int state) {
 	//state: enum explain{Qt::Unchecked=0, Qt::PartiallyChecked, Qt::Checked}
 	//so usually using 0(unchecked), 2(checked);
 	//qDebug() << state;
@@ -87,7 +96,7 @@ void algorithmTemplate::slot_singleCheckBoxStateChange(const int state) {
 	}
 }
 
-void algorithmTemplate::slot_multiCheckBoxStateChange(const int state) {
+void parallelTemplate::slot_multiCheckBoxStateChange(const int state) {
 	if (state == 0) {
 		//set another checkBox(multiCheckBox Checked)
 		_multi_group->setEnabled(false);
@@ -100,7 +109,7 @@ void algorithmTemplate::slot_multiCheckBoxStateChange(const int state) {
 	}
 }
 
-void algorithmTemplate::slot_addNodeButton() {
+void parallelTemplate::slot_addNodeButton() {
 	QString nodeinfo, coreinfo;
 	int rowIndex = _node_vars_table->rowCount();
 	//qDebug() << rowIndex;
@@ -111,7 +120,7 @@ void algorithmTemplate::slot_addNodeButton() {
 	_node_vars_table->insert2table(rowIndex, coreFlag, coreinfo);
 }
 
-void algorithmTemplate::slot_delNodeButton() {
+void parallelTemplate::slot_delNodeButton() {
 	int selectRow = _node_vars_table->currentRow();
 	//qDebug() << selectRow;
 	if (selectRow != -1)
