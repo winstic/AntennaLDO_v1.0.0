@@ -10,7 +10,7 @@
 class optimizeWizard : public QWizard{
     Q_OBJECT
 public:
-    optimizeWizard(QString problem_json_file, parsProblem* atn_problem, QWidget *parent = 0);
+    optimizeWizard(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
 	~optimizeWizard();
 	QJsonObject* getNewestJsonObject();
 
@@ -22,13 +22,6 @@ private:
 	QString _problem_json_file;
 	parsProblem* _atn_problem;
 	QJsonObject _obj;
-	QJsonObject _sub_frequency_obj;
-	QJsonObject _sub_far_field_obj;
-	QJsonObject _sub_gain_obj;
-	QJsonObject _sub_axial_obj;
-	QJsonObject _sub_loss_obj;
-	QJsonObject _sub_vars_range_obj;
-
 	wizardFreFarField* _optimize_pre_far;
     wizardOptimizeAXL* _optimize_axl;
     wizardOptimizeVariables* _optimize_vars;

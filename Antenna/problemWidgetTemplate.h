@@ -2,6 +2,7 @@
 
 #include <QtWidgets>
 #include "../Utility/global.h"
+#include "mTableWidget.h"
 
 class problemTemplate : public QWidget {
 	Q_OBJECT
@@ -16,6 +17,15 @@ public:
 	void initVariablesRangeWidget(QLayout* layout);
 	void initVariablesValueWidget(QLayout* layout);
 
+	//update _obj
+	void updateFrequencyJObject();
+	void updateFarFieldJObject();
+	void updateGainJObject();
+	void updateAxialJObject();
+	void updateLossJObject();
+	void updateVariablesValueJObject();
+	void updateVariablesRangeJObject();
+
 private:	
 	void initSweepNDPMComBox();
 	void initOptimalTypeComBox(QComboBox *combox);
@@ -23,7 +33,6 @@ private:
 	void initSliderSheet(QString& sheet);
 	double unitConversion(double sourceData, int preunit, int curunit);
 	void initUnitComBo(QComboBox *comb);
-	void insert2table(QTableWidget *table, const int &row, const int &clomun, const QString &itemValue);
 
 public slots:
 	void slot_gainChangeOptimaltype(QString);
@@ -62,16 +71,13 @@ public:
 	static QLineEdit* _phi_up_edit;
 	static QLineEdit* _phi_step_edit;
 	//gain axial loss
-	QTableWidget* _gain_table;
-	QTableWidget* _axial_table;
-	QTableWidget* _loss_table;
-	enum GACOLUMN { cthetalower = 0, cthetaupper, cphilower, cphiupper, coptimaltype, cdelta, cobjvalue, cweight };
-	enum LOSSCOLUMN { cz0real = 0, cz0imag, closstype, clossoptimaltype, cdeltareal, cdeltaimag, cobjreal, cobjimag, clossweight };
+	mTable* _gain_table;
+	mTable* _axial_table;
+	mTable* _loss_table;
 	//model vars value setting
-	QTableWidget* _vars_value_table;		//for design model
+	mTable* _vars_value_table;		//for design model
 	QMap<QString, QString> _default_vars;
 	//variables setting
-	QTableWidget* _vars_range_table;		//for optimize model
-	enum VARCOLUMN { varnote = 0, varmin, varmax, varunit, varvalue = 1};	//since i want make varvalue at column-2
+	mTable* _vars_range_table;		//for optimize model
 	QMap<int, int> _vars_unit;				//save combobox unit
 };

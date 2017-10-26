@@ -49,3 +49,9 @@
 
 //2017-6-19 new add
 //enum problemType { TEST = 0, HFSS, FEKO, NEC };
+
+enum GACOLUMN { cthetalower = 0, cthetaupper, cphilower, cphiupper, coptimaltype, cdelta, cobjvalue, cweight };
+enum LOSSCOLUMN { cz0real = 0, cz0imag, closstype, clossoptimaltype, cdeltareal, cdeltaimag, cobjreal, cobjimag, clossweight };
+enum NODESCOLUMN { nodeFlag = 0, coreFlag };
+enum VARCOLUMN { keyFlag = 0, valueFlag };
+enum VARCOLUMN { varnote = 0, varmin, varmax, varunit, varvalue = 1 };	//since i want make varvalue at column-2

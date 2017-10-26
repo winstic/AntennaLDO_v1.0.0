@@ -62,4 +62,5 @@ bool write(const QString &path, QJsonObject* obj) {
 	qInfo(dataPool::str2char(QString("write file [%1] successed.").arg(path)));
 	return true;
 }
+
 }

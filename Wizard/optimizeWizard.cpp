@@ -1,40 +1,25 @@
 #include "optimizeWizard.h"
 #include "../Utility/parseJson.h"
 
-optimizeWizard::optimizeWizard(QString problem_json_file, parsProblem* atn_problem, QWidget *parent) : QWizard(parent),
-_problem_json_file(problem_json_file), _atn_problem(atn_problem) {
-	_obj = parseJson::getJsonObj(_problem_json_file);
-	_sub_frequency_obj = parseJson::getSubJsonObj(_obj, "FreSetting");
-	_sub_far_field_obj = parseJson::getSubJsonObj(_obj, "ThetaPhiStep");
-	_sub_vars_range_obj = parseJson::getSubJsonObj(_obj, "variables");
-	_sub_gain_obj = parseJson::getSubJsonObj(_obj, "GainSetting");
-	_sub_axial_obj = parseJson::getSubJsonObj(_obj, "AxialratioSetting");
-	_sub_loss_obj = parseJson::getSubJsonObj(_obj, "VSWRSetting");
-	if (_sub_frequency_obj.isEmpty() || _sub_far_field_obj.isEmpty() || _sub_vars_range_obj.isEmpty() || 
-		_sub_gain_obj.isEmpty() || _sub_axial_obj.isEmpty() || _sub_loss_obj.isEmpty()) {
-		qCritical("get variables parameters field.");
-		QMessageBox::critical(0, QString("Error"), QString("error: get variables parameters field."));
-	}
-	else {
-		_optimize_pre_far = new wizardFreFarField(_sub_frequency_obj, _sub_far_field_obj, this);
-		_optimize_axl = new wizardOptimizeAXL(_sub_gain_obj, _sub_axial_obj, _sub_loss_obj, this);
-		_optimize_vars = new wizardOptimizeVariables(_sub_vars_range_obj, _atn_problem, this);
-		_optimize_alg = new wizardOptimizeAlg(_atn_problem ,this);
-		//remove help menu
-		setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
-		setWindowTitle("优化向导");
-		setOption(QWizard::NoBackButtonOnStartPage);
-		setButtonText(QWizard::NextButton, "下一步>");
-		setButtonText(QWizard::CancelButton, "取消");
-		setButtonText(QWizard::FinishButton, "完成");
-		setMinimumSize(880, 580);
-
-		
-		addPage(_optimize_pre_far);
-		addPage(_optimize_axl);
-		addPage(_optimize_vars);
-		addPage(_optimize_alg);
-	}
+optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent) : QWizard(parent),
+_atn_problem(atn_problem), _obj(obj) {
+	_optimize_pre_far = new wizardFreFarField(_atn_problem, _obj, this);
+	_optimize_axl = new wizardOptimizeAXL(_atn_problem, _obj, this);
+	_optimize_vars = new wizardOptimizeVariables(_atn_problem, _obj, this);
+	_optimize_alg = new wizardOptimizeAlg(_atn_problem ,this);
+	//remove help menu
+	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
+	setWindowTitle("优化向导");
+	setOption(QWizard::NoBackButtonOnStartPage);
+	setButtonText(QWizard::NextButton, "下一步>");
+	setButtonText(QWizard::CancelButton, "取消");
+	setButtonText(QWizard::FinishButton, "完成");
+	setMinimumSize(880, 580);
+	
+	addPage(_optimize_pre_far);
+	addPage(_optimize_axl);
+	addPage(_optimize_vars);
+	addPage(_optimize_alg);
 }
 
 QJsonObject* optimizeWizard::getNewestJsonObject() {

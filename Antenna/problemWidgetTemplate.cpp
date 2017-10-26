@@ -143,13 +143,11 @@ void problemTemplate::initFarFieldWidget(QLayout* layout) {
 
 void problemTemplate::initGainWidget(QLayout* layout) {
 	//initialize necessary parameters
-	_gain_table = new QTableWidget(this);
+	_gain_table = new mTable();
 	_gain_table->setColumnCount(8);
 	QStringList header;
 	header << "起始θ" << "终止θ" << "起始φ" << "终止φ" << "优化方式" << "误差值" << "增益(dB)" << "权值";
 	_gain_table->setHorizontalHeaderLabels(header);
-	//gainTable->setStyleSheet("QTableView {selection-background-color: grey;}");
-	_gain_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 	//setting default data
 	QJsonObject gain_obj = parseJson::getSubJsonObj(_obj, "GainSetting");
@@ -168,10 +166,10 @@ void problemTemplate::initGainWidget(QLayout* layout) {
 	QStringList str_list_weight = dataPool::str2list(gain_obj.value("weight_gain").toString());
 	_gain_table->setRowCount(str_list_theta_lower.length());
 	for (int i = 0; i < str_list_theta_lower.length(); i++) {
-		insert2table(_gain_table, i, cthetalower, str_list_theta_lower[i]);
-		insert2table(_gain_table, i, cthetaupper, str_list_theta_upper[i]);
-		insert2table(_gain_table, i, cphilower, str_list_phi_lower[i]);
-		insert2table(_gain_table, i, cphiupper, str_list_phi_upper[i]);
+		_gain_table->insert2table(i, cthetalower, str_list_theta_lower[i]);
+		_gain_table->insert2table(i, cthetaupper, str_list_theta_upper[i]);
+		_gain_table->insert2table(i, cphilower, str_list_phi_lower[i]);
+		_gain_table->insert2table(i, cphiupper, str_list_phi_upper[i]);
 
 		QComboBox optimal_type;
 		initOptimalTypeComBox(&optimal_type);
@@ -182,13 +180,13 @@ void problemTemplate::initGainWidget(QLayout* layout) {
 		connect(&optimal_type, SIGNAL(currentIndexChanged(int)), &gain_signals_map, SLOT(map()));
 		gain_signals_map.setMapping(&optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
 
-		insert2table(_gain_table, i, cdelta, str_list_delta[i]);
+		_gain_table->insert2table(i, cdelta, str_list_delta[i]);
 		//setting cannot edit when optimize type is not delta
 		if (optimal_type.currentIndex() != 2)
 			_gain_table->item(i, cdelta)->setFlags(Qt::NoItemFlags);
 
-		insert2table(_gain_table, i, cobjvalue, str_list_gain[i]);
-		insert2table(_gain_table, i, cweight, str_list_weight[i]);
+		_gain_table->insert2table(i, cobjvalue, str_list_gain[i]);
+		_gain_table->insert2table(i, cweight, str_list_weight[i]);
 	}
 	connect(&gain_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_gainChangeOptimaltype(QString)));
 
@@ -198,12 +196,11 @@ void problemTemplate::initGainWidget(QLayout* layout) {
 
 void problemTemplate::initAxialWidget(QLayout* layout) {
 	//initialize necessary parameters
-	_axial_table = new QTableWidget(this);
+	_axial_table = new mTable();
 	_axial_table->setColumnCount(8);
 	QStringList header;
 	header << "起始θ" << "终止θ" << "起始φ" << "终止φ" << "优化方式" << "误差值" << "轴比(dB)" << "权值";
 	_axial_table->setHorizontalHeaderLabels(header);
-	_axial_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 	//setting default data
 	QJsonObject axial_obj = parseJson::getSubJsonObj(_obj, "AxialratioSetting");
@@ -222,10 +219,10 @@ void problemTemplate::initAxialWidget(QLayout* layout) {
 	QStringList strListWeight = dataPool::str2list(axial_obj.value("weight_axial").toString());
 	_axial_table->setRowCount(strListThetaLower.length());
 	for (int i = 0; i < strListThetaLower.length(); i++) {
-		insert2table(_axial_table, i, cthetalower, strListThetaLower[i]);
-		insert2table(_axial_table, i, cthetaupper, strListThetaUpper[i]);
-		insert2table(_axial_table, i, cphilower, strListPhiLower[i]);
-		insert2table(_axial_table, i, cphiupper, strListPhiUpper[i]);
+		_axial_table->insert2table(i, cthetalower, strListThetaLower[i]);
+		_axial_table->insert2table(i, cthetaupper, strListThetaUpper[i]);
+		_axial_table->insert2table(i, cphilower, strListPhiLower[i]);
+		_axial_table->insert2table(i, cphiupper, strListPhiUpper[i]);
 
 		QComboBox optimal_type;
 		initOptimalTypeComBox(&optimal_type);
@@ -235,13 +232,13 @@ void problemTemplate::initAxialWidget(QLayout* layout) {
 		connect(&optimal_type, SIGNAL(currentIndexChanged(int)), &axial_signals_map, SLOT(map()));
 		axial_signals_map.setMapping(&optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
 
-		insert2table(_axial_table, i, cdelta, strListDelta[i]);
+		_axial_table->insert2table(i, cdelta, strListDelta[i]);
 		//setting cannot edit when optimize type is delta
 		if (optimal_type.currentIndex() != 2)
 			_axial_table->item(i, cdelta)->setFlags(Qt::NoItemFlags);
 
-		insert2table(_axial_table, i, cobjvalue, strListGainobj[i]);
-		insert2table(_axial_table, i, cweight, strListWeight[i]);
+		_axial_table->insert2table(i, cobjvalue, strListGainobj[i]);
+		_axial_table->insert2table(i, cweight, strListWeight[i]);
 	}
 	connect(&axial_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_axialChangeOptimaltype(QString)));
 
@@ -251,14 +248,13 @@ void problemTemplate::initAxialWidget(QLayout* layout) {
 
 void problemTemplate::initLossWidget(QLayout* layout) {
 	//initialize necessary parameters
-	_loss_table = new QTableWidget(this);
+	_loss_table = new mTable();
 	_loss_table->setColumnCount(9);
 	QStringList header;
 	header << "Z0实部" << "Z0虚部" << "损失方式" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";
 	_loss_table->setHorizontalHeaderLabels(header);
 	_loss_table->resizeColumnToContents(6);
 	_loss_table->resizeColumnToContents(7);
-	_loss_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
 	//setting default data
 	QJsonObject loss_obj = parseJson::getSubJsonObj(_obj, "VSWRSetting");
@@ -280,8 +276,8 @@ void problemTemplate::initLossWidget(QLayout* layout) {
 	QStringList strListWeight = dataPool::str2list(loss_obj.value("weight_vswr").toString());
 	_loss_table->setRowCount(strListR0Real.length());
 	for (int i = 0; i < strListR0Real.length(); i++) {
-		insert2table(_loss_table, i, cz0real, strListR0Real[i]);
-		insert2table(_loss_table, i, cz0imag, strListR0imag[i]);
+		_loss_table->insert2table(i, cz0real, strListR0Real[i]);
+		_loss_table->insert2table(i, cz0imag, strListR0imag[i]);
 
 		QComboBox loss_type;;
 		initLossTypeComBox(&loss_type);
@@ -299,8 +295,8 @@ void problemTemplate::initLossWidget(QLayout* layout) {
 		connect(&optimal_type, SIGNAL(currentIndexChanged(int)), &loss_signals_map, SLOT(map()));
 		loss_signals_map.setMapping(&optimal_type, QString("%1-%2").arg(i).arg(clossoptimaltype));
 
-		insert2table(_loss_table, i, cdeltareal, strListDeltaReal[i]);
-		insert2table(_loss_table, i, cdeltaimag, strListDeltaImag[i]);
+		_loss_table->insert2table(i, cdeltareal, strListDeltaReal[i]);
+		_loss_table->insert2table(i, cdeltaimag, strListDeltaImag[i]);
 		//setting cannot edit when optimize type is delta
 		if (2 != optimal_type.currentIndex()) {
 			_loss_table->item(i, cdeltareal)->setFlags(Qt::NoItemFlags);
@@ -308,20 +304,20 @@ void problemTemplate::initLossWidget(QLayout* layout) {
 		}
 		if (0 == loss_type.currentIndex()) {
 			//loss type is vswr
-			insert2table(_loss_table, i, cobjreal, strListVswrobj[i]);
+			_loss_table->insert2table(i, cobjreal, strListVswrobj[i]);
 			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
 			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
 		}
 		else if (1 == loss_type.currentIndex()) {
 			//loss type is S11
-			insert2table(_loss_table, i, cobjreal, strListS11[i]);
+			_loss_table->insert2table(i, cobjreal, strListS11[i]);
 			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
 			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
 		}
 		else if (2 == loss_type.currentIndex()) {
 			//loss type is R
-			insert2table(_loss_table, i, cobjreal, strListR1Real[i]);
-			insert2table(_loss_table, i, cobjimag, strListR1Imag[i]);
+			_loss_table->insert2table(i, cobjreal, strListR1Real[i]);
+			_loss_table->insert2table(i, cobjimag, strListR1Imag[i]);
 		}
 		else {
 			//loss type is None
@@ -330,7 +326,7 @@ void problemTemplate::initLossWidget(QLayout* layout) {
 			_loss_table->item(i, cobjreal)->setFlags(Qt::NoItemFlags);
 			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
 		}
-		insert2table(_loss_table, i, clossweight, strListWeight[i]);
+		_loss_table->insert2table(i, clossweight, strListWeight[i]);
 	}
 	connect(&loss_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_lossChangeType(QString)));
 
@@ -356,21 +352,13 @@ void problemTemplate::initLossTypeComBox(QComboBox *combox) {
 
 void problemTemplate::initVariablesRangeWidget(QLayout* layout) {
 	//initialize necessary parameters
-	_vars_range_table = new QTableWidget(this);
+	_vars_range_table = new mTable();
 	_vars_range_table->setColumnCount(4);
 	QStringList header;
 	header << "变量" << "最小值" << "最大值" << "单位";
 	_vars_range_table->setHorizontalHeaderLabels(header);
-	_vars_range_table->horizontalHeader()->setSectionsClickable(false);
-	//varTable->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	_vars_range_table->horizontalHeader()->setSectionResizeMode(varnote, QHeaderView::Stretch);
 	_vars_range_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);
-	_vars_range_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
-	_vars_range_table->setSelectionBehavior(QAbstractItemView::SelectRows);
-	_vars_range_table->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
-	_vars_range_table->setStyleSheet("selection-background-color:lightblue;");   //setting selected background
-	_vars_range_table->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); //setting header background
-	_vars_range_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 
 	//setting default data
 	QJsonObject variables_obj = parseJson::getSubJsonObj(_obj, "variables");
@@ -392,16 +380,16 @@ void problemTemplate::initVariablesRangeWidget(QLayout* layout) {
 		var_obj = iter.value().toObject();   //like {"note": "上贴片坐标y1(m)", "y1": "[-0.0115,0]"}
 											 //get note infomation
 		QString key_note = var_obj.value("note").toString().trimmed();
-		insert2table(_vars_range_table, row_number, varnote, key_note);
+		_vars_range_table->insert2table(row_number, varnote, key_note);
 		_vars_range_table->item(row_number, varnote)->setWhatsThis(var_key);
 
 		var_value = dataPool::str2list(var_obj.value(var_key).toString().trimmed());
 		value_list_length = var_value.length();
-		insert2table(_vars_range_table, row_number, varmin, var_value[0]);
+		_vars_range_table->insert2table(row_number, varmin, var_value[0]);
 		if (value_list_length == 1)
-			insert2table(_vars_range_table, row_number, varmax, var_value[0]);
+			_vars_range_table->insert2table(row_number, varmax, var_value[0]);
 		else
-			insert2table(_vars_range_table, row_number, varmax, var_value[1]);
+			_vars_range_table->insert2table(row_number, varmax, var_value[1]);
 
 		QComboBox *unit_combox = new QComboBox();
 		initUnitComBo(unit_combox);
@@ -432,25 +420,15 @@ void problemTemplate::initVariablesRangeWidget(QLayout* layout) {
 
 void problemTemplate::initVariablesValueWidget(QLayout* layout) {
 	//initialize necessary parameters
-	_vars_value_table = new QTableWidget(this);
+	_vars_value_table = new mTable();
 	_vars_value_table->setColumnCount(3);
 	QStringList header;
 	header << "变量" << "参数值" << "单位";
 	_vars_value_table->setHorizontalHeaderLabels(header);
 	_vars_value_table->horizontalHeader()->setSectionsClickable(false);
 	_vars_value_table->horizontalHeader()->setSectionResizeMode(varvalue, QHeaderView::Stretch);
-	_vars_value_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);
-	_vars_value_table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
-	//varTable->verticalHeader()->setDefaultSectionSize(0);      //setting row spacing
-	_vars_value_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
-	_vars_value_table->setShowGrid(false);                               //setting no grid line
-	_vars_value_table->verticalHeader()->setVisible(false);              //setting no vertical header
+	_vars_value_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);	
 	_vars_value_table->horizontalHeader()->resizeSection(0, 120);        //setting first column width is 150
-	_vars_value_table->setSelectionBehavior(QAbstractItemView::SelectRows);
-	_vars_value_table->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
-	_vars_value_table->setStyleSheet("selection-background-color:lightblue;");   //setting selected background
-	_vars_value_table->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); //setting header background
-	_vars_value_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 
 	//setting default parameters
 	QJsonObject vars_value_obj = parseJson::getSubJsonObj(_obj, "varsValue");
@@ -483,7 +461,7 @@ void problemTemplate::initVariablesValueWidget(QLayout* layout) {
 		var_obj = iter.value().toObject();   //like {"note": "上贴片坐标y1(m)", "y1": "[-0.0115,0]"}
 											 //get note infomation
 		QString key_note = var_obj.value("note").toString().trimmed();
-		insert2table(_vars_value_table, row_number, varnote, key_note);
+		_vars_value_table->insert2table(row_number, varnote, key_note);
 		// init text edit and layout
 		var_value = dataPool::str2list(var_obj.value(var_key).toString().trimmed());
 		value_list_length = var_value.length();
@@ -623,10 +601,122 @@ void problemTemplate::initUnitComBo(QComboBox *comb) {
 	comb->setCurrentIndex(3);
 }
 
-void problemTemplate::insert2table(QTableWidget *table, const int &row, const int &clomun, const QString &item_value) {
-	QTableWidgetItem *tableItem = new QTableWidgetItem(item_value);
-	tableItem->setTextAlignment(Qt::AlignCenter);
-	table->setItem(row, clomun, tableItem);
+//update _obj
+void problemTemplate::updateGainJObject() {
+	QJsonObject mgain_obj;
+	int i;
+	//update gain obj
+	QStringList gain_str[8];
+	for (i = 0; i < _gain_table->rowCount(); i++) {
+		gain_str[0] << _gain_table->item(i, cthetalower)->text().trimmed();
+		gain_str[1] << _gain_table->item(i, cthetaupper)->text().trimmed();
+		gain_str[2] << _gain_table->item(i, cphilower)->text().trimmed();
+		gain_str[3] << _gain_table->item(i, cphiupper)->text().trimmed();
+		QComboBox *goType = static_cast<QComboBox *>(_gain_table->cellWidget(i, coptimaltype));
+		if (3 == goType->currentIndex())
+			gain_str[4] << goType->currentText().trimmed();
+		else
+			gain_str[4] << QString("'%1'").arg(goType->currentText().trimmed());
+		gain_str[5] << _gain_table->item(i, cdelta)->text().trimmed();
+		gain_str[6] << _gain_table->item(i, cobjvalue)->text().trimmed();
+		gain_str[7] << _gain_table->item(i, cweight)->text().trimmed();
+	}
+	mgain_obj.insert("Theta_Lower_gain", QString("[[%1]]").arg(gain_str[0].join(",")));
+	mgain_obj.insert("Theta_Upper_gain", QString("[[%1]]").arg(gain_str[1].join(",")));
+	mgain_obj.insert("Phi_Lower_gain", QString("[[%1]]").arg(gain_str[2].join(",")));
+	mgain_obj.insert("Phi_Upper_gain", QString("[[%1]]").arg(gain_str[3].join(",")));
+	mgain_obj.insert("optimaltype_gain", QString("[[%1]]").arg(gain_str[4].join(",")));
+	mgain_obj.insert("delta_gain", QString("[[%1]]").arg(gain_str[5].join(",")));
+	mgain_obj.insert("gainobj", QString("[[%1]]").arg(gain_str[6].join(",")));
+	mgain_obj.insert("weight_gain", QString("[[%1]]").arg(gain_str[7].join(",")));
+	_obj.insert("GainSetting", mgain_obj);
+}
+void problemTemplate::updateAxialJObject() {
+	QJsonObject maxial_obj;
+	//update axial obj
+	QStringList axialStr[8];
+	for (int i = 0; i < _axial_table->rowCount(); i++) {
+		axialStr[0] << _axial_table->item(i, cthetalower)->text().trimmed();
+		axialStr[1] << _axial_table->item(i, cthetaupper)->text().trimmed();
+		axialStr[2] << _axial_table->item(i, cphilower)->text().trimmed();
+		axialStr[3] << _axial_table->item(i, cphiupper)->text().trimmed();
+		QComboBox *aoType = static_cast<QComboBox *>(_axial_table->cellWidget(i, coptimaltype));
+		if (3 == aoType->currentIndex())
+			axialStr[4] << aoType->currentText().trimmed();
+		else
+			axialStr[4] << QString("'%1'").arg(aoType->currentText().trimmed());
+		axialStr[5] << _axial_table->item(i, cdelta)->text().trimmed();
+		axialStr[6] << _axial_table->item(i, cobjvalue)->text().trimmed();
+		axialStr[7] << _axial_table->item(i, cweight)->text().trimmed();
+	}
+	maxial_obj.insert("Theta_Lower_axial", QString("[[%1]]").arg(axialStr[0].join(",")));
+	maxial_obj.insert("Theta_Upper_axial", QString("[[%1]]").arg(axialStr[1].join(",")));
+	maxial_obj.insert("Phi_Lower_axial", QString("[[%1]]").arg(axialStr[2].join(",")));
+	maxial_obj.insert("Phi_Upper_axial", QString("[[%1]]").arg(axialStr[3].join(",")));
+	maxial_obj.insert("optimaltype_axial", QString("[[%1]]").arg(axialStr[4].join(",")));
+	maxial_obj.insert("delta_axial", QString("[[%1]]").arg(axialStr[5].join(",")));
+	maxial_obj.insert("axialobj", QString("[[%1]]").arg(axialStr[6].join(",")));
+	maxial_obj.insert("weight_axial", QString("[[%1]]").arg(axialStr[7].join(",")));
+	_obj.insert("AxialratioSetting", maxial_obj);
+}
+void problemTemplate::updateLossJObject() {
+	QJsonObject mloss_obj;
+	//update loss obj
+	QStringList lossStr[11];
+	for (int i = 0; i < _loss_table->rowCount(); i++) {
+		lossStr[0] << _loss_table->item(i, cz0real)->text().trimmed();
+		lossStr[1] << _loss_table->item(i, cz0imag)->text().trimmed();
+		QComboBox *lossType = static_cast<QComboBox *>(_loss_table->cellWidget(i, closstype));
+		lossStr[2] << QString::number(lossType->currentIndex());
+		QComboBox *loType = static_cast<QComboBox *>(_loss_table->cellWidget(i, clossoptimaltype));
+		if (3 == loType->currentIndex())
+			lossStr[3] << loType->currentText().trimmed();
+		else
+			lossStr[3] << QString("'%1'").arg(loType->currentText().trimmed());
+		lossStr[4] << _loss_table->item(i, cdeltareal)->text().trimmed();
+		lossStr[5] << _loss_table->item(i, cdeltaimag)->text().trimmed();
+		if (0 == lossType->currentIndex()) {
+			lossStr[6] << _loss_table->item(i, cobjreal)->text().trimmed();
+			lossStr[7] << "None";
+			lossStr[8] << "None";
+		}
+		else if (1 == lossType->currentIndex()) {
+			lossStr[6] << "None";
+			lossStr[7] << _loss_table->item(i, cobjreal)->text().trimmed();
+			lossStr[8] << "None";
+		}
+		else if (2 == lossType->currentIndex()) {
+			lossStr[6] << "None";
+			lossStr[7] << "None";
+			lossStr[8] << _loss_table->item(i, cobjreal)->text().trimmed();
+		}
+		else {
+			lossStr[6] << "None";
+			lossStr[7] << "None";
+			lossStr[8] << "None";
+		}
+		lossStr[9] << _loss_table->item(i, cobjimag)->text().trimmed();
+		lossStr[10] << _loss_table->item(i, clossweight)->text().trimmed();
+	}
+	qDebug() << lossStr[2];
+	mloss_obj.insert("R0_real", QString("[[%1]]").arg(lossStr[0].join(",")));
+	mloss_obj.insert("R0_imag", QString("[[%1]]").arg(lossStr[1].join(",")));
+	mloss_obj.insert("ReturnLossType", QString("[[%1]]").arg(lossStr[2].join(",")));
+	mloss_obj.insert("optimaltype_vswr", QString("[[%1]]").arg(lossStr[3].join(",")));
+	mloss_obj.insert("delta_real", QString("[[%1]]").arg(lossStr[4].join(",")));
+	mloss_obj.insert("delta_imag", QString("[[%1]]").arg(lossStr[5].join(",")));
+	mloss_obj.insert("vswrobj", QString("[[%1]]").arg(lossStr[6].join(",")));
+	mloss_obj.insert("S11", QString("[[%1]]").arg(lossStr[7].join(",")));
+	mloss_obj.insert("R1_real", QString("[[%1]]").arg(lossStr[8].join(",")));
+	mloss_obj.insert("R1_imag", QString("[[%1]]").arg(lossStr[9].join(",")));
+	mloss_obj.insert("weight_vswr", QString("[[%1]]").arg(lossStr[10].join(",")));
+	_obj.insert("VSWRSetting", mloss_obj);
+}
+void problemTemplate::updateVariablesValueJObject() {
+
+}
+void problemTemplate::updateVariablesRangeJObject() {
+
 }
 
 //slots function
@@ -697,8 +787,8 @@ void problemTemplate::slot_unitChange4Optimize(QString pos) {
 		double currentValueMin = unitConversion(preValueMin, currentUnitData, newUnitData);
 		double currentValueMax = unitConversion(preValueMax, currentUnitData, newUnitData);
 		qDebug() << currentValueMin << currentValueMax;
-		insert2table(_vars_range_table, row, varmin, QString::number(currentValueMin));
-		insert2table(_vars_range_table, row, varmax, QString::number(currentValueMax));
+		_vars_range_table->insert2table(row, varmin, QString::number(currentValueMin));
+		_vars_range_table->insert2table(row, varmax, QString::number(currentValueMax));
 	}
 	_vars_unit[row] = newUnitData;
 }

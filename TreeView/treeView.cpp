@@ -445,7 +445,7 @@ void treeModel::slot_addDesign() {
 				qCritical("get json object field.");
 				return;
 			}
-			designWizard *wizard = new designWizard(_atn_problem,obj, this);
+			designWizard *wizard = new designWizard(_atn_problem, obj, this);
 			if (wizard->exec() == 1) {
 				QString design_name = QString("设计%1").arg(item->rowCount() + 1);
 				QDir* dir = new QDir();
@@ -494,7 +494,12 @@ void treeModel::slot_addOptimize() {
 		if (MARK_NODE_OPTIMIZE == var_node.toInt()) {
 			QString working_path = dataPool::global::getGWorkingProjectPath();
 			QString json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);
-			optimizeWizard *wizard = new optimizeWizard(json_path, _atn_problem, this);
+			QJsonObject obj = parseJson::getJsonObj(json_path);
+			if (obj.isEmpty()) {
+				qCritical("get json object field.");
+				return;
+			}
+			optimizeWizard *wizard = new optimizeWizard(_atn_problem, obj, this);
 			if (wizard->exec() == 1) {
 				QString optimize_name = QString("优化%1").arg(item->rowCount() + 1);
 				QDir *dir = new QDir();

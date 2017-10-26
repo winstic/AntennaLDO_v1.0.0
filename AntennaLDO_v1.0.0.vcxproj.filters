@@ -211,6 +211,30 @@
     <ClCompile Include="GeneratedFiles\Release\moc_problemWidgetTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
+    <ClCompile Include="Antenna\algorithmWidgetTemplate.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_algorithmWidgetTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_algorithmWidgetTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\parallelWidgetTemplate.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_parallelWidgetTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_parallelWidgetTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_mTableWidget.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_mTableWidget.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -271,6 +295,15 @@
       <Filter>TreeView</Filter>
     </CustomBuild>
     <CustomBuild Include="Antenna\problemWidgetTemplate.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\algorithmWidgetTemplate.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\parallelWidgetTemplate.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\mTableWidget.h">
       <Filter>Antenna</Filter>
     </CustomBuild>
   </ItemGroup>
