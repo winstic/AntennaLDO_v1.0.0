@@ -10,7 +10,7 @@
 class optimizeWizard : public QWizard{
     Q_OBJECT
 public:
-    optimizeWizard(parsProblem* atn_problem, QJsonObject& global_obj, QJsonObject& problem_obj, QJsonObject& algorithm_obj, QWidget *parent = 0);
+    optimizeWizard(parsProblem* atn_problem, QJsonObject& problem_obj, QJsonObject& algorithm_obj, parsAlgorithm* palgorithm, QWidget *parent = 0);
 	~optimizeWizard();
 
 protected:
@@ -20,7 +20,7 @@ protected:
 private:
 	QString _problem_json_file;
 	parsProblem* _atn_problem;
-	QJsonObject _global_obj;
+	parsAlgorithm* _algorithm;
 	QJsonObject _problem_obj;
 	QJsonObject _algorithm_obj;
 	wizardFreFarField* _optimize_pre_far;

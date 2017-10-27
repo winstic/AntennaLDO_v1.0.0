@@ -4,6 +4,7 @@
 #include "../Wizard/designWizard.h"
 #include "../Wizard/optimizeWizard.h"
 #include "designtab.h"
+#include "optimizetab.h"
 
 treeModel::treeModel(QWidget* parent) : QTreeView(parent), _atn_problem(nullptr), _model_info(nullptr){
 	_pro_tree = new QTreeView(this);
@@ -493,17 +494,16 @@ void treeModel::slot_addOptimize() {
 	if (var_node.isValid()) {
 		if (MARK_NODE_OPTIMIZE == var_node.toInt()) {
 			QString working_path = dataPool::global::getGWorkingProjectPath();
-			QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath());
 			QString problem_json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);			
-			QJsonObject global_obj, problem_obj, algorithm_obj;	//do not know which algorithm right now.
-			global_obj = parseJson::getJsonObj(global_json_path);
+			QJsonObject problem_obj, algorithm_obj;	//do not know which algorithm right now.
 			problem_obj = parseJson::getJsonObj(problem_json_path);
-			if (global_obj.isEmpty() || problem_obj.isEmpty()) {
+			if (problem_obj.isEmpty()) {
 				qCritical("get json object field.");
 				return;
 			}
-			//pass by refrence
-			optimizeWizard *wizard = new optimizeWizard(_atn_problem, global_obj, problem_obj, algorithm_obj, this);
+			//pass by reference or point
+			parsAlgorithm* pars_algorithm = 0;
+			optimizeWizard *wizard = new optimizeWizard(_atn_problem, problem_obj, algorithm_obj, pars_algorithm, this);
 			if (wizard->exec() == 1) {
 				//json obj already updated.
 				QString optimize_name = QString("ÓÅ»¯%1").arg(item->rowCount() + 1);
@@ -515,14 +515,12 @@ void treeModel::slot_addOptimize() {
 				item->appendRow(child);
 				dir->mkdir(optimize_path);
 
-				//we know which algorithm now.
-				QString alg_name = global_obj.value("ALGORITHM_NAME").toString().trimmed();
-				parsAlgorithm* pars_algorithm = dataPool::getAlgorithmByName(alg_name);
+				QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
 				bool is_success = true;
 				//copy files(.json..,) in optimizeDir					
 				is_success &= (dataPool::copyFile(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name),	QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name)) &&
-					dataPool::copyFile(global_json_path, QString("%1/global_conf.json").arg(optimize_path)) &&
-					dataPool::copyFile(QString("%1/%2_conf.json").arg(pars_algorithm->path).arg(alg_name), QString("%1/%2_conf.json").arg(optimize_path).arg(alg_name)));
+					dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), QString("%1/global_conf.json").arg(optimize_path)) &&
+					dataPool::copyFile(QString("%1/%2_conf.json").arg(pars_algorithm->path).arg(pars_algorithm->name), QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name)));
 				if (is_success) {
 					dir->mkdir(QString("%1/outfilepath").arg(optimize_path));
 					global_obj.insert("outfilepath", QString("%1/outfilepath").arg(optimize_path));
@@ -533,6 +531,8 @@ void treeModel::slot_addOptimize() {
 					else if (_atn_problem->type == FEKO)
 						is_success &= dataPool::copyFile(QString("%1/%2.cfx").arg(working_path).arg(_atn_problem->name),
 							QString("%1/outfilepath/%2.cfx").arg(optimize_path).arg(_atn_problem->name));
+					global_obj.insert("ALGORITHM_NAME", pars_algorithm->name);
+					global_obj.insert("PROBLEM_NAME", _atn_problem->name);
 
 				}
 				if (!is_success) {
@@ -548,7 +548,7 @@ void treeModel::slot_addOptimize() {
 				//update json file
 				parseJson::write(QString("%1/global_conf.json").arg(optimize_path), &global_obj);
 				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name), &problem_obj);
-				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(alg_name), &algorithm_obj);
+				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name), &algorithm_obj);
 				//update xml file
 				updateXMLFile(QString("%1/%2.xml").arg(working_path).arg(dataPool::global::getGProjectName()), item, child);					
 				delete dir;
@@ -568,8 +568,8 @@ void treeModel::slot_modifyDesignVar() {
 	QString json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentDesignPath()).arg(_atn_problem->name);
 	QJsonObject obj = parseJson::getJsonObj(json_path);
 	if (obj.isEmpty()) {
-		qCritical("get json object field.");
-		QMessageBox::critical(0, QString("Error"), QString("error: get json object field."));
+		qCritical(dataPool::str2char(QString("something wrong in file [%1]").arg(json_path)));
+		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(json_path));
 		return;
 	}
 	designTab dTab(_atn_problem, obj, this);
@@ -579,14 +579,18 @@ void treeModel::slot_modifyDesignVar() {
 }
 
 void treeModel::slot_modifyOptimizeVar() {
-	QString json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentOptimizePath()).arg(_atn_problem->name);
-	QJsonObject obj = parseJson::getJsonObj(json_path);
-	if (obj.isEmpty()) {
-		qCritical("get json object field.");
-		QMessageBox::critical(0, QString("Error"), QString("error: get json object field."));
+	QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGCurrentOptimizePath());
+	QString problem_json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentOptimizePath()).arg(_atn_problem->name);
+	QJsonObject global_obj, problem_obj;
+	global_obj = parseJson::getJsonObj(global_json_path);
+	problem_obj  = parseJson::getJsonObj(problem_json_path);
+	if (global_obj.isEmpty() || problem_obj.isEmpty()) {
+		qCritical(dataPool::str2char(QString("something wrong in file [%1] or [%2]").arg(global_json_path).arg(problem_json_path)));
+		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1] or [%2]").arg(global_json_path).arg(problem_json_path));
 		return;
 	}
-	optimizeTab *otab = new optimizeTab(obj, this);
+	parsAlgorithm* palgorithm = dataPool::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
+	optimizeTab *otab = new optimizeTab(_atn_problem, problem_obj, palgorithm, this);
 	//otab->setAttribute(Qt::WA_DeleteOnClose);
 	//otab->setModal(true);
 	otab->exec();

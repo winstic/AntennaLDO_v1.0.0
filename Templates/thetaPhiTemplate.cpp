@@ -17,7 +17,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	_phi_step_edit = new QLineEdit(this);
 	initRegex();
 	initDefaultData();
-	initThetaPhiLayout();
+	initLayout();
 }
 
 void thetaPhiTemplate::initRegex() {

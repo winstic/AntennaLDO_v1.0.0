@@ -16,7 +16,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	initSweepNDPMComBox();
 	initRegex();
 	initDefaultData(); 
-	initFrequencyLayout();
+	initLayout();
 }
 
 void frequencyTemplate::initSweepNDPMComBox() {

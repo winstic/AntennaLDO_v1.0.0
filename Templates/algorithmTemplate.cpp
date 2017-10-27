@@ -1,8 +1,8 @@
 #include "../Utility/parseJson.h"
 #include "algorithmTemplate.h"
 
-algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject global_obj, QJsonObject algorithm_obj, iTemplate *parent)
-	: iTemplate(parent), _atn_problem(atn_problem), _global_obj(global_obj), _algorithm_obj(algorithm_obj){
+algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject algorithm_obj, parsAlgorithm* palgorithm, iTemplate *parent)
+	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj){
 	_alg_label = new QLabel(tr("Ñ¡ÔñËã·¨:"), this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
@@ -10,10 +10,15 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject globa
 	_alg_vars_table->setColumnCount(2);
 	_alg_vars_table->horizontalHeader()->setSectionResizeMode(valueFlag, QHeaderView::Stretch);
 	initAlgComboItem();
-	_alg_combox->setCurrentIndex(0);
-	_algorithm = dataPool::getAlgorithmByID(_alg_combox->currentData().toInt());
-	initDefaultData();
 	initLayout();
+	if (_algorithm == 0 || _algorithm == nullptr) {
+		//set default algorithm
+		_alg_combox->setCurrentIndex(0);
+		_algorithm = dataPool::getAlgorithmByID(_alg_combox->currentData().toInt());
+	}
+	else
+		_alg_combox->setCurrentText(_algorithm->name);
+	initDefaultData();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
 }
 
@@ -73,9 +78,6 @@ QLayout* algorithmTemplate::getLayout() {
 }
 //update _obj
 void algorithmTemplate::updateJObj() {
-	_global_obj.insert("ALGORITHM_NAME", _algorithm->name);
-	_global_obj.insert("PROBLEM_NAME", _atn_problem->name);
-
 	QString varKey, varValue, varNote;
 	for (int i = 0; i < _alg_vars_table->rowCount(); ++i) {
 		varKey = _alg_vars_table->item(i, keyFlag)->whatsThis().trimmed();

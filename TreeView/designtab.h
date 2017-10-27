@@ -1,7 +1,8 @@
 #pragma once
 
-#include <QtWidgets>
-#include "../Antenna/problemWidgetTemplate.h"
+#include "../Templates/frequencyTemplate.h"
+#include "../Templates/thetaPhiTemplate.h"
+#include "../Templates/varsDefaultValueTemplate.h"
 
 class designTab : public QDialog{
     Q_OBJECT
@@ -18,7 +19,9 @@ private:
 private:
 	parsProblem* _atn_problem;
 	QJsonObject _obj;
-	problemTemplate _temp_widget;
+	frequencyTemplate* _frequency_widget;
+	thetaPhiTemplate* _theta_phi_widget;
+	varsDefaultValueTemplate* _vars_value_widget;
     QTabWidget* _tab_widget;
     QWidget* _first_tab;
     QWidget* _second_tab;    
