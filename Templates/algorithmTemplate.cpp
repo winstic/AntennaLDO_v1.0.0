@@ -1,8 +1,8 @@
 #include "../Utility/parseJson.h"
 #include "algorithmTemplate.h"
 
-algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem){
+algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject global_obj, QJsonObject algorithm_obj, iTemplate *parent)
+	: iTemplate(parent), _atn_problem(atn_problem), _global_obj(global_obj), _algorithm_obj(algorithm_obj){
 	_alg_label = new QLabel(tr("Ñ¡ÔñËã·¨:"), this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
@@ -13,6 +13,7 @@ _atn_problem(atn_problem){
 	_alg_combox->setCurrentIndex(0);
 	_algorithm = dataPool::getAlgorithmByID(_alg_combox->currentData().toInt());
 	initDefaultData();
+	initLayout();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
 }
 
@@ -72,10 +73,8 @@ QLayout* algorithmTemplate::getLayout() {
 }
 //update _obj
 void algorithmTemplate::updateJObj() {
-	QJsonObject uglobal_obj, ualg_obj;
-	uglobal_obj.insert("ALGORITHM_NAME", _algorithm->name);
-	uglobal_obj.insert("PROBLEM_NAME", _atn_problem->name);
-	_gAlg_obj.insert("global", uglobal_obj);
+	_global_obj.insert("ALGORITHM_NAME", _algorithm->name);
+	_global_obj.insert("PROBLEM_NAME", _atn_problem->name);
 
 	QString varKey, varValue, varNote;
 	for (int i = 0; i < _alg_vars_table->rowCount(); ++i) {
@@ -85,9 +84,8 @@ void algorithmTemplate::updateJObj() {
 		QJsonObject itemobj;
 		itemobj.insert(varKey, varValue);
 		itemobj.insert("note", varNote);
-		ualg_obj.insert(varKey, itemobj);
+		_algorithm_obj.insert(varKey, itemobj);
 	}
-	_gAlg_obj.insert("algorithm", ualg_obj);
 }
 
 //slots function

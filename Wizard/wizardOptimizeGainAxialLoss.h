@@ -1,14 +1,16 @@
 #pragma once
 
-#include <QtWidgets>
 #include <QWizardPage>
-#include "../Antenna/problemWidgetTemplate.h"
+#include "../Templates/gainTemplate.h"
+#include "../Templates/axialTemplate.h"
+#include "../Templates/lossTemplate.h"
 
 class wizardOptimizeAXL : public QWizardPage{
     Q_OBJECT
 public:
     wizardOptimizeAXL(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
-    ~wizardOptimizeAXL(){}
+	~wizardOptimizeAXL();
+	QList<iTemplate*> getTemplatesWidget() const;
 
 protected:
 	bool isComplete() const override;
@@ -16,5 +18,7 @@ protected:
 private:
 	QJsonObject _obj;
 	parsProblem* _atn_problem;
-	problemTemplate _temp_widget;
+	gainTemplate* _gain_widget;
+	axialTemplate* _axial_widget;
+	lossTemplate* _loss_widget;
 };

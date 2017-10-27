@@ -1,15 +1,15 @@
 ﻿#pragma once
 
-#include <QtWidgets>
 #include <QWizardPage>
-#include <QFile>
-#include "../Antenna/problemWidgetTemplate.h"
+#include "../Templates/frequencyTemplate.h"
+#include "../Templates/thetaPhiTemplate.h"
 
 class wizardFreFarField : public QWizardPage{
     Q_OBJECT
 public:
 	wizardFreFarField(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
     ~wizardFreFarField();
+	QList<iTemplate*> getTemplatesWidget() const;
 
 protected:
 	bool isComplete() const override;
@@ -17,5 +17,6 @@ protected:
 private:
 	QJsonObject _obj;
 	parsProblem* _atn_problem;
-	problemTemplate _temp_widget;
+	frequencyTemplate* _frequency_widget;
+	thetaPhiTemplate* _theta_phi_widget;
 };

@@ -1,15 +1,14 @@
 #pragma once
 
-#include <QtWidgets>
 #include <QWizardPage>
-#include "../Utility/global.h"
-#include "../Antenna/problemWidgetTemplate.h"
+#include "../Templates/variablesTemplate.h"
 
 class wizardOptimizeVariables : public QWizardPage{
     Q_OBJECT
 public:
     wizardOptimizeVariables(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
 	~wizardOptimizeVariables();
+	QList<iTemplate*> getTemplatesWidget() const;
 
 protected:
 	bool isComplete() const override;
@@ -17,5 +16,5 @@ protected:
 private:
 	parsProblem* _atn_problem;
 	QJsonObject _obj;
-	problemTemplate _temp_widget;
+	variablesTemplate* _variables_widget;
 };

@@ -10,9 +10,8 @@
 class optimizeWizard : public QWizard{
     Q_OBJECT
 public:
-    optimizeWizard(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
+    optimizeWizard(parsProblem* atn_problem, QJsonObject& global_obj, QJsonObject& problem_obj, QJsonObject& algorithm_obj, QWidget *parent = 0);
 	~optimizeWizard();
-	QJsonObject* getNewestJsonObject();
 
 protected:
 	//after click finish trigger accept() slot function
@@ -21,11 +20,11 @@ protected:
 private:
 	QString _problem_json_file;
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject _global_obj;
+	QJsonObject _problem_obj;
+	QJsonObject _algorithm_obj;
 	wizardFreFarField* _optimize_pre_far;
     wizardOptimizeAXL* _optimize_axl;
     wizardOptimizeVariables* _optimize_vars;
     wizardOptimizeAlg* _optimize_alg;
-
-	QJsonObject _newest_json_obj;  //save all json data after click Finish.
 };

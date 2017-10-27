@@ -475,7 +475,7 @@ void treeModel::slot_addDesign() {
 				dataPool::global::setGCurrentDesignPath(design_path);
 				qInfo(dataPool::str2char(QString("current design path change to [%1]").arg(design_path)));
 				//update json file
-				parseJson::write(QString("%1/%2_conf.json").arg(design_path).arg(_atn_problem->name), wizard->getNewestJsonobject());
+				parseJson::write(QString("%1/%2_conf.json").arg(design_path).arg(_atn_problem->name), &obj);
 				//update xml file
 				updateXMLFile(QString("%1/%2.xml").arg(working_path).arg(dataPool::global::getGProjectName()), item, child);
 				delete dir;
@@ -493,14 +493,19 @@ void treeModel::slot_addOptimize() {
 	if (var_node.isValid()) {
 		if (MARK_NODE_OPTIMIZE == var_node.toInt()) {
 			QString working_path = dataPool::global::getGWorkingProjectPath();
-			QString json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);
-			QJsonObject obj = parseJson::getJsonObj(json_path);
-			if (obj.isEmpty()) {
+			QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath());
+			QString problem_json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);			
+			QJsonObject global_obj, problem_obj, algorithm_obj;	//do not know which algorithm right now.
+			global_obj = parseJson::getJsonObj(global_json_path);
+			problem_obj = parseJson::getJsonObj(problem_json_path);
+			if (global_obj.isEmpty() || problem_obj.isEmpty()) {
 				qCritical("get json object field.");
 				return;
 			}
-			optimizeWizard *wizard = new optimizeWizard(_atn_problem, obj, this);
+			//pass by refrence
+			optimizeWizard *wizard = new optimizeWizard(_atn_problem, global_obj, problem_obj, algorithm_obj, this);
 			if (wizard->exec() == 1) {
+				//json obj already updated.
 				QString optimize_name = QString("ÓÅ»¯%1").arg(item->rowCount() + 1);
 				QDir *dir = new QDir();
 				QString optimize_path = QString("%1/optimize%2").arg(working_path).arg(item->rowCount() + 1);
@@ -510,22 +515,17 @@ void treeModel::slot_addOptimize() {
 				item->appendRow(child);
 				dir->mkdir(optimize_path);
 
-				QJsonObject* json_data_obj = wizard->getNewestJsonObject();
-				if (json_data_obj == nullptr) return;
-				QJsonObject global_obj = parseJson::getSubJsonObj(*json_data_obj, "global");
-				QJsonObject problem_obj = parseJson::getSubJsonObj(*json_data_obj, "problem");
-				QJsonObject algorithm_obj = parseJson::getSubJsonObj(*json_data_obj, "algorithm");
-				QString alg_name = algorithm_obj.value("ALGORITHM_NAME").toString().trimmed();
+				//we know which algorithm now.
+				QString alg_name = global_obj.value("ALGORITHM_NAME").toString().trimmed();
 				parsAlgorithm* pars_algorithm = dataPool::getAlgorithmByName(alg_name);
 				bool is_success = true;
 				//copy files(.json..,) in optimizeDir					
 				is_success &= (dataPool::copyFile(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name),	QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name)) &&
-					dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), QString("%1/global_conf.json").arg(optimize_path)) &&
+					dataPool::copyFile(global_json_path, QString("%1/global_conf.json").arg(optimize_path)) &&
 					dataPool::copyFile(QString("%1/%2_conf.json").arg(pars_algorithm->path).arg(alg_name), QString("%1/%2_conf.json").arg(optimize_path).arg(alg_name)));
 				if (is_success) {
 					dir->mkdir(QString("%1/outfilepath").arg(optimize_path));
 					global_obj.insert("outfilepath", QString("%1/outfilepath").arg(optimize_path));
-					global_obj.insert("outhfsspath", "");
 					if (_atn_problem->type == HFSS) {
 						dir->mkdir(QString("%1/outhfsspath").arg(optimize_path));
 						global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(optimize_path));

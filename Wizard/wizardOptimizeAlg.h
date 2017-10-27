@@ -1,33 +1,21 @@
 #pragma once
 
-#include <QtWidgets>
 #include <QWizardPage>
-#include "../Utility/global.h"
-#include "../Antenna/algorithmWidgetTemplate.h"
+#include "../Templates/algorithmTemplate.h"
 
 class wizardOptimizeAlg : public QWizardPage{
     Q_OBJECT
-	Q_PROPERTY(QJsonObject gAlgJsonObj WRITE updateGAlgJsonObj)
 public:
-    wizardOptimizeAlg(parsProblem* atn_problem, QWidget *parent = 0);
-    ~wizardOptimizeAlg(){}
-	void initializePage() override;
+    wizardOptimizeAlg(parsProblem* atn_problem, QJsonObject global_obj, QJsonObject algorithm_obj, QWidget *parent = 0);
+	~wizardOptimizeAlg();
+	QList<iTemplate*> getTemplatesWidget() const;
 
 protected:
 	bool isComplete() const override;
 
-public slots:
-    void slot_algName(const int index);
-
-signals:
-	void signal_gAlgJsonObjChanged();
-
-private:
-	void updateGAlgJsonObj();
-
 private:
 	parsProblem* _atn_problem;
-	algorithmTemplate _temp_widget;
-    enum VARCOLUMN{keyFlag = 0, valueFlag};
-	QJsonObject _gAlg_obj;
+	QJsonObject _global_obj;
+	QJsonObject _algorithm_obj;
+	algorithmTemplate* _algorithm_widget;
 };

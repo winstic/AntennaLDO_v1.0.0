@@ -7,7 +7,7 @@
 class algorithmTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	algorithmTemplate(parsProblem* atn_problem, iTemplate *parent = 0);
+	algorithmTemplate(parsProblem* atn_problem, QJsonObject global_obj, QJsonObject algorithm_obj, iTemplate *parent = 0);
 	~algorithmTemplate() {}
 
 	QLayout* getLayout();
@@ -25,6 +25,8 @@ private:
 public:
 	parsProblem* _atn_problem;
 	parsAlgorithm* _algorithm;
+	QJsonObject _global_obj;
+	QJsonObject _algorithm_obj;
 	QLabel* _alg_label;
 	QComboBox* _alg_combox;
 	tableTemplate* _alg_vars_table;

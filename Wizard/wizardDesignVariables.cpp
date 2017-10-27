@@ -3,21 +3,25 @@
 
 
 wizardDesignVariables::wizardDesignVariables(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent): QWizardPage(parent), 
-_atn_problem(atn_problem), _obj(obj), _temp_widget(atn_problem, obj){
+_atn_problem(atn_problem), _obj(obj){
 
 	setTitle(tr("模型设置"));
 	setSubTitle(tr("模型设置"));
-
+	_vars_value_widget = new varsDefaultValueTemplate(atn_problem, obj);
     //layout
-	QHBoxLayout layout;
-	_temp_widget.initVariablesValueWidget(&layout);
-	setLayout(&layout);
-
-	registerField(QString("%1*").arg(var_key), value_edit);
+	QLayout* layout = _vars_value_widget->getLayout();
+	setLayout(layout);
 }
 
 bool wizardDesignVariables::isComplete() const {
 	return true;
 }
 
-wizardDesignVariables::~wizardDesignVariables(){}
+QList<iTemplate*> wizardDesignVariables::getTemplatesWidget() const {
+	return QList<iTemplate*> {_vars_value_widget};
+}
+
+wizardDesignVariables::~wizardDesignVariables(){
+	delete _vars_value_widget;
+	_vars_value_widget = nullptr;
+}

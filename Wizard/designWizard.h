@@ -1,9 +1,6 @@
 ﻿#pragma once
 
 #include <QWizard>
-#include <QWizardPage>
-#include <QFile>
-#include <QTextStream>
 #include "wizardFreFarField.h"
 #include "wizardDesignVariables.h"
 
@@ -13,7 +10,6 @@ class designWizard : public QWizard{
 public:
     designWizard(parsProblem* atn_problem, QJsonObject& obj, QWidget* parent = 0);
 	~designWizard();
-	QJsonObject* getNewestJsonobject();
 
 protected:
 	//after click finish trigger accept() slot function

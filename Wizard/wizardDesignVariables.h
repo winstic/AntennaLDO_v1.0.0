@@ -1,21 +1,19 @@
 ﻿#pragma once
 
-#include <QtWidgets>
 #include <QWizardPage>
-#include "../Utility/global.h"
-#include "../Antenna/problemWidgetTemplate.h"
+#include "../Templates/varsDefaultValueTemplate.h"
 
 class wizardDesignVariables : public QWizardPage{
     Q_OBJECT
 public:
     wizardDesignVariables(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
 	~wizardDesignVariables();
-
+	QList<iTemplate*> getTemplatesWidget() const;
 protected:
 	bool isComplete() const override;
 
 private:
 	QJsonObject _obj;
 	parsProblem* _atn_problem;
-	problemTemplate _temp_widget;
+	varsDefaultValueTemplate* _vars_value_widget;
 };
