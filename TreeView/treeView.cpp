@@ -5,6 +5,8 @@
 #include "../Wizard/optimizeWizard.h"
 #include "designtab.h"
 #include "optimizetab.h"
+#include "designRun.h"
+#include "optimizeRun.h"
 
 treeModel::treeModel(QWidget* parent) : QTreeView(parent), _atn_problem(nullptr), _model_info(nullptr){
 	_pro_tree = new QTreeView(this);
@@ -597,14 +599,24 @@ void treeModel::slot_modifyOptimizeVar() {
 }
 
 void treeModel::slot_designRun() {
-	designRun *d_run = new designRun();
+	QJsonObject obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentDesignPath()).
+		arg(_atn_problem->name));
+	designRun *d_run = new designRun(_atn_problem, obj);
 	d_run->start();
 }
 
 void treeModel::slot_optimizeRun() {
+	QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGCurrentOptimizePath());
+	QJsonObject global_obj = parseJson::getJsonObj(global_json_path);
+	if (global_obj.isEmpty()) {
+		qCritical(dataPool::str2char(QString("something wrong in file [%1]").arg(global_json_path)));
+		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(global_json_path));
+		return;
+	}
+	parsAlgorithm* palgorithm = dataPool::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
 	optRunProcess = new QProcess(0);
 	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
-	optimizeRun *oRun = new optimizeRun(optRunProcess);
+	optimizeRun *oRun = new optimizeRun(_atn_problem, palgorithm, optRunProcess);
 	oRun->start();
 }
 

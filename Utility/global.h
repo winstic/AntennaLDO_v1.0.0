@@ -1,4 +1,5 @@
 #pragma once
+#include <QFile>
 #include <QString>
 #include <qvector.h>
 #include <qmap.h>

@@ -298,6 +298,12 @@
     <ClCompile Include="Templates\parallelTemplate.cpp">
       <Filter>Templates</Filter>
     </ClCompile>
+    <ClCompile Include="TreeView\designRun.cpp">
+      <Filter>TreeView</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeView\optimizeRun.cpp">
+      <Filter>TreeView</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -409,6 +415,15 @@
     </ClInclude>
     <ClInclude Include="Antenna\initialization.h">
       <Filter>Antenna</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeView\designRun.h">
+      <Filter>TreeView</Filter>
+    </ClInclude>
+    <ClInclude Include="TreeView\optimizeRun.h">
+      <Filter>TreeView</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\aRun.h">
+      <Filter>Utility</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

@@ -200,7 +200,9 @@
     <ClCompile Include="Templates\thetaPhiTemplate.cpp" />
     <ClCompile Include="Templates\variablesTemplate.cpp" />
     <ClCompile Include="Templates\varsDefaultValueTemplate.cpp" />
+    <ClCompile Include="TreeView\designRun.cpp" />
     <ClCompile Include="TreeView\designtab.cpp" />
+    <ClCompile Include="TreeView\optimizeRun.cpp" />
     <ClCompile Include="TreeView\optimizetab.cpp" />
     <ClCompile Include="TreeView\treeView.cpp" />
     <ClCompile Include="Wizard\designWizard.cpp" />
@@ -512,6 +514,9 @@
       <Outputs Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">.\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp</Outputs>
       <Command Condition="'$(Configuration)|$(Platform)'=='Release|Win32'">"$(QTDIR)\bin\moc.exe"  "%(FullPath)" -o ".\GeneratedFiles\$(ConfigurationName)\moc_%(Filename).cpp"  -DUNICODE -DWIN32 -DQT_DLL -DQT_NO_DEBUG -DNDEBUG -DQT_CORE_LIB -DQT_GUI_LIB -DQT_WIDGETS_LIB -DQT_XML_LIB "-I.\GeneratedFiles" "-I." "-I$(QTDIR)\include" "-I.\GeneratedFiles\$(ConfigurationName)\." "-I$(QTDIR)\include\QtCore" "-I$(QTDIR)\include\QtGui" "-I$(QTDIR)\include\QtWidgets" "-I$(QTDIR)\include\QtXml"</Command>
     </CustomBuild>
+    <ClInclude Include="TreeView\designRun.h" />
+    <ClInclude Include="TreeView\optimizeRun.h" />
+    <ClInclude Include="Utility\aRun.h" />
     <ClInclude Include="Utility\parseJson.h" />
     <ClInclude Include="Utility\global.h" />
     <ClInclude Include="Utility\macrodefined.h" />
