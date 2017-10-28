@@ -26,7 +26,7 @@ void optimizeRun::run(){
     //qDebug() << p.state();
     //QMessageBox::critical(0, QString("Error"),str);
 
-    qDebug() << p->processId();
+    //qDebug() << p->processId();
     p->setReadChannel(p->StandardOutput);
     //p.setReadChannel(p.StandardError);
 
@@ -46,6 +46,6 @@ void optimizeRun::run(){
     }*/
     if(!p->waitForFinished(-1))
         exit(1);
-    qDebug() << "finifshed";
+   // qDebug() << "finifshed";
     //QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
 }

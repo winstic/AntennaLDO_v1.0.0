@@ -25,20 +25,21 @@ public slots:
 	void slot_cellPressed(int, int);
 	void slot_property();
 	void slot_newProject();
+	//search antenna
+	void slot_clickSearchButton();
+	void slot_searchTextChange(QString);
 
 private:
-	void initAtnLayout();
+	void atnLibraryLayout();
 	void initAtnCellList();
 	void initAtnCellWidth(QVector<int>& cell_width_vec);
-	void showInfo();
 	void initMenu();
 	void newProject();
 
 	parsProblem* _atn_problem;
-	QVector<antennaCell*> _atn_cell_list;
+	QList<antennaCell*> _atn_cell_list;
 	QTableWidget* _table_view;
 	modelInfo* _model_info;
-	QLabel* _search_label;		//necessary?
 	int _atn_dock_WH;
 	int _num_of_table_col;
 	QMenu* _item_menu;

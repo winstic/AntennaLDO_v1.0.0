@@ -14,14 +14,14 @@ public:
 	explicit treeModel(QWidget* parent = 0);
 	QTreeView* getTreeWidget();
 	bool updateXMLFile(const QString &fileName, const QStandardItem *item, const QStandardItem *child);
+	bool parseXML(const QString& file_name, parsProblem* atn_problem);
 	~treeModel() {}
 
 private:
 	void parseProjectElement(const QDomElement &element, QStandardItem* parent);
 	void parseNodeElement(const QDomElement &element, QStandardItem *parent);
-	void parseItemElement(const QDomElement &element, QStandardItem *parent);
-	bool parseXML(const QString& file_name);
-	bool writeXMLFile(const QString& file_name, const QString& atn_name);
+	void parseItemElement(const QDomElement &element, QStandardItem *parent);	
+	bool writeXMLFile(const QString& file_name, parsProblem* atn_problem);
 
 	//make no sence
 	QList<QStandardItem*> getRoots();           //获取所有节点
@@ -83,6 +83,6 @@ private:
 	QModelIndex* _curr_item_index;
 
 	//optimizal process
-	QProcess* optRunProcess; //better?
+	QProcess* optRunProcess; //better? i don't know. maybe
 	//QDockWidget* outputDock;
 };

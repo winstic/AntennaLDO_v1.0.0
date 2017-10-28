@@ -36,7 +36,8 @@ QTreeView* treeModel::getTreeWidget() {
 	return _pro_tree;
 }
 
-bool treeModel::writeXMLFile(const QString &file_name, const QString &atn_name) {
+bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem) {
+	_atn_problem = atn_problem;
 	QFile file(file_name);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 		return false;
@@ -49,7 +50,7 @@ bool treeModel::writeXMLFile(const QString &file_name, const QString &atn_name) 
 
 	//project
 	root = doc.createElement("project");
-	root.setAttribute("name", atn_name);
+	root.setAttribute("name", _atn_problem->name);
 	doc.appendChild(root);
 
 	element = doc.createElement("item");
@@ -131,7 +132,8 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 	return true;
 }
 
-bool treeModel::parseXML(const QString &file_name) {
+bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
+	_atn_problem = atn_problem;
 	QFile file(file_name);
 	if (!file.open(QFile::ReadOnly | QFile::Text)) {
 		qCritical(dataPool::str2char(QString("cannot read file [%1].").arg(file_name)));
@@ -345,9 +347,8 @@ QList<QStandardItem*> treeModel::getFolderNode() {
 // slot function
 //create project tree by xml file
 void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem) {
-	_atn_problem = atn_problem;
-	writeXMLFile(path, _atn_problem->name);
-	parseXML(path);
+	writeXMLFile(path, atn_problem);
+	parseXML(path, atn_problem);
 	qInfo("create project tree.");
 }
 

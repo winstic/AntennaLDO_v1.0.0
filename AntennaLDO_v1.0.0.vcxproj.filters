@@ -304,6 +304,9 @@
     <ClCompile Include="TreeView\optimizeRun.cpp">
       <Filter>TreeView</Filter>
     </ClCompile>
+    <ClCompile Include="Antenna\searchWidget.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -424,6 +427,9 @@
     </ClInclude>
     <ClInclude Include="Utility\aRun.h">
       <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\searchWidget.h">
+      <Filter>Antenna</Filter>
     </ClInclude>
   </ItemGroup>
   <ItemGroup>

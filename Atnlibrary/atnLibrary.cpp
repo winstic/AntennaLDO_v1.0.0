@@ -7,12 +7,10 @@ atnLibrary::atnLibrary(int dock_width, int table_columns, QWidget *parent) : QWi
 _num_of_table_col(table_columns), _atn_problem(nullptr), _model_info(nullptr){
 	_table_view = new QTableWidget(this);
 	_table_view->setContextMenuPolicy(Qt::CustomContextMenu);
-	_search_label = new QLabel(this);
-	_item_menu = new QMenu(this);
-	initAtnCellList();
+	_item_menu = new QMenu(this);	
 	initMenu();
-	initAtnLayout();
-	//showInfo();
+	initAtnCellList();
+	atnLibraryLayout();
 	//QMessageBox::information(this, "infomation", "atnlibrary:"+QString::number(geometry().width()));
 	//qDebug() << sizeHint().width() << "," << sizeHint().height();
 	connect(_table_view, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slot_tableCellDoubleClick(int, int)));
@@ -20,24 +18,24 @@ _num_of_table_col(table_columns), _atn_problem(nullptr), _model_info(nullptr){
 	connect(_table_view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slot_customContextMenuRequested(QPoint)));
 }
 
+void atnLibrary::initMenu() {
+	QAction act_new(QStringLiteral("新建工程"), this);
+	QAction act_property(QStringLiteral("属性"), this);
+	connect(&act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
+	connect(&act_property, &QAction::triggered, this, &atnLibrary::slot_property);
+	_item_menu->addAction(&act_new);
+	_item_menu->addAction(&act_property);
+}
+
 void atnLibrary::initAtnCellList() {
 	QVector<parsProblem*>::iterator iter;
 	for (iter = dataPool::g_problems.begin(); iter != dataPool::g_problems.end(); ++iter) {
 		antennaCell* atnCellTemp = new antennaCell(*iter);
-		_atn_cell_list.push_back(atnCellTemp);
+		_atn_cell_list.append(atnCellTemp);
 	}
 }
 
-void atnLibrary::initMenu() {
-	QAction* act_new = new QAction(QStringLiteral("新建工程"), this);
-	QAction* act_property = new QAction(QStringLiteral("属性"), this);
-	connect(act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
-	connect(act_property, &QAction::triggered, this, &atnLibrary::slot_property);
-	_item_menu->addAction(act_new);
-	_item_menu->addAction(act_property);
-}
-
-void atnLibrary::initAtnLayout() {
+void atnLibrary::atnLibraryLayout() {
 	_table_view->clear();
 	int num_of_atn = _atn_cell_list.size();
 	if (num_of_atn > 0) {
@@ -80,29 +78,6 @@ void atnLibrary::initAtnCellWidth(QVector<int>& cell_width_vec) {
 		++cell_width_vec[_num_of_table_col - 1 - j];
 	}
 }
-
-//delete ?
-void atnLibrary::showInfo() {
-	//search result is Null
-	_search_label->setText("搜索结果为空，请重新搜索！");
-	QFont *font = new QFont;
-	font->setBold(true);
-	font->setPixelSize(30);
-	_search_label->setFont(*font);
-	_search_label->setAlignment(Qt::AlignCenter);
-
-	//find something
-	_table_view->verticalHeader()->setVisible(false);
-	_table_view->horizontalHeader()->setVisible(false);
-	_table_view->setSelectionMode(QAbstractItemView::SingleSelection);
-	_table_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
-
-	QPalette pal(this->palette());
-	pal.setColor(QPalette::Background, Qt::white);
-	this->setAutoFillBackground(true);
-	this->setPalette(pal);
-}
-
 
 QTableWidget* atnLibrary::getTableWidget() const {
 	if (_table_view == nullptr)
@@ -155,9 +130,8 @@ void atnLibrary::newProject() {
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);
 			QTextStream out(&inFile);
-			out << "Problem:" << _atn_problem->name << endl;
-			out << "id:" << _atn_problem->id << endl;
-			out << "ProType:" << _atn_problem->type << endl;
+			out << "PID:" << _atn_problem->id << endl;
+			out << "PROBLEM:" << _atn_problem->name << endl;			
 			inFile.close();
 			qInfo("successfully create project.");
 			//memory leak
@@ -215,6 +189,22 @@ void atnLibrary::slot_property() {
 	qInfo(dataPool::str2char(QString("scan [%1] antenna model info.").arg(_atn_problem->name)));
 }
 
+void atnLibrary::slot_clickSearchButton() {}
+void atnLibrary::slot_searchTextChange(QString searchText) {
+	//update antenna cell list
+	_atn_cell_list.clear();
+	QVector<parsProblem*>::iterator iter;
+	for (iter = dataPool::g_problems.begin(); iter != dataPool::g_problems.end(); ++iter) {
+		//we can use kmp algorithm instead
+		if ((*iter)->name.contains(searchText) || (*iter)->info.contains(searchText)) {
+			antennaCell* atn_cell_temp = new antennaCell(*iter);
+			_atn_cell_list.append(atn_cell_temp);
+		}
+	}
+	atnLibraryLayout();
+}
+
+
 atnLibrary::~atnLibrary() {
 	//qt支持父子控件，一旦atnLibrary实例析构后，会自动调用内部控件的析构函数
 	//delete table_view;
@@ -222,13 +212,12 @@ atnLibrary::~atnLibrary() {
 	//delete item_menu;
 	//delete action_new;
 	//delete action_property;
-	for (QVector<antennaCell*>::iterator iter = _atn_cell_list.begin(); iter != _atn_cell_list.end(); ++iter) {
+	for (QList<antennaCell*>::iterator iter = _atn_cell_list.begin(); iter != _atn_cell_list.end(); ++iter) {
 		if ((*iter) != nullptr) {
 			delete (*iter);
-			(*iter) = nullptr;
+			//(*iter) = nullptr;
 		}
 	}
-	_atn_cell_list.swap(QVector<antennaCell*>{});
 	
 	delete _model_info;
 	_model_info = nullptr;

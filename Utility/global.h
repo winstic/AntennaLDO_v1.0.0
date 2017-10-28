@@ -150,4 +150,23 @@ namespace dataPool{
 		QStringList strList = str.split(re, QString::SkipEmptyParts);
 		return strList;
 	}
+
+	static QString getInfoFromRelFile(const QString &key) {
+		QFile infile(QString("%1/%2.rel").arg(global::getGWorkingProjectPath()).arg(global::getGProjectName()));
+		if (!infile.open(QFile::Text | QFile::ReadOnly)) 			
+			return "";
+		QTextStream txtInput(&infile);
+		QString str = txtInput.readAll();
+		infile.close();
+
+		QString up_key = key.toUpper();
+		QStringList strList = str.split("\n", QString::SkipEmptyParts);
+		for (int i = 0; i < strList.count(); ++i) {
+			if (strList.at(i).contains(up_key)) {
+				QStringList tempList = QString(strList.at(i)).split(":");
+				return tempList.at(1).trimmed();
+			}
+		}
+		return "";
+	}
 }
