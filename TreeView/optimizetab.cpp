@@ -14,7 +14,7 @@ optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject& problem_obj, par
 	_second_tab = new QWidget(this);
 	_third_tab = new QWidget(this);
 	_fourth_tab = new QWidget(this);
-	_save_all_button = new QPushButton("保存所有", this);
+	_save_all_button = new QPushButton(QString("保存所有."), this);
 
 	_frequency_widgete = new frequencyTemplate(_atn_problem, _problem_obj);
 	_theta_phi_widget = new thetaPhiTemplate(_atn_problem, _problem_obj);
@@ -41,12 +41,12 @@ void optimizeTab::initLayout() {
 	frequency_group_box.setLayout(frequency_layout);
 	QLayout* far_field_layout = _theta_phi_widget->getLayout();
 	far_field_group_box.setLayout(far_field_layout);
-	QVBoxLayout v_layout;
-	v_layout.addWidget(&frequency_group_box);
-	v_layout.addWidget(&far_field_group_box);
-	v_layout.setSpacing(50);
-	v_layout.setContentsMargins(2, 20, 2, 2);
-	_first_tab->setLayout(&v_layout);
+	QVBoxLayout v_layout1;
+	v_layout1.addWidget(&frequency_group_box);
+	v_layout1.addWidget(&far_field_group_box);
+	v_layout1.setSpacing(50);
+	v_layout1.setContentsMargins(2, 20, 2, 2);
+	_first_tab->setLayout(&v_layout1);
 	//second tab
 	QGroupBox group_box_gain(tr("增益设置"));
 	QLayout* gain_layout = _gain_widget->getLayout();
@@ -60,11 +60,11 @@ void optimizeTab::initLayout() {
 	QLayout* loss_layout = _loss_widget->getLayout();
 	group_box_loss.setLayout(loss_layout);
 
-	QVBoxLayout v_layout;
-	v_layout.addWidget(&group_box_gain);
-	v_layout.addWidget(&group_box_axial);
-	v_layout.addWidget(&group_box_loss);
-	_second_tab->setLayout(&v_layout);
+	QVBoxLayout v_layout2;
+	v_layout2.addWidget(&group_box_gain);
+	v_layout2.addWidget(&group_box_axial);
+	v_layout2.addWidget(&group_box_loss);
+	_second_tab->setLayout(&v_layout2);
 	//third tab
 	QLayout* h_layout3 = _variables_widget->getLayout();
 	_third_tab->setLayout(h_layout3);
@@ -94,7 +94,7 @@ void optimizeTab::slot_saveAllButton(bool){
 	
 	QJsonObject global_obj = parseJson::getJsonObj(global_json_path);	
 	if (global_obj.isEmpty()) {
-		qCritical(dataPool::str2char(QString("something wrong in file [%1]").arg(global_json_path)));
+		qCritical("something wrong in file: '%s'", qUtf8Printable(global_json_path));
 		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(global_json_path));
 		return;
 	}

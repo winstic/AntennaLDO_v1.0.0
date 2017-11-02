@@ -1,4 +1,5 @@
 #include "../Utility/parsejson.h"
+#include <QTextStream>
 #include "designRun.h"
 
 designRun::designRun(parsProblem* atn_problem, QJsonObject& obj) : _atn_problem(_atn_problem), _obj(obj){
@@ -17,8 +18,8 @@ bool designRun::registerHfssVars(){
 	frequency_obj = parseJson::getSubJsonObj(_obj, "FreSetting");
 	far_field_obj = parseJson::getSubJsonObj(_obj, "ThetaPhiStep");
     if(vars_value_obj.isEmpty() || frequency_obj.isEmpty() || far_field_obj.isEmpty()){
-		qCritical(dataPool::str2char(QString("something wrong in file [%1/%2_conf.json]").arg(_design_path).arg(_atn_problem->name)));
-        QMessageBox::critical(0, QString("Error"), QString("something wrong in file [%1/%2_conf.json]").arg(_design_path).arg(_atn_problem->name));
+		qCritical("something wrong in file '%s/%s_conf.json'", qUtf8Printable(_design_path), qUtf8Printable(_atn_problem->name));
+        //QMessageBox::critical(0, QString("Error"), QString("something wrong in file [%1/%2_conf.json]").arg(_design_path).arg(_atn_problem->name));
         return false;
     }
     for(QJsonObject::iterator iter = vars_value_obj.begin(); iter != vars_value_obj.end(); ++ iter){
@@ -49,8 +50,8 @@ bool designRun::updateVbs(){
 	QString vbs_path = QString("%1/%2_design.vbs").arg(_design_path).arg(_atn_problem->name);
     QFile inFile(vbs_path);
     if(!inFile.open(QFile::ReadOnly | QFile::Text)){
-		qCritical(dataPool::str2char(QString("error: Cannot read file %1").arg(vbs_path)));
-        QMessageBox::critical(0, QString("Error"), QString("error: Cannot read file %1").arg(vbs_path));
+		qCritical("Cannot read file '%s'", qUtf8Printable(vbs_path));
+        //QMessageBox::critical(0, QString("Error"), QString("error: Cannot read file %1").arg(vbs_path));
         return false;
     }
     QTextStream in(&inFile);
@@ -91,5 +92,5 @@ void designRun::run(){
         return;
     }*/
     p.waitForFinished();
-    qDebug() << QString::fromLocal8Bit(p.readAllStandardError());
+    //qDebug() << QString::fromLocal8Bit(p.readAllStandardError());
 }

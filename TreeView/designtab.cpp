@@ -15,7 +15,7 @@ _atn_problem(atn_problem), _obj(obj){
 	_frequency_widget = new frequencyTemplate(_atn_problem, _obj);
 	_theta_phi_widget = new thetaPhiTemplate(_atn_problem, _obj);
 	_vars_value_widget = new varsDefaultValueTemplate(_atn_problem, _obj);
-	_save_all_button = new QPushButton("保存所有", this);
+	_save_all_button = new QPushButton(QString("保存所有."), this);
 
 	_tab_widget->addTab(_first_tab, QIcon(""), tr("性能参数设置"));
 	//firstTab->setWindowTitle(tr("设置频率信息并指定远场范围"));

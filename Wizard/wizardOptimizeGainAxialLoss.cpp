@@ -5,7 +5,7 @@
 wizardOptimizeAXL::wizardOptimizeAXL(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent) : QWizardPage(parent), 
 _atn_problem(atn_problem), _obj(obj){
     setTitle(tr("增益轴比回波损失设置"));
-    setSubTitle(tr("设置增益轴比回波损失等参数"));
+    setSubTitle(tr("设置增益轴比回波损失等参数."));
 
 	_gain_widget = new gainTemplate(atn_problem, obj);
 	_axial_widget = new axialTemplate(atn_problem, obj);

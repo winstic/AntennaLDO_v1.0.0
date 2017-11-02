@@ -57,7 +57,7 @@ bool wizardAddSetting::isComplete() const{
 		.arg(_project_name_edit->text().trimmed());
     if (dir.exists(full_path)){
         _hint->setText("当前文件已存在" + full_path);
-		qCritical(dataPool::str2char(QString("current file %1 already exist.").arg(full_path)));
+		qCritical("current file: '%s' already exist.", qUtf8Printable(full_path));
 		return false;
 	}
 	qInfo("project setting success.");

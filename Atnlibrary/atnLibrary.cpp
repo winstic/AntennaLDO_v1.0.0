@@ -5,14 +5,16 @@
 
 atnLibrary::atnLibrary(int dock_width, int table_columns, QWidget *parent) : QWidget(parent) ,_atn_dock_WH(dock_width), 
 _num_of_table_col(table_columns), _atn_problem(nullptr), _model_info(nullptr){
-	_table_view = new QTableWidget(this);
+	_table_view = new QTableWidget();
 	_table_view->setContextMenuPolicy(Qt::CustomContextMenu);
-	_item_menu = new QMenu(this);	
+	_table_view->verticalHeader()->setVisible(false);
+	_table_view->horizontalHeader()->setVisible(false);
+	_table_view->setSelectionMode(QAbstractItemView::SingleSelection);
+	_table_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	_item_menu = new QMenu;	
 	initMenu();
 	initAtnCellList();
 	atnLibraryLayout();
-	//QMessageBox::information(this, "infomation", "atnlibrary:"+QString::number(geometry().width()));
-	//qDebug() << sizeHint().width() << "," << sizeHint().height();
 	connect(_table_view, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slot_tableCellDoubleClick(int, int)));
 	connect(_table_view, SIGNAL(cellPressed(int, int)), this, SLOT(slot_cellPressed(int, int)));
 	connect(_table_view, SIGNAL(customContextMenuRequested(QPoint)), this, SLOT(slot_customContextMenuRequested(QPoint)));
@@ -28,9 +30,9 @@ void atnLibrary::initMenu() {
 }
 
 void atnLibrary::initAtnCellList() {
-	QVector<parsProblem*>::iterator iter;
-	for (iter = dataPool::g_problems.begin(); iter != dataPool::g_problems.end(); ++iter) {
-		antennaCell* atnCellTemp = new antennaCell(*iter);
+	QVector<parsProblem>::iterator iter;
+	for (iter = dataPool::global::g_problems.begin(); iter != dataPool::global::g_problems.end(); ++iter) {
+		antennaCell* atnCellTemp = new antennaCell(iter);
 		_atn_cell_list.append(atnCellTemp);
 	}
 }
@@ -59,7 +61,7 @@ void atnLibrary::atnLibraryLayout() {
 		}
 	}
 	QLabel *plusPhoto = new QLabel;
-	QPixmap plusMap = QPixmap("./images/plus.png");
+	QPixmap plusMap = QPixmap("images/plus.png");
 	plusPhoto->setPixmap(plusMap);
 	_table_view->setCellWidget(num_of_atn / _num_of_table_col, num_of_atn % _num_of_table_col, plusPhoto);
 }
@@ -186,18 +188,18 @@ void atnLibrary::slot_property() {
 	_model_info = new modelInfo(_atn_problem);
 	//mf->setAttribute(Qt::WA_DeleteOnClose);
 	_model_info->exec();
-	qInfo(dataPool::str2char(QString("scan [%1] antenna model info.").arg(_atn_problem->name)));
+	qInfo("scan '%s' antenna model info.", qUtf8Printable(_atn_problem->name));
 }
 
 void atnLibrary::slot_clickSearchButton() {}
 void atnLibrary::slot_searchTextChange(QString searchText) {
 	//update antenna cell list
 	_atn_cell_list.clear();
-	QVector<parsProblem*>::iterator iter;
-	for (iter = dataPool::g_problems.begin(); iter != dataPool::g_problems.end(); ++iter) {
+	QVector<parsProblem>::iterator iter;
+	for (iter = dataPool::global::g_problems.begin(); iter != dataPool::global ::g_problems.end(); ++iter) {
 		//we can use kmp algorithm instead
-		if ((*iter)->name.contains(searchText) || (*iter)->info.contains(searchText)) {
-			antennaCell* atn_cell_temp = new antennaCell(*iter);
+		if (iter->name.contains(searchText) || iter->info.contains(searchText)) {
+			antennaCell* atn_cell_temp = new antennaCell(iter);
 			_atn_cell_list.append(atn_cell_temp);
 		}
 	}

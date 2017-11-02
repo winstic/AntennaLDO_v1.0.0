@@ -10,11 +10,11 @@ optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject& problem_ob
 	_optimize_alg = new wizardOptimizeAlg(_atn_problem, _algorithm_obj, _algorithm, this);
 	//remove help menu
 	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
-	setWindowTitle("优化向导");
+	setWindowTitle(tr("优化向导"));
 	setOption(QWizard::NoBackButtonOnStartPage);
-	setButtonText(QWizard::NextButton, "下一步>");
-	setButtonText(QWizard::CancelButton, "取消");
-	setButtonText(QWizard::FinishButton, "完成");
+	setButtonText(QWizard::NextButton, tr("下一步>"));
+	setButtonText(QWizard::CancelButton, tr("取消"));
+	setButtonText(QWizard::FinishButton, tr("完成"));
 	setMinimumSize(880, 580);
 	
 	addPage(_optimize_pre_far);

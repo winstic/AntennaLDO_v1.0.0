@@ -14,7 +14,7 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject algor
 	if (_algorithm == 0 || _algorithm == nullptr) {
 		//set default algorithm
 		_alg_combox->setCurrentIndex(0);
-		_algorithm = dataPool::getAlgorithmByID(_alg_combox->currentData().toInt());
+		_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toInt());
 	}
 	else
 		_alg_combox->setCurrentText(_algorithm->name);
@@ -36,7 +36,7 @@ void algorithmTemplate::initDefaultData() {
 	QString alg_json_path = QString("%1/%2_conf.json").arg(_algorithm->path).arg(_algorithm->name);
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
-		qCritical(dataPool::str2char(QString("cannot parse algorithm json file [%1]").arg(alg_json_path)));
+		qCritical("cannot parse algorithm json file: '%s'", qUtf8Printable(alg_json_path));
 		QMessageBox::critical(0, QString("Error"), QString("error: Cannot parse algorithm json file"));
 		return;
 	}
@@ -65,9 +65,9 @@ void algorithmTemplate::initDefaultData() {
 void algorithmTemplate::initAlgComboItem() {
 	int problem_id = _atn_problem->id;
 	QMap<alg4pro, unsigned int>::iterator iter;		//like((algid, proid), associateId) 
-	for (iter = dataPool::g_associates.begin(); iter != dataPool::g_associates.end(); ++iter) {
+	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
 		if (iter.key().second == problem_id) {
-			parsAlgorithm* algorithm = dataPool::getAlgorithmByID(iter.key().first);
+			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(iter.key().first);
 			_alg_combox->addItem(algorithm->name, algorithm->id);	//so you can get algorithm_id through _alg_combox->Data()
 		}
 	}
@@ -92,6 +92,6 @@ void algorithmTemplate::updateJObj() {
 
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
-	_algorithm = dataPool::getAlgorithmByID(_alg_combox->itemData(index).toInt());
+	_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
 	initDefaultData();
 }

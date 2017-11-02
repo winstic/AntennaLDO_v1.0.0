@@ -24,12 +24,12 @@ void projectWizard::accept() {
 	QString working_path = QString("%1/%2").arg(project_path).arg(project_name);
 	if (field("is_default_path").toBool()) {
 		dataPool::global::setGDefaultProjectPath(project_path);
-		qInfo(dataPool::str2char(QString("default path change to [%1]").arg(project_path)));
+		qInfo("default path change to '%s'", qUtf8Printable(project_path));
 	}
 	dataPool::global::setGProjectName(project_name);
 	dataPool::global::setGWorkingProjectPath(working_path);
-	qInfo(dataPool::str2char(QString("project name is [%1]").arg(project_name)));
-	qInfo(dataPool::str2char(QString("working path is [%1]").arg(working_path)));
+	qInfo("project name is '%s'", qUtf8Printable(project_name));
+	qInfo("working path is '%s'", qUtf8Printable(working_path));
 
 	QDialog::accept();
 }

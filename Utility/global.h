@@ -1,5 +1,5 @@
 #pragma once
-#include <QFile>
+
 #include <QString>
 #include <qvector.h>
 #include <qmap.h>
@@ -27,9 +27,6 @@ struct parsAlgorithm {
 };
 
 namespace dataPool{
-	QVector<parsProblem*> g_problems;
-	QVector<parsAlgorithm*> g_algorithms;
-	QMap<alg4pro, unsigned int> g_associates;
 
 	class global {
 	public:
@@ -42,47 +39,26 @@ namespace dataPool{
 		}
 		~global(){}
 
-		static QString getGDEA4ADPath() {
-			return g_DEA4AD_path;
-		}
-		static void setGDEA4ADPath(QString value) {
-			g_DEA4AD_path = value;
-		}
-
-		static QString getGProjectName() {
-			return g_project_name;
-		}
-		static void setGProjectName(QString value) {
-			g_project_name = value;
-		}
-
-		static QString getGDefaultProjectPath(){
-			return g_default_project_path;
-		}
-		static void setGDefaultProjectPath(QString value) {
-			g_default_project_path = value;
-		}
-
-		static QString getGWorkingProjectPath(){
-			return g_working_project_path;
-		}
-		static void setGWorkingProjectPath(QString value) {
-			g_working_project_path = value;
-		}
-
-		static QString getGCurrentDesignPath(){
-			return g_current_design_path;
-		}
-		static void setGCurrentDesignPath(QString value) {
-			g_current_design_path = value;
-		}
-
-		static QString getGCurrentOptimizePath(){
-			return g_current_optimize_path;
-		}
-		static void setGCurrentOptimizePath(QString value) {
-			g_current_optimize_path = value;
-		}
+		static parsProblem* getProblemByID(const int id);
+		static parsAlgorithm* getAlgorithmByID(const int id);
+		//each algorithm has unique name
+		static parsAlgorithm* getAlgorithmByName(const QString name);
+		static QString getGDEA4ADPath();
+		static void setGDEA4ADPath(QString value);
+		static QString getGProjectName();
+		static void setGProjectName(QString value);
+		static QString getGDefaultProjectPath();
+		static void setGDefaultProjectPath(QString value);
+		static QString getGWorkingProjectPath();
+		static void setGWorkingProjectPath(QString value);
+		static QString getGCurrentDesignPath();
+		static void setGCurrentDesignPath(QString value);
+		static QString getGCurrentOptimizePath();
+		static void setGCurrentOptimizePath(QString value);
+	public:
+		static QVector<parsProblem> g_problems;
+		static QVector<parsAlgorithm> g_algorithms;
+		static QMap<alg4pro, unsigned int> g_associates;
 	private:
 		static QString g_DEA4AD_path;
 		static QString g_project_name;
@@ -91,82 +67,7 @@ namespace dataPool{
 		static QString g_current_design_path;
 		static QString g_current_optimize_path;
 	};
-
-	static parsProblem* getProblemByID(const int id) {
-		QVector<parsProblem*>::iterator it;
-		for (it = g_problems.begin(); it != g_problems.end(); ++it)
-			if ((*it)->id == id) return (*it);
-		return nullptr;
-	}
-
-	static parsAlgorithm* getAlgorithmByID(const int id) {
-		QVector<parsAlgorithm*>::iterator it;
-		for (it = g_algorithms.begin(); it != g_algorithms.end(); ++it)
-			if ((*it)->id == id) return (*it);
-		return nullptr;
-	}
-
-	//each algorithm has unique name
-	static parsAlgorithm* getAlgorithmByName(const QString name) {
-		QVector<parsAlgorithm*>::iterator it;
-		for (it = g_algorithms.begin(); it != g_algorithms.end(); ++it)
-			if ((*it)->name == name) return (*it);
-		return nullptr;
-	}
-
-	static const char* str2char(QString& str) {
-		std::string std_str = str.toStdString();
-		return std_str.c_str();
-	}
-
-	static bool copyFile(QString source_file, QString target_file, bool cover_file_if_exist = true) {
-		QString source_file_path = QDir(source_file).absolutePath();
-		QString target_file_path = QDir(target_file).absolutePath();
-		if (source_file_path == target_file_path) {
-			return true;
-		}
-		if (!QFile::exists(source_file_path)) {
-			qCritical(str2char(QString("source file %1 do not exist.").arg(source_file_path)));
-			return false;
-		}
-		QDir* dir = new QDir();
-		bool isExist = dir->exists(target_file_path);
-		if (isExist && cover_file_if_exist) {
-			dir->remove(target_file_path);
-		}
-		delete dir;
-		dir = nullptr;
-
-		//copy function: if target file already exist then return false 
-		if (!QFile::copy(source_file_path, target_file_path)) {
-			qCritical(str2char(QString("target file %1 already exist").arg(target_file_path)));
-			return false;
-		}
-		return true;
-	}
-
-	static QStringList str2list(QString str) {
-		QRegExp re("[\\[,'\\]]");
-		QStringList strList = str.split(re, QString::SkipEmptyParts);
-		return strList;
-	}
-
-	static QString getInfoFromRelFile(const QString &key) {
-		QFile infile(QString("%1/%2.rel").arg(global::getGWorkingProjectPath()).arg(global::getGProjectName()));
-		if (!infile.open(QFile::Text | QFile::ReadOnly)) 			
-			return "";
-		QTextStream txtInput(&infile);
-		QString str = txtInput.readAll();
-		infile.close();
-
-		QString up_key = key.toUpper();
-		QStringList strList = str.split("\n", QString::SkipEmptyParts);
-		for (int i = 0; i < strList.count(); ++i) {
-			if (strList.at(i).contains(up_key)) {
-				QStringList tempList = QString(strList.at(i)).split(":");
-				return tempList.at(1).trimmed();
-			}
-		}
-		return "";
-	}
+	bool copyFile(QString source_file, QString target_file, bool cover_file_if_exist = true);
+	QStringList str2list(QString str);
+	QString getInfoFromRelFile(const QString &key);
 }

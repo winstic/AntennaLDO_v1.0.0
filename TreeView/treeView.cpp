@@ -84,15 +84,14 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 	//!get xml root node
 	QFile in_file(file_name);
 	if (!in_file.open(QFile::ReadOnly | QFile::Text)) {
-		qCritical(dataPool::str2char(QString("cannot read file [%1].").arg(file_name)));
+		qCritical("cannot read file: '%s'.", qUtf8Printable(file_name));
 		return false;
 	}
 	QDomDocument doc;
 	QString error;
 	int row, column;
 	if (!doc.setContent(&in_file, false, &error, &row, &column)) {
-		qFatal(dataPool::str2char(QString("error parse xml [%1] at row-%2, column-%3: %4.").arg(file_name)
-			.arg(row).arg(column).arg(error)));
+		qCritical("error parse xml file: '%s' at row-%d, column-%d: %s.", qUtf8Printable(file_name), row, column, qUtf8Printable(error));
 		return false;
 	}
 	in_file.close();
@@ -136,15 +135,14 @@ bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
 	QFile file(file_name);
 	if (!file.open(QFile::ReadOnly | QFile::Text)) {
-		qCritical(dataPool::str2char(QString("cannot read file [%1].").arg(file_name)));
+		qCritical("cannot read file: '%s'.", qUtf8Printable(file_name));
 		return false;
 	}
 	QDomDocument doc;
 	QString error;
 	int row, column;
 	if (!doc.setContent(&file, false, &error, &row, &column)) {
-		qFatal(dataPool::str2char(QString("error parse xml [%1] at row-%2, column-%3: %4.").arg(file_name)
-			.arg(row).arg(column).arg(error)));
+		qCritical("error parse xml file: '%s' at row-%d, column-%d: %s.", qUtf8Printable(file_name), row, column, qUtf8Printable(error));
 		return false;
 	}
 	file.close();
@@ -381,7 +379,7 @@ void treeModel::slot_customContextMenuRequested(const QPoint &pos) {
 				QString current_design_path = QString("%1/design%2").arg(dataPool::global::getGWorkingProjectPath()).arg(design_index);
 				dataPool::global::setGCurrentDesignPath(current_design_path);
 				_item_design_menu->exec(QCursor::pos());
-				qInfo(dataPool::str2char(QString("current design path change to [%1]").arg(current_design_path)));
+				qInfo("current design path change to '%s'", qUtf8Printable(current_design_path));
 			}
 			else if (var_item_int == MARK_ITEM_ATNOPTIMIZE) {
 				int optimize_index = _curr_item_index->row() + 1;
@@ -389,7 +387,7 @@ void treeModel::slot_customContextMenuRequested(const QPoint &pos) {
 				QString current_optimize_path = QString("%1/optimize%2").arg(dataPool::global::getGWorkingProjectPath()).arg(optimize_index);
 				dataPool::global::setGCurrentOptimizePath(current_optimize_path);
 				_item_optimize_menu->exec(QCursor::pos());
-				qInfo(dataPool::str2char(QString("current optimize path change to [%1]").arg(current_optimize_path)));
+				qInfo("current optimize path change to '%1'", qUtf8Printable(current_optimize_path));
 			}
 		}
 	}
@@ -413,14 +411,14 @@ void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
 			QString current_design_path = QString("%1/design%2").arg(dataPool::global::getGWorkingProjectPath()).arg(d_o_index);
 			dataPool::global::setGCurrentDesignPath(current_design_path);
 			slot_modifyDesignVar();
-			qInfo(dataPool::str2char(QString("current design path change to [%1]").arg(current_design_path)));
+			qInfo("current design path change to '%s'", qUtf8Printable(current_design_path));
 		}
 		else if (item_int == MARK_ITEM_ATNOPTIMIZE) {
 			//update current optimize path
 			QString current_optimize_path = QString("%1/optimize%2").arg(dataPool::global::getGWorkingProjectPath()).arg(d_o_index);
 			dataPool::global::setGCurrentOptimizePath(current_optimize_path);
 			slot_modifyOptimizeVar();
-			qInfo(dataPool::str2char(QString("current optimize path change to [%1]").arg(current_optimize_path)));
+			qInfo("current optimize path change to '%1'", qUtf8Printable(current_optimize_path));
 		}
 		else if (item_int == MARK_ITEM_OPENFILE)
 			slot_openFile();
@@ -469,7 +467,7 @@ void treeModel::slot_addDesign() {
 					is_success &= dataPool::copyFile(QString("%1/%2_design.vbs").arg(working_path).arg(_atn_problem->name),
 						QString("%1/%2_design.vbs").arg(design_path).arg(_atn_problem->name));
 				if (!is_success) {
-					qCritical(dataPool::str2char(QString("create sub-project [%1] failed").arg(design_path)));
+					qCritical("create sub-project '%s' failed", qUtf8Printable(design_path));
 					dir->rmdir(design_path);
 					delete dir;
 					dir = nullptr;
@@ -477,7 +475,7 @@ void treeModel::slot_addDesign() {
 				}
 				//update current design path
 				dataPool::global::setGCurrentDesignPath(design_path);
-				qInfo(dataPool::str2char(QString("current design path change to [%1]").arg(design_path)));
+				qInfo("current design path change to '%s'", qUtf8Printable(design_path));
 				//update json file
 				parseJson::write(QString("%1/%2_conf.json").arg(design_path).arg(_atn_problem->name), &obj);
 				//update xml file
@@ -539,7 +537,7 @@ void treeModel::slot_addOptimize() {
 
 				}
 				if (!is_success) {
-					qCritical(dataPool::str2char(QString("create sub-project [%1] failed").arg(optimize_path)));
+					qCritical("create sub-project '%s' failed", qUtf8Printable(optimize_path));
 					dir->rmdir(optimize_path);
 					delete dir;
 					dir = nullptr;
@@ -547,7 +545,7 @@ void treeModel::slot_addOptimize() {
 				}
 				//update current optimize path
 				dataPool::global::setGCurrentOptimizePath(optimize_path);
-				qInfo(dataPool::str2char(QString("current optimize path change to [%1]").arg(optimize_path)));
+				qInfo("current optimize path change to '%s'", qUtf8Printable(optimize_path));
 				//update json file
 				parseJson::write(QString("%1/global_conf.json").arg(optimize_path), &global_obj);
 				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name), &problem_obj);
@@ -571,7 +569,7 @@ void treeModel::slot_modifyDesignVar() {
 	QString json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentDesignPath()).arg(_atn_problem->name);
 	QJsonObject obj = parseJson::getJsonObj(json_path);
 	if (obj.isEmpty()) {
-		qCritical(dataPool::str2char(QString("something wrong in file [%1]").arg(json_path)));
+		qCritical("something wrong in file: '%s'", qUtf8Printable(json_path));
 		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(json_path));
 		return;
 	}
@@ -588,11 +586,11 @@ void treeModel::slot_modifyOptimizeVar() {
 	global_obj = parseJson::getJsonObj(global_json_path);
 	problem_obj  = parseJson::getJsonObj(problem_json_path);
 	if (global_obj.isEmpty() || problem_obj.isEmpty()) {
-		qCritical(dataPool::str2char(QString("something wrong in file [%1] or [%2]").arg(global_json_path).arg(problem_json_path)));
+		qCritical("something wrong in file: '%s' or '%s'", qUtf8Printable(global_json_path), qUtf8Printable(problem_json_path));
 		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1] or [%2]").arg(global_json_path).arg(problem_json_path));
 		return;
 	}
-	parsAlgorithm* palgorithm = dataPool::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
+	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
 	optimizeTab *otab = new optimizeTab(_atn_problem, problem_obj, palgorithm, this);
 	//otab->setAttribute(Qt::WA_DeleteOnClose);
 	//otab->setModal(true);
@@ -610,11 +608,11 @@ void treeModel::slot_optimizeRun() {
 	QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGCurrentOptimizePath());
 	QJsonObject global_obj = parseJson::getJsonObj(global_json_path);
 	if (global_obj.isEmpty()) {
-		qCritical(dataPool::str2char(QString("something wrong in file [%1]").arg(global_json_path)));
+		qCritical("something wrong in file: '%s'", qUtf8Printable(global_json_path));
 		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(global_json_path));
 		return;
 	}
-	parsAlgorithm* palgorithm = dataPool::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
+	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
 	optRunProcess = new QProcess(0);
 	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
 	optimizeRun *oRun = new optimizeRun(_atn_problem, palgorithm, optRunProcess);
@@ -642,7 +640,7 @@ void treeModel::slot_showResult() {
 	QProcess p(0);;
 	int is_ok = p.execute("hfss", QStringList() << hfss_path);
 	if (is_ok != 0)
-		qCritical(dataPool::str2char(QString("cannot open hfss-path [%1]").arg(hfss_path)));
+		qCritical("cannot open hfss-path: '%s'", qUtf8Printable(hfss_path));
 	p.waitForFinished();
 	qDebug() << QString::fromLocal8Bit(p.readAllStandardError());
 }
