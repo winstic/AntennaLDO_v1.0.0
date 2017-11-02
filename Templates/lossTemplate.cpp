@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "lossTemplate.h"
 
@@ -6,7 +7,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	_loss_table = new tableTemplate();
 	_loss_table->setColumnCount(9);
 	QStringList header;
-	header << "Z0Êµ²¿" << "Z0Ðé²¿" << "ËðÊ§·½Ê½" << "ÓÅ»¯·½Ê½" << "Îó²îÊµ²¿" << "Îó²îÐé²¿" << "ÖµÊµ²¿" << "ÖµÐé²¿" << "È¨Öµ";
+	header << "Z0å®žéƒ¨" << "Z0è™šéƒ¨" << "æŸå¤±æ–¹å¼" << "ä¼˜åŒ–æ–¹å¼" << "è¯¯å·®å®žéƒ¨" << "è¯¯å·®è™šéƒ¨" << "å€¼å®žéƒ¨" << "å€¼è™šéƒ¨" << "æƒå€¼";
 	_loss_table->setHorizontalHeaderLabels(header);
 	_loss_table->resizeColumnToContents(6);
 	_loss_table->resizeColumnToContents(7);
@@ -91,10 +92,10 @@ void lossTemplate::initDefaultData() {
 }
 
 void lossTemplate::initLossTypeComBox(QComboBox *combox) {
-	combox->addItem(tr("×¤²¨±È"));
-	combox->addItem(tr("S11(dB)"));
-	combox->addItem(tr("×è¿¹"));
-	combox->addItem(tr("None"));
+	combox->addItem("é©»æ³¢æ¯”");
+	combox->addItem("S11(dB)");
+	combox->addItem("é˜»æŠ—");
+	combox->addItem("None");
 	combox->setCurrentIndex(3);
 }
 

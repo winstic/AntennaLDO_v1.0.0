@@ -1,4 +1,4 @@
-#include "optimizeRun.h"
+﻿#include "optimizeRun.h"
 
 optimizeRun::optimizeRun(parsProblem* atn_problem, parsAlgorithm* algorithm, QProcess* &optRunP) : p(optRunP),
 _atn_problem(atn_problem), _algorithm(algorithm){

@@ -1,14 +1,15 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "thetaPhiTemplate.h"
 
 thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
-	_theta_low_label = new QLabel("ÆðÊ¼¦È:", this);
-	_theta_up_label = new QLabel("ÖÕÖ¹¦È:", this);
-	_theta_step_label = new QLabel("¦È²½³¤:", this);
-	_phi_low_label = new QLabel("ÆðÊ¼¦Õ:", this);
-	_phi_up_label = new QLabel("ÖÕÖ¹¦Õ:", this);
-	_phi_step_label = new QLabel("¦Õ²½³¤:", this);
+	_theta_low_label = new QLabel("èµ·å§‹Î¸:", this);
+	_theta_up_label = new QLabel("ç»ˆæ­¢Î¸:", this);
+	_theta_step_label = new QLabel("Î¸æ­¥é•¿:", this);
+	_phi_low_label = new QLabel("èµ·å§‹Ï†:", this);
+	_phi_up_label = new QLabel("ç»ˆæ­¢Ï†:", this);
+	_phi_step_label = new QLabel("Ï†æ­¥é•¿:", this);
 	_theta_low_edit = new QLineEdit(this);
 	_theta_up_edit = new QLineEdit(this);
 	_theta_step_edit = new QLineEdit(this);

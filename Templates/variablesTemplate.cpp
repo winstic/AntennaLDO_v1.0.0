@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "variablesTemplate.h"
 
@@ -7,7 +8,7 @@ variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject& obj,
 	_vars_table = new tableTemplate();
 	_vars_table->setColumnCount(4);
 	QStringList header;
-	header << "±äÁ¿" << "×îĞ¡Öµ" << "×î´óÖµ" << "µ¥Î»";
+	header << "å˜é‡" << "æœ€å°å€¼" << "æœ€å¤§å€¼" << "å•ä½";
 	_vars_table->setHorizontalHeaderLabels(header);
 	_vars_table->horizontalHeader()->setSectionResizeMode(varnote, QHeaderView::Stretch);
 	_vars_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);
@@ -30,9 +31,9 @@ void variablesTemplate::initDefaultData() {
 	_vars_table->setRowCount(variables_obj.count());
 
 	for (QJsonObject::iterator iter = variables_obj.begin(); iter != variables_obj.end(); ++iter) {
-		// iter format: "W1":{"note" : "½éÖÊ°å¿í¶ÈW1(m)", "W1" : "0.025"}
+		// iter format: "W1":{"note" : "ä»‹è´¨æ¿å®½åº¦W1(m)", "W1" : "0.025"}
 		var_key = iter.key();
-		var_obj = iter.value().toObject();   //like {"note": "ÉÏÌùÆ¬×ø±êy1(m)", "y1": "[-0.0115,0]"}
+		var_obj = iter.value().toObject();   //like {"note": "ä¸Šè´´ç‰‡åæ ‡y1(m)", "y1": "[-0.0115,0]"}
 											 //get note infomation
 		QString key_note = var_obj.value("note").toString().trimmed();
 		_vars_table->insert2table(row_number, varnote, key_note);

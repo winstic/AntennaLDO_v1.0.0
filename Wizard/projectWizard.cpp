@@ -1,5 +1,5 @@
-﻿#include "projectWizard.h"
-
+﻿#pragma execution_character_set("utf-8")
+#include "projectWizard.h"
 
 projectWizard::projectWizard(parsProblem* antenna_problem, QWidget *parent) : QWizard(parent),
 _antenna_problem(antenna_problem){

@@ -1,4 +1,5 @@
-﻿#include "designWizard.h"
+﻿#pragma execution_character_set("utf-8")
+#include "designWizard.h"
 #include "../Utility/parseJson.h"
 #include "../Templates/iTemplate.h"
 

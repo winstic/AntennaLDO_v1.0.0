@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "atnlibrary.h"
 #include "../Utility/global.h"
 #include "../Utility/macrodefined.h"
@@ -21,8 +22,8 @@ _num_of_table_col(table_columns), _atn_problem(nullptr), _model_info(nullptr){
 }
 
 void atnLibrary::initMenu() {
-	QAction act_new(QStringLiteral("ĞÂ½¨¹¤³Ì"), this);
-	QAction act_property(QStringLiteral("ÊôĞÔ"), this);
+	QAction act_new("æ–°å»ºå·¥ç¨‹", this);
+	QAction act_property("å±æ€§", this);
 	connect(&act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
 	connect(&act_property, &QAction::triggered, this, &atnLibrary::slot_property);
 	_item_menu->addAction(&act_new);
@@ -208,7 +209,7 @@ void atnLibrary::slot_searchTextChange(QString searchText) {
 
 
 atnLibrary::~atnLibrary() {
-	//qtÖ§³Ö¸¸×Ó¿Ø¼ş£¬Ò»µ©atnLibraryÊµÀıÎö¹¹ºó£¬»á×Ô¶¯µ÷ÓÃÄÚ²¿¿Ø¼şµÄÎö¹¹º¯Êı
+	//qtæ”¯æŒçˆ¶å­æ§ä»¶ï¼Œä¸€æ—¦atnLibraryå®ä¾‹ææ„åï¼Œä¼šè‡ªåŠ¨è°ƒç”¨å†…éƒ¨æ§ä»¶çš„ææ„å‡½æ•°
 	//delete table_view;
 	//delete search_label;
 	//delete item_menu;

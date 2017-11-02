@@ -1,4 +1,4 @@
-#pragma once
+ï»¿#pragma once
 
 #include <QtWidgets>
 #include <QMenu>
@@ -24,9 +24,9 @@ private:
 	bool writeXMLFile(const QString& file_name, parsProblem* atn_problem);
 
 	//make no sence
-	QList<QStandardItem*> getRoots();           //»ñÈ¡ËùÓĞ½Úµã
-	QStandardItem* getProNode();                //»ñÈ¡ÏîÄ¿¹¤³Ì½Úµã
-	QList<QStandardItem*> getFolderNode();      //»ñÈ¡ÎÄ¼ş¼Ğ½Úµã
+	QList<QStandardItem*> getRoots();           //è·å–æ‰€æœ‰èŠ‚ç‚¹
+	QStandardItem* getProNode();                //è·å–é¡¹ç›®å·¥ç¨‹èŠ‚ç‚¹
+	QList<QStandardItem*> getFolderNode();      //è·å–æ–‡ä»¶å¤¹èŠ‚ç‚¹
 
 	void initMenu();
 	void initIcon();
@@ -58,7 +58,7 @@ private slots:
 	void slot_modifyDesignVar();
 	void slot_modifyOptimizeVar();
 	void slot_showResult();
-	//ÊµÊ±¶ÁÈ¡±ê×¼Êä³ö
+	//å®æ—¶è¯»å–æ ‡å‡†è¾“å‡º
 	void slot_readyRead();
 
 	//mouse right click

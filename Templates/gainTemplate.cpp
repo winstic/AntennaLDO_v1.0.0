@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "gainTemplate.h"
 
@@ -6,7 +7,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	_gain_table = new tableTemplate();
 	_gain_table->setColumnCount(8);
 	QStringList header;
-	header << "ÆðÊ¼¦È" << "ÖÕÖ¹¦È" << "ÆðÊ¼¦Õ" << "ÖÕÖ¹¦Õ" << "ÓÅ»¯·½Ê½" << "Îó²îÖµ" << "ÔöÒæ(dB)" << "È¨Öµ";
+	header << "èµ·å§‹Î¸" << "ç»ˆæ­¢Î¸" << "èµ·å§‹Ï†" << "ç»ˆæ­¢Ï†" << "ä¼˜åŒ–æ–¹å¼" << "è¯¯å·®å€¼" << "å¢žç›Š(dB)" << "æƒå€¼";
 	_gain_table->setHorizontalHeaderLabels(header);
 	initDefaultData();
 	initLayout();

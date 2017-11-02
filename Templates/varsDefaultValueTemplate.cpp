@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "varsDefaultValueTemplate.h"
 
@@ -7,7 +8,7 @@ varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJs
 	_vars_table = new tableTemplate();
 	_vars_table->setColumnCount(3);
 	QStringList header;
-	header << "±äÁ¿" << "²ÎÊıÖµ" << "µ¥Î»";
+	header << "å˜é‡" << "å‚æ•°å€¼" << "å•ä½";
 	_vars_table->horizontalHeader()->setSectionsClickable(false);
 	_vars_table->horizontalHeader()->setSectionResizeMode(varvalue, QHeaderView::Stretch);
 	_vars_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);
@@ -43,9 +44,9 @@ void varsDefaultValueTemplate::initDefaultData() {
 	_vars_table->setRowCount(vars_range_obj.count());
 
 	for (QJsonObject::iterator iter = vars_range_obj.begin(); iter != vars_range_obj.end(); ++iter) {
-		// iter format: "W1":{"note" : "½éÖÊ°å¿í¶ÈW1(m)", "W1" : "0.025"}
+		// iter format: "W1":{"note" : "ä»‹è´¨æ¿å®½åº¦W1(m)", "W1" : "0.025"}
 		var_key = iter.key();
-		var_obj = iter.value().toObject();   //like {"note": "ÉÏÌùÆ¬×ø±êy1(m)", "y1": "[-0.0115,0]"}
+		var_obj = iter.value().toObject();   //like {"note": "ä¸Šè´´ç‰‡åæ ‡y1(m)", "y1": "[-0.0115,0]"}
 											 //get note infomation
 		QString key_note = var_obj.value("note").toString().trimmed();
 		_vars_table->insert2table(row_number, varnote, key_note);
@@ -102,7 +103,7 @@ void varsDefaultValueTemplate::initDefaultData() {
 		}
 		connect(value_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_LinetextChange(QString)));
 
-		//valueEdit->installEventFilter(this);        //install filter in this dialog(ÔÚ¶Ô»°¿òÉÏÎªQLineEdit°²×°¹ıÂËÆ÷)
+		//valueEdit->installEventFilter(this);        //install filter in this dialog(åœ¨å¯¹è¯æ¡†ä¸Šä¸ºQLineEditå®‰è£…è¿‡æ»¤å™¨)
 		QWidget* unit_widget = new QWidget(this);
 		QHBoxLayout* unit_layout = new QHBoxLayout(this);
 		QComboBox* unit_combox = new QComboBox(this);

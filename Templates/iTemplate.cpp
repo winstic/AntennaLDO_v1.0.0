@@ -1,4 +1,4 @@
-#include "iTemplate.h"
+ï»¿#include "iTemplate.h"
 
 iTemplate::iTemplate(QWidget* parent) : QWidget(parent){}
 
@@ -15,7 +15,7 @@ void iTemplate::initUnitComBo(QComboBox *comb) {
 	comb->setItemData(0, MARK_UNIT_MM, ROLE_MARK_UNIT);
 	comb->addItem("cm");
 	comb->setItemData(1, MARK_UNIT_CM, ROLE_MARK_UNIT);
-	comb->addItem("¦Ë");
+	comb->addItem("Î»");
 	comb->setItemData(2, MARK_UNIT_LAMBDA, ROLE_MARK_UNIT);
 	comb->addItem("m");
 	comb->setItemData(3, MARK_UNIT_M, ROLE_MARK_UNIT);

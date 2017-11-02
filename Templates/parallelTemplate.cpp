@@ -1,27 +1,28 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "parallelTemplate.h"
 
 
 parallelTemplate::parallelTemplate(QJsonObject& obj, iTemplate *parent) : iTemplate(parent), _obj(obj) {
-	_thread_label = new QLabel(tr("Æô¶¯ºËÊý"), this);
+	_thread_label = new QLabel("å¯åŠ¨æ ¸æ•°", this);
 	_thread_label->setFixedWidth(80);
 	_thread_edit = new QLineEdit(this);
-	_single_thread_checkbox = new QCheckBox(QString("µ¥»ú¼ÆËã"), this);
+	_single_thread_checkbox = new QCheckBox("å•æœºè®¡ç®—", this);
 	_single_thread_checkbox->setCheckState(Qt::Checked);
-	_multi_thread_checkbox = new QCheckBox(QString("¶à»ú¼ÆËã"), this);
+	_multi_thread_checkbox = new QCheckBox("å¤šæœºè®¡ç®—", this);
 	_multi_thread_checkbox->setCheckState(Qt::Unchecked);
-	_node_label = new QLabel(QString("node"), this);
+	_node_label = new QLabel("node", this);
 	_node_edit = new QLineEdit(this);
 	_node_vars_table = new tableTemplate();
-	_core_label = new QLabel(QString("cores"), this);
+	_core_label = new QLabel("cores", this);
 	_core_edit = new QLineEdit(this);
 	_single_group = new QGroupBox(this);
 	_multi_group = new QGroupBox(this);
-	_add_button = new QPushButton(QString("Ìí¼Ó"), this);
-	_del_button = new QPushButton(QString("É¾³ý"), this);
+	_add_button = new QPushButton("æ·»åŠ ", this);
+	_del_button = new QPushButton("åˆ é™¤", this);
 	_node_vars_table->setColumnCount(2);
 	QStringList header;
-	header << "IPµØÖ·/Ö÷»úÃû" << "Æô¶¯ºËÊý";
+	header << "IPåœ°å€/ä¸»æœºå" << "å¯åŠ¨æ ¸æ•°";
 	_node_vars_table->setHorizontalHeaderLabels(header);
 
 	initDefaultData();

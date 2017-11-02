@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 #include "../Utility/global.h"
 #include "../Utility/parseJson.h"
 

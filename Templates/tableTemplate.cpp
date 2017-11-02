@@ -1,4 +1,4 @@
-#include "tableTemplate.h"
+﻿#include "tableTemplate.h"
 
 tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent) {
 	_table = new QTableWidget(this);

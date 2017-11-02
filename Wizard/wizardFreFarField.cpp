@@ -1,15 +1,16 @@
-﻿#include "wizardFreFarField.h"
+﻿#pragma execution_character_set("utf-8")
+#include "wizardFreFarField.h"
 #include "../Utility/parseJson.h"
 
 wizardFreFarField::wizardFreFarField(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent) : QWizardPage(parent),
  _atn_problem(atn_problem), _obj(obj){    
-	setTitle(tr("性能参数设置"));
-    setSubTitle(tr("设置频率信息并指定远场范围"));
+	setTitle("性能参数设置");
+    setSubTitle("设置频率信息并指定远场范围");
 	_frequency_widget = new frequencyTemplate(atn_problem, obj);
 	_theta_phi_widget = new thetaPhiTemplate(atn_problem, obj);
 	//layout
-	QGroupBox frequency_group_box(tr("频率设置"));
-	QGroupBox far_field_group_box(tr("远场范围设置"));
+	QGroupBox frequency_group_box("频率设置");
+	QGroupBox far_field_group_box("远场范围设置");
 	QLayout* frequency_layout = _frequency_widget->getLayout();
 	frequency_group_box.setLayout(frequency_layout);
 	QLayout* theta_phi_layout = _theta_phi_widget->getLayout();

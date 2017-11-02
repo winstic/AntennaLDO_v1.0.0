@@ -1,9 +1,10 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "algorithmTemplate.h"
 
 algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject algorithm_obj, parsAlgorithm* palgorithm, iTemplate *parent)
 	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj){
-	_alg_label = new QLabel(tr("Ñ¡ÔñËã·¨:"), this);
+	_alg_label = new QLabel("é€‰æ‹©ç®—æ³•:", this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
 	_alg_vars_table = new tableTemplate();
@@ -42,7 +43,7 @@ void algorithmTemplate::initDefaultData() {
 	}
 	_alg_vars_table->setRowCount(alg_obj.count());
 	QString var_key, var_value, value_note;
-	QJsonObject var_obj; //format:{"generation": "1000", "note": "×î´ó´úÊý", "instruction": "×î´óµü´ú´ÎÊý"}
+	QJsonObject var_obj; //format:{"generation": "1000", "note": "æœ€å¤§ä»£æ•°", "instruction": "æœ€å¤§è¿­ä»£æ¬¡æ•°"}
 	int row_number = 0;
 
 	for (QJsonObject::iterator iter = alg_obj.begin(); iter != alg_obj.end(); ++iter) {

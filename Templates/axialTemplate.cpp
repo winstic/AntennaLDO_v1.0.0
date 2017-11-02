@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "axialTemplate.h"
 
@@ -6,7 +7,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	_axial_table = new tableTemplate();
 	_axial_table->setColumnCount(8);
 	QStringList header;
-	header << "ÆðÊ¼¦È" << "ÖÕÖ¹¦È" << "ÆðÊ¼¦Õ" << "ÖÕÖ¹¦Õ" << "ÓÅ»¯·½Ê½" << "Îó²îÖµ" << "Öá±È(dB)" << "È¨Öµ";
+	header << "èµ·å§‹Î¸" << "ç»ˆæ­¢Î¸" << "èµ·å§‹Ï†" << "ç»ˆæ­¢Ï†" << "ä¼˜åŒ–æ–¹å¼" << "è¯¯å·®å€¼" << "è½´æ¯”(dB)" << "æƒå€¼";
 	_axial_table->setHorizontalHeaderLabels(header);
 	initDefaultData();
 	initLayout();

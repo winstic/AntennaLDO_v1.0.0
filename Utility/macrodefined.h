@@ -1,4 +1,8 @@
-#pragma once
+ï»¿#pragma once
+
+#define SCREEN_WIDTH 1440
+#define SCREEN_HEIGHT 900
+#define PROJECT_TREE_WIDTH 320
 
 //#define MBNTICON_WH 120
 //#define MBNTICON_HT 100
@@ -9,32 +13,32 @@
 #define CELLATNHT 140
 #define INTRODUCEIMAGEPIX 440
 //
-//// ¹¤³ÌÊ÷ÓÒ¼ü²Ëµ¥roleÉè¶¨
-#define ROLE_MARK Qt::UserRole + 1          //ÓÃÓÚÇø·Ö¸ù½Úµã¡¢ÎÄ¼ş¼Ğ½Úµã¡¢ÌõÄ¿½ÚµãµÄ½ÇÉ«
-#define ROLE_MARK_NODE Qt::UserRole + 2   //ÓÃÓÚÇø·ÖÓÅ»¯Éè¼ÆÎÄ¼ş¼Ğ¡¢½á¹ûÎÄ¼ş¼ĞµÄ½ÇÉ«
-#define ROLE_MARK_ITEM Qt::UserRole + 3     //ÓÃÓÚÇø·ÖËùÓĞÌõÄ¿½Úµã
+//// å·¥ç¨‹æ ‘å³é”®èœå•roleè®¾å®š
+#define ROLE_MARK Qt::UserRole + 1          //ç”¨äºåŒºåˆ†æ ¹èŠ‚ç‚¹ã€æ–‡ä»¶å¤¹èŠ‚ç‚¹ã€æ¡ç›®èŠ‚ç‚¹çš„è§’è‰²
+#define ROLE_MARK_NODE Qt::UserRole + 2   //ç”¨äºåŒºåˆ†ä¼˜åŒ–è®¾è®¡æ–‡ä»¶å¤¹ã€ç»“æœæ–‡ä»¶å¤¹çš„è§’è‰²
+#define ROLE_MARK_ITEM Qt::UserRole + 3     //ç”¨äºåŒºåˆ†æ‰€æœ‰æ¡ç›®èŠ‚ç‚¹
 #define ROLE_MARK_UNIT Qt::UserRole + 4     //unit role
 //
-//// ¶ÔÓ¦ÓÚROLE_MARK£¬Éè¶¨Ã¿ÖÖroleµÄÖµ
+//// å¯¹åº”äºROLE_MARKï¼Œè®¾å®šæ¯ç§roleçš„å€¼
 #define MARK_PROJECT 1
 #define MARK_NODE 2
 #define MARK_ITEM 3
 //
-//// ¶ÔÓ¦ÓÚROLE_MARK_FOLDER£¬Éè¶¨Ã¿ÖÖroleµÄÖµ
-#define MARK_NODE_GENERAL 1  //Í¨ÓÃÖµ£¨±£Áô£©
+//// å¯¹åº”äºROLE_MARK_FOLDERï¼Œè®¾å®šæ¯ç§roleçš„å€¼
+#define MARK_NODE_GENERAL 1  //é€šç”¨å€¼ï¼ˆä¿ç•™ï¼‰
 #define MARK_NODE_DESIGN 2
 #define MARK_NODE_OPTIMIZE 3
 #define MARK_NODE_RESULT 4
 //
 //
-////¶ÔÓ¦ÓÚROLE_MARK_ITEM£¬Éè¶¨Ã¿ÖÖ½ÇÉ«µÄÖµ
+////å¯¹åº”äºROLE_MARK_ITEMï¼Œè®¾å®šæ¯ç§è§’è‰²çš„å€¼
 #define MARK_ITEM_OPENFILE 1
 #define MARK_ITEM_PERDESIGN 2
 #define MARK_ITEM_ALGDESIGN 3
 #define MARK_ITEM_ATNDESIGN 4
 #define MARK_ITEM_ATNOPTIMIZE 5
 //
-////¶ÔÓ¦ÓÚROLE_MARK_UNIT£¬Éè¶¨Ã¿ÖÖ½ÇÉ«µÄÖµ
+////å¯¹åº”äºROLE_MARK_UNITï¼Œè®¾å®šæ¯ç§è§’è‰²çš„å€¼
 #define MARK_UNIT_LAMBDA 0
 #define MARK_UNIT_MM 1
 #define MARK_UNIT_CM 2

@@ -1,4 +1,4 @@
-#include "modeInfo.h"
+﻿#include "modeInfo.h"
 
 modelInfo::modelInfo(parsProblem* atn_problem, QWidget *parent) : QDialog(parent), _atn_problem(atn_problem) {
 	//remove help menu

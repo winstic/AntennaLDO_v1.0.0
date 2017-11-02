@@ -1,4 +1,5 @@
-﻿#include "searchWidget.h"
+﻿#pragma execution_character_set("utf-8")
+#include "searchWidget.h"
 
 searchWidget::searchWidget(QWidget *parent) : QWidgetAction(parent){
     _search_button = new QPushButton("Search");

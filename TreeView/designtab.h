@@ -1,4 +1,4 @@
-#pragma once
+﻿#pragma once
 
 #include "../Templates/frequencyTemplate.h"
 #include "../Templates/thetaPhiTemplate.h"

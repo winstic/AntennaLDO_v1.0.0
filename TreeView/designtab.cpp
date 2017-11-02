@@ -1,3 +1,4 @@
+﻿#pragma execution_character_set("utf-8")
 #include "designtab.h"
 #include "../Utility/global.h"
 #include "../Utility/macrodefined.h"
@@ -5,7 +6,7 @@
 
 designTab::designTab(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent) : QDialog(parent),
 _atn_problem(atn_problem), _obj(obj){
-	setWindowTitle(tr("天线设计"));    
+	setWindowTitle("天线设计");    
     setMinimumSize(880, 580);
     //remove help menu
     setWindowFlags(windowFlags() &~ Qt::WindowContextHelpButtonHint);
@@ -17,9 +18,9 @@ _atn_problem(atn_problem), _obj(obj){
 	_vars_value_widget = new varsDefaultValueTemplate(_atn_problem, _obj);
 	_save_all_button = new QPushButton(QString("保存所有."), this);
 
-	_tab_widget->addTab(_first_tab, QIcon(""), tr("性能参数设置"));
+	_tab_widget->addTab(_first_tab, QIcon(""), "性能参数设置");
 	//firstTab->setWindowTitle(tr("设置频率信息并指定远场范围"));
-	_tab_widget->addTab(_second_tab, QIcon(""), tr("模型设置"));
+	_tab_widget->addTab(_second_tab, QIcon(""), "模型设置");
 	//secondTab->setWindowTitle(tr("模型设置"));
 	//QScrollArea *scrollArea = new QScrollArea;
 	//scrollArea->setWidget(tabWidget);
@@ -30,8 +31,8 @@ _atn_problem(atn_problem), _obj(obj){
 
 void designTab::initLayout() {
 	//first tab
-	QGroupBox frequency_group_box(tr("频率设置"));
-	QGroupBox far_field_group_box(tr("远场范围设置"));
+	QGroupBox frequency_group_box("频率设置");
+	QGroupBox far_field_group_box("远场范围设置");
 	QLayout* frequency_layout = _frequency_widget->getLayout();
 	frequency_group_box.setLayout(frequency_layout);
 	QLayout* far_field_layout = _theta_phi_widget->getLayout();

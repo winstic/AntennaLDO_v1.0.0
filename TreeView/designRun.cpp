@@ -1,4 +1,4 @@
-#include "../Utility/parsejson.h"
+﻿#include "../Utility/parsejson.h"
 #include <QTextStream>
 #include "designRun.h"
 

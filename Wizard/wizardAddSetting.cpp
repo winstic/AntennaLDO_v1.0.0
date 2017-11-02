@@ -1,4 +1,5 @@
-﻿#include "wizardAddSetting.h"
+﻿#pragma execution_character_set("utf-8")
+#include "wizardAddSetting.h"
 #include "../Utility/global.h"
 
 wizardAddSetting::wizardAddSetting(QWidget *parent) : QWizardPage(parent){
@@ -68,7 +69,7 @@ bool wizardAddSetting::isComplete() const{
 void wizardAddSetting::slot_selectPath(){
     QFileDialog* open_file_path = new QFileDialog();
     QString home_dir = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
-    QString select_dir = open_file_path->getExistingDirectory(this, tr("选择文件夹"), home_dir,
+    QString select_dir = open_file_path->getExistingDirectory(this, "选择文件夹", home_dir,
                                                            QFileDialog::ShowDirsOnly | QFileDialog::DontResolveSymlinks);
 	_project_path_edit->setText(select_dir);
     _always_path->setChecked(false);

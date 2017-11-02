@@ -1,13 +1,14 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "frequencyTemplate.h"
 
 frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
-	_frequency_low_label = new QLabel("Æµ¶ÎÉÏÏÞ:", this);
-	_frequency_up_label = new QLabel("Æµ¶ÎÏÂÏÞ:", this);
-	_frequency_num_label = new QLabel("Æµµã¸öÊý:", this);
-	_sweep_type_label = new QLabel("É¨Æµ·½Ê½:", this);
-	_polarization_label = new QLabel("¼«»¯·½Ê½:", this);
+	_frequency_low_label = new QLabel("é¢‘æ®µä¸Šé™:", this);
+	_frequency_up_label = new QLabel("é¢‘æ®µä¸‹é™:", this);
+	_frequency_num_label = new QLabel("é¢‘ç‚¹ä¸ªæ•°:", this);
+	_sweep_type_label = new QLabel("æ‰«é¢‘æ–¹å¼:", this);
+	_polarization_label = new QLabel("æžåŒ–æ–¹å¼:", this);
 	_frequency_low_edit = new QLineEdit(this);
 	_frequency_up_edit = new QLineEdit(this);
 	_frequency_num_edit = new QLineEdit(this);
@@ -20,14 +21,14 @@ _atn_problem(atn_problem), _obj(obj) {
 }
 
 void frequencyTemplate::initSweepNDPMComBox() {
-	_sweep_type_combox->addItem("µÈ²î");
-	_sweep_type_combox->addItem("µÈ±È");
+	_sweep_type_combox->addItem("ç­‰å·®");
+	_sweep_type_combox->addItem("ç­‰æ¯”");
 
-	_polarization_combox->addItem("×ÜÔöÒæ");
-	_polarization_combox->addItem("×óÐý");
-	_polarization_combox->addItem("ÓÒÐý");
-	_polarization_combox->addItem("Ë®Æ½");
-	_polarization_combox->addItem("´¹Ö±");
+	_polarization_combox->addItem("æ€»å¢žç›Š");
+	_polarization_combox->addItem("å·¦æ—‹");
+	_polarization_combox->addItem("å³æ—‹");
+	_polarization_combox->addItem("æ°´å¹³");
+	_polarization_combox->addItem("åž‚ç›´");
 }
 
 void frequencyTemplate::initRegex() {

@@ -1,10 +1,11 @@
+﻿#pragma execution_character_set("utf-8")
 #include "optimizetab.h"
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
 
 optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject& problem_obj, parsAlgorithm* palgorithm, QWidget *parent)
 	: QDialog(parent), _atn_problem(atn_problem), _problem_obj(problem_obj), _algorithm(palgorithm){
-    setWindowTitle(tr("天线优化"));
+    setWindowTitle("天线优化");
 	setMinimumSize(880, 580);
 	//remove help menu
 	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
@@ -25,18 +26,18 @@ optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject& problem_obj, par
 	//if _algorithm not nullptr, get _algorithm infomation
 	_algorithm_widget = new algorithmTemplate(_atn_problem, _algorithm_obj, _algorithm);
 
-	_tab_widget->addTab(_first_tab, QIcon(""), tr("性能参数设置"));
-	_tab_widget->addTab(_second_tab, QIcon(""), tr("增益轴比设置"));
-	_tab_widget->addTab(_third_tab, QIcon(""), tr("模型设置"));
-	_tab_widget->addTab(_fourth_tab, QIcon(""), tr("算法设置"));
+	_tab_widget->addTab(_first_tab, QIcon(""), "性能参数设置");
+	_tab_widget->addTab(_second_tab, QIcon(""), "增益轴比设置");
+	_tab_widget->addTab(_third_tab, QIcon(""), "模型设置");
+	_tab_widget->addTab(_fourth_tab, QIcon(""), "算法设置");
 	initLayout();
     connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
 }
 
 void optimizeTab::initLayout() {
 	//first tab
-	QGroupBox frequency_group_box(tr("频率设置"));
-	QGroupBox far_field_group_box(tr("远场范围设置"));
+	QGroupBox frequency_group_box("频率设置");
+	QGroupBox far_field_group_box("远场范围设置");
 	QLayout* frequency_layout = _frequency_widgete->getLayout();
 	frequency_group_box.setLayout(frequency_layout);
 	QLayout* far_field_layout = _theta_phi_widget->getLayout();
@@ -48,15 +49,15 @@ void optimizeTab::initLayout() {
 	v_layout1.setContentsMargins(2, 20, 2, 2);
 	_first_tab->setLayout(&v_layout1);
 	//second tab
-	QGroupBox group_box_gain(tr("增益设置"));
+	QGroupBox group_box_gain("增益设置");
 	QLayout* gain_layout = _gain_widget->getLayout();
 	group_box_gain.setLayout(gain_layout);
 
-	QGroupBox group_box_axial(tr("轴比设置"));
+	QGroupBox group_box_axial("轴比设置");
 	QLayout* axial_layout = _axial_widget->getLayout();
 	group_box_axial.setLayout(axial_layout);
 
-	QGroupBox group_box_loss(tr("回波损失"));
+	QGroupBox group_box_loss("回波损失");
 	QLayout* loss_layout = _loss_widget->getLayout();
 	group_box_loss.setLayout(loss_layout);
 

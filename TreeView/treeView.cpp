@@ -1,3 +1,4 @@
+ï»¿#pragma execution_character_set("utf-8")
 #include "treeView.h"
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
@@ -54,23 +55,23 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 	doc.appendChild(root);
 
 	element = doc.createElement("item");
-	text = doc.createTextNode("Ä£ÐÍ¼ò½é");
+	text = doc.createTextNode("æ¨¡åž‹ç®€ä»‹");
 	element.appendChild(text);
 	element.setAttribute("flag", "viewOnly");
 	root.appendChild(element);
 
 	element = doc.createElement("node");
-	element.setAttribute("name", "Éè¼Æ");
+	element.setAttribute("name", "è®¾è®¡");
 	element.setAttribute("flag", "design");
 	root.appendChild(element);
 
 	element = doc.createElement("node");
-	element.setAttribute("name", "ÓÅ»¯");
+	element.setAttribute("name", "ä¼˜åŒ–");
 	element.setAttribute("flag", "optimize");
 	root.appendChild(element);
 
 	element = doc.createElement("node");
-	element.setAttribute("name", "½á¹û²é¿´");
+	element.setAttribute("name", "ç»“æžœæŸ¥çœ‹");
 	element.setAttribute("flag", "result");
 	root.appendChild(element);
 
@@ -165,7 +166,7 @@ bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 
 	_pro_tree->setModel(tree_model);
 	_pro_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
-	_pro_tree->setContextMenuPolicy(Qt::CustomContextMenu);        //ÉèÖÃÓÒ¼ü²Ëµ¥
+	_pro_tree->setContextMenuPolicy(Qt::CustomContextMenu);        //è®¾ç½®å³é”®èœå•
 	_pro_tree->expandAll();
 
 	delete tree_root;
@@ -239,36 +240,36 @@ void treeModel::parseItemElement(const QDomElement &element, QStandardItem *pare
 }
 
 void treeModel::initMenu() {
-	QAction* act_close = new QAction(QStringLiteral("¹Ø±Õ"), _pro_tree);
-	QAction* act_del = new QAction(QStringLiteral("É¾³ý"), _pro_tree);
+	QAction* act_close = new QAction("å…³é—­", _pro_tree);
+	QAction* act_del = new QAction("åˆ é™¤", _pro_tree);
 	connect(act_del, &QAction::triggered, this, &treeModel::slot_del);
-	QAction* act_hide_all = new QAction(QStringLiteral("È«²¿ÕÛµþ"), _pro_tree);
+	QAction* act_hide_all = new QAction("å…¨éƒ¨æŠ˜å ", _pro_tree);
 	connect(act_hide_all, &QAction::triggered, this, &treeModel::slot_hideAll);
-	QAction* act_show_all = new QAction(QStringLiteral("È«²¿Õ¹¿ª"), _pro_tree);
+	QAction* act_show_all = new QAction("å…¨éƒ¨å±•å¼€", _pro_tree);
 	connect(act_show_all, &QAction::triggered, this, &treeModel::slot_showAll);
-	QAction* act_add_design = new QAction(QStringLiteral("Ìí¼ÓÉè¼Æ"), _pro_tree);
+	QAction* act_add_design = new QAction("æ·»åŠ è®¾è®¡", _pro_tree);
 	connect(act_add_design, &QAction::triggered, this, &treeModel::slot_addDesign);
-	QAction* act_add_optimize = new QAction(QStringLiteral("Ìí¼ÓÓÅ»¯"), _pro_tree);
+	QAction* act_add_optimize = new QAction("æ·»åŠ ä¼˜åŒ–", _pro_tree);
 	connect(act_add_optimize, &QAction::triggered, this, &treeModel::slot_addOptimize);
 	//design run
-	QAction* act_design_run = new QAction(QStringLiteral("ÔËÐÐ"), _pro_tree);
+	QAction* act_design_run = new QAction("è¿è¡Œ", _pro_tree);
 	connect(act_design_run, &QAction::triggered, this, &treeModel::slot_designRun);
 	//optimize run
-	QAction* act_optimize_run = new QAction(QStringLiteral("ÔËÐÐ"), _pro_tree);
+	QAction* act_optimize_run = new QAction("è¿è¡Œ", _pro_tree);
 	connect(act_optimize_run, &QAction::triggered, this, &treeModel::slot_optimizeRun);
-	QAction* act_interrupt = new QAction(QStringLiteral("ÔÝÍ£"), _pro_tree);
+	QAction* act_interrupt = new QAction("æš‚åœ", _pro_tree);
 	connect(act_interrupt, &QAction::triggered, this, &treeModel::slot_interrupt);
-	QAction* act_design_stop = new QAction(QStringLiteral("ÖÕÖ¹"), _pro_tree);
+	QAction* act_design_stop = new QAction("ç»ˆæ­¢", _pro_tree);
 	connect(act_design_stop, &QAction::triggered, this, &treeModel::slot_designStop);
-	QAction* act_optimize_stop = new QAction(QStringLiteral("ÖÕÖ¹"), _pro_tree);
+	QAction* act_optimize_stop = new QAction("ç»ˆæ­¢", _pro_tree);
 	connect(act_optimize_stop, &QAction::triggered, this, &treeModel::slot_optimizeStop);
-	QAction* act_open_file = new QAction(QStringLiteral("´ò¿ª"), _pro_tree);
+	QAction* act_open_file = new QAction("æ‰“å¼€", _pro_tree);
 	connect(act_open_file, &QAction::triggered, this, &treeModel::slot_openFile);
-	QAction* act_modify_design_var = new QAction(QStringLiteral("ÐÞ¸Ä²ÎÊý"), _pro_tree);
+	QAction* act_modify_design_var = new QAction("ä¿®æ”¹å‚æ•°", _pro_tree);
 	connect(act_modify_design_var, &QAction::triggered, this, &treeModel::slot_modifyDesignVar);
-	QAction* act_modify_optimize_var = new QAction(QStringLiteral("ÐÞ¸Ä²ÎÊý"), _pro_tree);
+	QAction* act_modify_optimize_var = new QAction("ä¿®æ”¹å‚æ•°", _pro_tree);
 	connect(act_modify_optimize_var, &QAction::triggered, this, &treeModel::slot_modifyOptimizeVar);
-	QAction* act_show_result = new QAction(QStringLiteral("½á¹û²é¿´"), _pro_tree);
+	QAction* act_show_result = new QAction("ç»“æžœæŸ¥çœ‹", _pro_tree);
 	//actShowResult->setEnabled(false);
 	connect(act_show_result, &QAction::triggered, this, &treeModel::slot_showResult);
 
@@ -361,7 +362,7 @@ void treeModel::slot_customContextMenuRequested(const QPoint &pos) {
 	int var_item_int = var_item.toInt();
 	if (var_node.isValid()) {
 		if (var_int == MARK_PROJECT)
-			_project_menu->exec(QCursor::pos()); //µ¯³öÓÒ¼ü²Ëµ¥£¬²Ëµ¥Î»ÖÃÎª¹â±êÎ»ÖÃ
+			_project_menu->exec(QCursor::pos()); //å¼¹å‡ºå³é”®èœå•ï¼Œèœå•ä½ç½®ä¸ºå…‰æ ‡ä½ç½®
 		else if (var_folder.isValid() && var_int == MARK_NODE) {
 			if (var_folder.toInt() == MARK_NODE_DESIGN)
 				_atn_design_menu->exec(QCursor::pos());
@@ -449,7 +450,7 @@ void treeModel::slot_addDesign() {
 			}
 			designWizard *wizard = new designWizard(_atn_problem, obj, this);
 			if (wizard->exec() == 1) {
-				QString design_name = QString("Éè¼Æ%1").arg(item->rowCount() + 1);
+				QString design_name = QString("è®¾è®¡%1").arg(item->rowCount() + 1);
 				QDir* dir = new QDir();
 				QString design_path = QString("%1/design%2").arg(working_path).arg(item->rowCount() + 1);
 
@@ -507,7 +508,7 @@ void treeModel::slot_addOptimize() {
 			optimizeWizard *wizard = new optimizeWizard(_atn_problem, problem_obj, algorithm_obj, pars_algorithm, this);
 			if (wizard->exec() == 1) {
 				//json obj already updated.
-				QString optimize_name = QString("ÓÅ»¯%1").arg(item->rowCount() + 1);
+				QString optimize_name = QString("ä¼˜åŒ–%1").arg(item->rowCount() + 1);
 				QDir *dir = new QDir();
 				QString optimize_path = QString("%1/optimize%2").arg(working_path).arg(item->rowCount() + 1);
 				QStandardItem *child = new QStandardItem(_icon_map[QStringLiteral("treeItem")], optimize_name);

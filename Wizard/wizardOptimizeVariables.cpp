@@ -1,10 +1,11 @@
+﻿#pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
 #include "wizardOptimizeVariables.h"
 
 wizardOptimizeVariables::wizardOptimizeVariables(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent)
 	: QWizardPage(parent), _atn_problem(atn_problem), _obj(obj){
-	setTitle(tr("优化变量设置"));
-	setSubTitle(tr("设置需要优化的变量参数"));
+	setTitle("优化变量设置");
+	setSubTitle("设置需要优化的变量参数");
 	_variables_widget = new variablesTemplate(_atn_problem, _obj);
 	//layout
 	QLayout* layout = _variables_widget->getLayout();

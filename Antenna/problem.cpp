@@ -1,4 +1,4 @@
-#include "problem.h"
+﻿#include "problem.h"
 
 problem::problem(QString pName, QString pPath) {
 
