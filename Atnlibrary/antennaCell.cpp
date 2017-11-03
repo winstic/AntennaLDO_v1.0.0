@@ -5,7 +5,7 @@ antennaCell::antennaCell(parsProblem* atn_problem, QWidget* parent) : QWidget(pa
 	_atn_name_label = new QLabel(QString("%1 Antenna").arg(_atn_problem->name));
 	_atn_photo = new QLabel;
 	QPixmap mPixmap = QPixmap(_atn_problem->pImage);
-	_atn_photo->setPixmap(mPixmap.scaled(CELLATNWH, CELLATNHT, Qt::KeepAspectRatio));
+	_atn_photo->setPixmap(mPixmap.scaled(ANTENNA_IMGWH, ANTENNA_IMGWH, Qt::KeepAspectRatio));
 	_vlayout = new QVBoxLayout;
 	_hlayout = new QHBoxLayout;
 	_vlayout->addWidget(_atn_photo);

@@ -1,9 +1,10 @@
-﻿#include "modeInfo.h"
+﻿#include "../Utility/macrodefined.h"
+#include "modeInfo.h"
 
 modelInfo::modelInfo(parsProblem* atn_problem, QWidget *parent) : QDialog(parent), _atn_problem(atn_problem) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
-	this->setMinimumSize(880, 580);
+	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 	
 	_atn_info = new QTextEdit(this);
 	_atn_info->setReadOnly(true);

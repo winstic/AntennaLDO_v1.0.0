@@ -8,9 +8,10 @@
 class atnLibrary : public QWidget {
 	Q_OBJECT
 public:
-	atnLibrary(int dock_width, int table_columns, QWidget *parent = 0);
+	atnLibrary(QWidget *parent = 0);
 	~atnLibrary();
 	QTableWidget* getTableWidget() const;
+	void atnLibraryLayout();
 	/*QSize sizeHint() const{
 	return QSize(500, 900);
 	}*/
@@ -30,9 +31,7 @@ public slots:
 	void slot_searchTextChange(QString);
 
 private:
-	void atnLibraryLayout();
 	void initAtnCellList();
-	void initAtnCellWidth(QVector<int>& cell_width_vec);
 	void initMenu();
 	void newProject();
 
@@ -40,8 +39,6 @@ private:
 	QList<antennaCell*> _atn_cell_list;
 	QTableWidget* _table_view;
 	modelInfo* _model_info;
-	int _atn_dock_WH;
-	int _num_of_table_col;
 	QMenu* _item_menu;
 };
 

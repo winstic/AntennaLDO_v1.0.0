@@ -44,14 +44,28 @@ void setProNdAlgAssociateParameters(QJsonObject& obj) {
 	}
 }
 
+void setConfigParameters(QJsonObject& obj) {
+	dataPool::global::setGDEA4ADPath(obj.value("DEFAULT_PATH").toString().trimmed());
+	dataPool::global::setGWindowWidth(obj.value("WINDOW_WIDTH").toString().trimmed().toInt());
+	dataPool::global::setGWindowHeight(obj.value("WINDOW_HEIGHT").toString().trimmed().toInt());
+}
+
 void loadData() {
+	const QString config_json_file = "config.json";
 	const QString problem_json_file = "Utility/problems.json";
 	const QString algorithm_json_file = "Utility/algorithms.json";
 	const QString associate_json_file = "Utility/associates.json";
-	QJsonObject pro_obj, alg_obj, associate_obj;
+	
+	QJsonObject conf_obj, pro_obj, alg_obj, associate_obj;
+	conf_obj = parseJson::getJsonObj(config_json_file);
 	pro_obj = parseJson::getJsonObj(problem_json_file);
 	alg_obj = parseJson::getJsonObj(algorithm_json_file);
 	associate_obj = parseJson::getJsonObj(associate_json_file);
+
+	if (conf_obj.isEmpty()) {
+		qCritical("something wrong about config.json.");
+		exit(1);
+	}
 	if (pro_obj.isEmpty()) {
 		qCritical("something wrong about problems.json.");
 		exit(1);
@@ -65,6 +79,8 @@ void loadData() {
 		exit(1);
 	}
 
+	qInfo("initialize config parameters....");
+	setConfigParameters(conf_obj);
 	qInfo("initialize problems parameters....");
 	setProblemParameters(pro_obj);
 	qInfo("initialize algorithms parameters....");

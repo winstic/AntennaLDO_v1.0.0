@@ -1,5 +1,6 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "optimizeWizard.h"
+#include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
 #include "../Templates/iTemplate.h"
 
@@ -16,7 +17,7 @@ optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject& problem_ob
 	setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");
 	setButtonText(QWizard::FinishButton, "完成");
-	setMinimumSize(880, 580);
+	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 	
 	addPage(_optimize_pre_far);
 	addPage(_optimize_axl);

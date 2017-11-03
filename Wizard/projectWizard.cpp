@@ -1,4 +1,5 @@
 ﻿#pragma execution_character_set("utf-8")
+#include "../Utility/macrodefined.h"
 #include "projectWizard.h"
 
 projectWizard::projectWizard(parsProblem* antenna_problem, QWidget *parent) : QWizard(parent),
@@ -14,7 +15,7 @@ _antenna_problem(antenna_problem){
     //confManage = new config();
     addPage(_introduce);
     addPage(_add_setting);        
-    this->setMinimumSize(880, 580);
+	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 }
 
 void projectWizard::accept() {

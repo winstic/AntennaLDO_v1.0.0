@@ -43,6 +43,11 @@ namespace dataPool{
 		static parsAlgorithm* getAlgorithmByID(const int id);
 		//each algorithm has unique name
 		static parsAlgorithm* getAlgorithmByName(const QString name);
+
+		static int getGWindowWidth();
+		static void setGWindowWidth(int value);
+		static int getGWindowHeight();
+		static void setGWindowHeight(int value);
 		static QString getGDEA4ADPath();
 		static void setGDEA4ADPath(QString value);
 		static QString getGProjectName();
@@ -60,6 +65,8 @@ namespace dataPool{
 		static QVector<parsAlgorithm> g_algorithms;
 		static QMap<alg4pro, unsigned int> g_associates;
 	private:
+		static int g_window_width;
+		static int g_window_height;
 		static QString g_DEA4AD_path;
 		static QString g_project_name;
 		static QString g_default_project_path;

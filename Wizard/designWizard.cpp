@@ -1,5 +1,6 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "designWizard.h"
+#include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
 #include "../Templates/iTemplate.h"
 
@@ -18,7 +19,7 @@ _atn_problem(atn_problem), _obj(obj){
 	setButtonText(QWizard::FinishButton, "完成");
 	addPage(_design_performance);
 	addPage(_design_variables);
-	setMinimumSize(880, 580);
+	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 }
 
 void designWizard::accept(){

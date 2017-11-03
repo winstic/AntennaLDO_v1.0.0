@@ -1,16 +1,17 @@
 ﻿#pragma once
 
-#define SCREEN_WIDTH 1440
-#define SCREEN_HEIGHT 900
-#define PROJECT_TREE_WIDTH 320
+#define SUBWINDOW_WIDTH 880
+#define SUBWINDOW_HEIGHT 580
+#define PROJECT_TREE_WIDTH 260
 
 //#define MBNTICON_WH 120
 //#define MBNTICON_HT 100
 //#define TOOLBNTSIZE 150
 //#define MBNTDIS 15
 //#define NUMOFANTENNA 60
-#define CELLATNWH 182
-#define CELLATNHT 140
+#define ANTENNA_IMGWH 120
+#define MIN_CELL_ATNWH 140
+#define NUM_ANTENNA_COLUMN 6
 #define INTRODUCEIMAGEPIX 440
 //
 //// 工程树右键菜单role设定

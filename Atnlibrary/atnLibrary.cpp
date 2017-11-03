@@ -4,8 +4,7 @@
 #include "../Utility/macrodefined.h"
 #include "../Wizard/projectWizard.h"
 
-atnLibrary::atnLibrary(int dock_width, int table_columns, QWidget *parent) : QWidget(parent) ,_atn_dock_WH(dock_width), 
-_num_of_table_col(table_columns), _atn_problem(nullptr), _model_info(nullptr){
+atnLibrary::atnLibrary(QWidget *parent) : QWidget(parent), _atn_problem(nullptr), _model_info(nullptr){
 	_table_view = new QTableWidget();
 	_table_view->setContextMenuPolicy(Qt::CustomContextMenu);
 	_table_view->verticalHeader()->setVisible(false);
@@ -40,46 +39,30 @@ void atnLibrary::initAtnCellList() {
 
 void atnLibrary::atnLibraryLayout() {
 	_table_view->clear();
+	int cell_size = (dataPool::global::getGWindowWidth() - PROJECT_TREE_WIDTH - 10) / NUM_ANTENNA_COLUMN;
+	cell_size = (cell_size < MIN_CELL_ATNWH) ? MIN_CELL_ATNWH : cell_size;
 	int num_of_atn = _atn_cell_list.size();
 	if (num_of_atn > 0) {
-		_num_of_table_col = (num_of_atn < _num_of_table_col) ? num_of_atn : _num_of_table_col;
-		QVector<int> cell_width_vec(_num_of_table_col);
-		initAtnCellWidth(cell_width_vec);
-		int num_of_Row = num_of_atn / _num_of_table_col;
-		if (num_of_atn % _num_of_table_col)
+		int num_of_Row = num_of_atn / NUM_ANTENNA_COLUMN;
+		if (num_of_atn % NUM_ANTENNA_COLUMN)
 			num_of_Row += 1;
 
-		_table_view->setColumnCount(_num_of_table_col);
+		_table_view->setColumnCount(NUM_ANTENNA_COLUMN);
 		_table_view->setRowCount(num_of_Row);
 		for (int i = 0; i < num_of_Row; ++i) {
-			_table_view->setRowHeight(i, CELLATNHT);
+			_table_view->setRowHeight(i, cell_size);
 		}
-		for (int j = 0; j < _num_of_table_col; ++j) {
-			_table_view->setColumnWidth(j, cell_width_vec.at(j));
+		for (int j = 0; j < NUM_ANTENNA_COLUMN; ++j) {
+			_table_view->setColumnWidth(j, cell_size);
 		}
 		for (int k = 0; k < num_of_atn; ++k) {
-			_table_view->setCellWidget(k / _num_of_table_col, k % _num_of_table_col, _atn_cell_list.at(k));
+			_table_view->setCellWidget(k / NUM_ANTENNA_COLUMN, k % NUM_ANTENNA_COLUMN, _atn_cell_list.at(k));
 		}
 	}
 	QLabel *plusPhoto = new QLabel;
 	QPixmap plusMap = QPixmap("images/plus.png");
 	plusPhoto->setPixmap(plusMap);
-	_table_view->setCellWidget(num_of_atn / _num_of_table_col, num_of_atn % _num_of_table_col, plusPhoto);
-}
-
-// set antenna width
-void atnLibrary::initAtnCellWidth(QVector<int>& cell_width_vec) {
-	if (cell_width_vec.size() <= 0) {
-		qWarning("setting wrong parameter of table column.");
-		return;
-	}
-	for (int i = 0; i < _num_of_table_col; ++i) {
-		cell_width_vec[i] = _atn_dock_WH / _num_of_table_col;
-	}
-	int restPixNum = _atn_dock_WH % _num_of_table_col;
-	for (int j = 0; j < restPixNum; ++j) {
-		++cell_width_vec[_num_of_table_col - 1 - j];
-	}
+	_table_view->setCellWidget(num_of_atn / NUM_ANTENNA_COLUMN, num_of_atn % NUM_ANTENNA_COLUMN, plusPhoto);
 }
 
 QTableWidget* atnLibrary::getTableWidget() const {
@@ -215,6 +198,7 @@ atnLibrary::~atnLibrary() {
 	//delete item_menu;
 	//delete action_new;
 	//delete action_property;
+
 	for (QList<antennaCell*>::iterator iter = _atn_cell_list.begin(); iter != _atn_cell_list.end(); ++iter) {
 		if ((*iter) != nullptr) {
 			delete (*iter);
