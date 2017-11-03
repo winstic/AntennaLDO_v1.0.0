@@ -41,9 +41,9 @@ private:
 	inline QMenu* getItemOptimizeMenu() { return _item_optimize_menu; }
 
 signals:
-	void signal_outputMessage(QString text);
+	void signal_outputMessage(QString);
 
-private slots:
+public slots:
 	void slot_showAll();
 	void slot_hideAll();
 	void slot_addDesign();

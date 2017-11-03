@@ -16,7 +16,7 @@ public:
 	return QSize(500, 900);
 	}*/
 signals:
-	void signal_createAndParseXML(QString, parsProblem*);
+	void signal_createAndParseXML(QString&, parsProblem*);
 
 public slots:
 	void slot_reSizeSlot(int row, int column);
