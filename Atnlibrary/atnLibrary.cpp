@@ -21,12 +21,12 @@ atnLibrary::atnLibrary(QWidget *parent) : QWidget(parent), _atn_problem(nullptr)
 }
 
 void atnLibrary::initMenu() {
-	QAction act_new("新建工程", this);
-	QAction act_property("属性", this);
-	connect(&act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
-	connect(&act_property, &QAction::triggered, this, &atnLibrary::slot_property);
-	_item_menu->addAction(&act_new);
-	_item_menu->addAction(&act_property);
+	QAction* act_new = new QAction("新建工程", this);
+	QAction* act_property = new QAction("属性", this);
+	connect(act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
+	connect(act_property, &QAction::triggered, this, &atnLibrary::slot_property);
+	_item_menu->addAction(act_new);
+	_item_menu->addAction(act_property);
 }
 
 void atnLibrary::initAtnCellList() {
@@ -59,10 +59,10 @@ void atnLibrary::atnLibraryLayout() {
 			_table_view->setCellWidget(k / NUM_ANTENNA_COLUMN, k % NUM_ANTENNA_COLUMN, _atn_cell_list.at(k));
 		}
 	}
-	QLabel *plusPhoto = new QLabel;
-	QPixmap plusMap = QPixmap("images/plus.png");
-	plusPhoto->setPixmap(plusMap);
-	_table_view->setCellWidget(num_of_atn / NUM_ANTENNA_COLUMN, num_of_atn % NUM_ANTENNA_COLUMN, plusPhoto);
+	//QLabel *plusPhoto = new QLabel;
+	//QPixmap plusMap = QPixmap("images/plus.png");
+	//plusPhoto->setPixmap(plusMap);
+	//_table_view->setCellWidget(num_of_atn / NUM_ANTENNA_COLUMN, num_of_atn % NUM_ANTENNA_COLUMN, plusPhoto);
 }
 
 QTableWidget* atnLibrary::getTableWidget() const {
@@ -175,7 +175,6 @@ void atnLibrary::slot_property() {
 	qInfo("scan '%s' antenna model info.", qUtf8Printable(_atn_problem->name));
 }
 
-void atnLibrary::slot_clickSearchButton() {}
 void atnLibrary::slot_searchTextChange(QString searchText) {
 	//update antenna cell list
 	_atn_cell_list.clear();

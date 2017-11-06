@@ -27,7 +27,6 @@ public slots:
 	void slot_property();
 	void slot_newProject();
 	//search antenna
-	void slot_clickSearchButton();
 	void slot_searchTextChange(QString);
 
 private:

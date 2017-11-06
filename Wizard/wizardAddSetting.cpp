@@ -10,9 +10,12 @@ wizardAddSetting::wizardAddSetting(QWidget *parent) : QWizardPage(parent){
     _project_path_edit = new QLineEdit(this);
     _select_path_btn = new QPushButton("浏览", this);
     _always_path = new QRadioButton("设为默认路径", this);
-    _hint = new QLabel("请输入工程名称。", this);
     _always_path->setChecked(true);
-
+	_hint = new QLabel(this);
+	QFont font;
+	font.setPixelSize(20);
+	_hint->setFont(font);
+	
 	//register data field, with asterisk(*) means its a mandatory field
 	registerField("project_name*", _project_name_edit);
 	registerField("project_path*", _project_path_edit);
@@ -25,14 +28,15 @@ wizardAddSetting::wizardAddSetting(QWidget *parent) : QWizardPage(parent){
     _project_path_edit->setText(default_path);
     _project_path_edit->setReadOnly(true);
 
+	initSettingLayout();
     connect(_select_path_btn, SIGNAL(clicked()), this, SLOT(slot_selectPath()));
 }
 
 void wizardAddSetting::initSettingLayout() {
-	QVBoxLayout *vlayout = new QVBoxLayout(this);
-	QHBoxLayout *hlayout1 = new QHBoxLayout(this); 
-	QHBoxLayout *hlayout2 = new QHBoxLayout(this);
-	QHBoxLayout *hlayout3 = new QHBoxLayout(this);	
+	QVBoxLayout *vlayout = new QVBoxLayout;
+	QHBoxLayout *hlayout1 = new QHBoxLayout; 
+	QHBoxLayout *hlayout2 = new QHBoxLayout;
+	QHBoxLayout *hlayout3 = new QHBoxLayout;	
 	hlayout1->addWidget(_project_name_label);
 	hlayout1->addWidget(_project_name_edit);
 	vlayout->addLayout(hlayout1);
@@ -44,24 +48,25 @@ void wizardAddSetting::initSettingLayout() {
 
 	vlayout->addWidget(_always_path);
 
-	hlayout3->addSpacerItem(&QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
+	hlayout3->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
 	hlayout3->addWidget(_hint);
-	vlayout->addSpacerItem(&QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	hlayout3->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 	vlayout->addLayout(hlayout3);
 
 	setLayout(vlayout);
 }
 
 bool wizardAddSetting::isComplete() const{	
+	_hint->clear();
+	if (_project_name_edit->text().isEmpty() || _project_name_edit->text().isNull())
+		return false;
 	QDir dir;
 	QString full_path = QString("%1/%2").arg(_project_path_edit->text().trimmed())
 		.arg(_project_name_edit->text().trimmed());
-    if (dir.exists(full_path)){
-        _hint->setText("当前文件已存在" + full_path);
-		qCritical("current file: '%s' already exist.", qUtf8Printable(full_path));
+	if (dir.exists(full_path)) {
+		_hint->setText("当前工程已存在，请更改工程名或工程路径。");
 		return false;
 	}
-	qInfo("project setting success.");
 	return true;
 }
 
