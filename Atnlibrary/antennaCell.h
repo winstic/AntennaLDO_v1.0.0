@@ -3,12 +3,15 @@
 #include <QtWidgets>
 #include "../Utility/global.h"
 
-class antennaCell :public QWidget
+class antennaCell :public QFrame
 {
 public:
-    antennaCell(parsProblem* atn_problem, QWidget* parent = 0);
+    antennaCell(parsProblem* atn_problem, QFrame* parent = 0);
 	~antennaCell();
 	parsProblem* getAntennaProblem() const;
+
+private:
+	void paintEvent(QPaintEvent *event) override;
 
 private:
 	parsProblem* _atn_problem;

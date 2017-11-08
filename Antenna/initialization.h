@@ -45,7 +45,7 @@ void setProNdAlgAssociateParameters(QJsonObject& obj) {
 }
 
 void setConfigParameters(QJsonObject& obj) {
-	dataPool::global::setGDEA4ADPath(obj.value("DEFAULT_PATH").toString().trimmed());
+	dataPool::global::setGDefaultProjectPath(obj.value("DEFAULT_PATH").toString().trimmed());
 	dataPool::global::setGWindowWidth(obj.value("WINDOW_WIDTH").toString().trimmed().toInt());
 	dataPool::global::setGWindowHeight(obj.value("WINDOW_HEIGHT").toString().trimmed().toInt());
 }

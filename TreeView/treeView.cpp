@@ -168,11 +168,6 @@ bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 	_pro_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	_pro_tree->setContextMenuPolicy(Qt::CustomContextMenu);        //设置右键菜单
 	_pro_tree->expandAll();
-
-	delete tree_root;
-	tree_root = nullptr;
-	delete tree_model;
-	tree_model = nullptr;
 	return true;
 }
 
@@ -324,7 +319,6 @@ QStandardItem* treeModel::getProNode() {
 	}
 	return nullptr;
 }
-
 
 QList<QStandardItem*> treeModel::getFolderNode() {
 	QList<QStandardItem*> folder_nodes;

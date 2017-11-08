@@ -1,5 +1,6 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
+#include "../Utility/parseJson.h"
 #include "projectWizard.h"
 
 projectWizard::projectWizard(parsProblem* antenna_problem, QWidget *parent) : QWizard(parent),
@@ -25,6 +26,7 @@ void projectWizard::accept() {
 	QString working_path = QString("%1/%2").arg(project_path).arg(project_name);
 	if (field("is_default_path").toBool()) {
 		dataPool::global::setGDefaultProjectPath(project_path);
+		parseJson::updateConfigFile("DEFAULT_PATH", project_path);
 		qInfo("default path change to '%s'", qUtf8Printable(project_path));
 	}
 	dataPool::global::setGProjectName(project_name);

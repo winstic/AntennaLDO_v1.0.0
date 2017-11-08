@@ -11,6 +11,9 @@ atnLibrary::atnLibrary(QWidget *parent) : QWidget(parent), _atn_problem(nullptr)
 	_table_view->horizontalHeader()->setVisible(false);
 	_table_view->setSelectionMode(QAbstractItemView::SingleSelection);
 	_table_view->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	_table_view->setStyleSheet("selection-background-color:white;"); //设置选中背景色
+	_table_view->setShowGrid(false);
+
 	_item_menu = new QMenu;	
 	initMenu();
 	initAtnCellList();

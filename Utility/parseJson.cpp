@@ -57,3 +57,14 @@ bool parseJson::write(const QString &path, QJsonObject* obj) {
 	qInfo("write file: '%s' successed.", qUtf8Printable(path));
 	return true;
 }
+
+void parseJson::updateConfigFile(const QString& key, const QString& value) {
+	const QString config_json_file = "config.json";
+	QJsonObject conf_obj = getJsonObj(config_json_file);
+	if (conf_obj.isEmpty()) {
+		qCritical("something wrong about config.json.");
+		exit(1);
+	}
+	conf_obj.insert(key, value);
+	write(config_json_file, &conf_obj);
+}

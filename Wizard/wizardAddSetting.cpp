@@ -22,8 +22,9 @@ wizardAddSetting::wizardAddSetting(QWidget *parent) : QWizardPage(parent){
 	registerField("is_default_path", _always_path);
 
 	//读取默认路径
+	QDir dir;
 	QString default_path = dataPool::global::getGDefaultProjectPath();
-    if(default_path.isNull() || default_path.isEmpty())
+    if(default_path.isNull() || default_path.isEmpty() || !dir.exists(default_path))
 		default_path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     _project_path_edit->setText(default_path);
     _project_path_edit->setReadOnly(true);
