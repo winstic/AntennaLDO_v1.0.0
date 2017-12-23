@@ -44,7 +44,7 @@ bool parseJson::write(const QString &path, QJsonObject* obj) {
 	}
 	QFile file(path);
 	if (!file.open(QFile::WriteOnly)) {
-		qCritical("Cannot write file: '%s'", qUtf8Printable(path));
+		qCritical("Cannot write fl: '%s'", qUtf8Printable(path));
 		return false;
 	}
 	QJsonDocument jsonDocument;

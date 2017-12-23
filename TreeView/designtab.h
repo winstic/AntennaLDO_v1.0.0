@@ -7,7 +7,7 @@
 class designTab : public QDialog{
     Q_OBJECT
 public:
-    designTab(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
+    designTab(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent = 0);
     ~designTab(){}
 
 public slots:
@@ -18,7 +18,7 @@ private:
 
 private:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	frequencyTemplate* _frequency_widget;
 	thetaPhiTemplate* _theta_phi_widget;
 	varsDefaultValueTemplate* _vars_value_widget;

@@ -7,7 +7,7 @@
 class gainTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	gainTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent = 0);
+	gainTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~gainTemplate();
 
 	QLayout* getLayout();
@@ -24,7 +24,7 @@ private:
 
 public:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	QLayout* _layout;
 	tableTemplate* _gain_table;
 };

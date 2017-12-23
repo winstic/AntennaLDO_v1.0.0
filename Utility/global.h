@@ -31,7 +31,7 @@ namespace dataPool{
 	class global {
 	public:
 		global() {
-			g_DEA4AD_path = "./DEA4AD/trunk";
+			//g_DEA4AD_path = "./DEA4AD/trunk";
 			/*g_default_project_path = "";
 			g_working_project_path = "";
 			g_current_design_path = 

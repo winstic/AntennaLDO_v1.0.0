@@ -442,8 +442,9 @@ void treeModel::slot_addDesign() {
 				qCritical("get json object field.");
 				return;
 			}
-			designWizard *wizard = new designWizard(_atn_problem, obj, this);
-			if (wizard->exec() == 1) {
+			designWizard wizard(_atn_problem, &obj, this);
+			if (wizard.exec() == 1) 
+			{
 				QString design_name = QString("设计%1").arg(item->rowCount() + 1);
 				QDir* dir = new QDir();
 				QString design_path = QString("%1/design%2").arg(working_path).arg(item->rowCount() + 1);
@@ -498,9 +499,9 @@ void treeModel::slot_addOptimize() {
 				return;
 			}
 			//pass by reference or point
-			parsAlgorithm* pars_algorithm = 0;
-			optimizeWizard *wizard = new optimizeWizard(_atn_problem, problem_obj, algorithm_obj, pars_algorithm, this);
-			if (wizard->exec() == 1) {
+			parsAlgorithm* pars_algorithm = nullptr;
+			optimizeWizard wizard(_atn_problem, &problem_obj, &algorithm_obj, &pars_algorithm, this);
+			if (wizard.exec() == 1) {
 				//json obj already updated.
 				QString optimize_name = QString("优化%1").arg(item->rowCount() + 1);
 				QDir *dir = new QDir();
@@ -513,7 +514,7 @@ void treeModel::slot_addOptimize() {
 
 				QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
 				bool is_success = true;
-				//copy files(.json..,) in optimizeDir					
+				//copy files(.json..,) in optimizeDir
 				is_success &= (dataPool::copyFile(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name),	QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name)) &&
 					dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), QString("%1/global_conf.json").arg(optimize_path)) &&
 					dataPool::copyFile(QString("%1/%2_conf.json").arg(pars_algorithm->path).arg(pars_algorithm->name), QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name)));
@@ -568,7 +569,7 @@ void treeModel::slot_modifyDesignVar() {
 		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(json_path));
 		return;
 	}
-	designTab dTab(_atn_problem, obj, this);
+	designTab dTab(_atn_problem, &obj, this);
 	//dTab->setAttribute(Qt::WA_DeleteOnClose);
 	//dTab->setModal(true);
 	dTab.exec();
@@ -586,7 +587,7 @@ void treeModel::slot_modifyOptimizeVar() {
 		return;
 	}
 	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
-	optimizeTab *otab = new optimizeTab(_atn_problem, problem_obj, palgorithm, this);
+	optimizeTab *otab = new optimizeTab(_atn_problem, &problem_obj, palgorithm, this);
 	//otab->setAttribute(Qt::WA_DeleteOnClose);
 	//otab->setModal(true);
 	otab->exec();

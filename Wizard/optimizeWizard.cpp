@@ -4,12 +4,12 @@
 #include "../Utility/parseJson.h"
 #include "../Templates/iTemplate.h"
 
-optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject& problem_obj, QJsonObject& algorithm_obj, parsAlgorithm* palgorithm, QWidget *parent)
+optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject* problem_obj, QJsonObject* algorithm_obj, parsAlgorithm** palgorithm, QWidget *parent)
 	: QWizard(parent),_atn_problem(atn_problem), _problem_obj(problem_obj), _algorithm_obj(algorithm_obj), _algorithm(palgorithm) {
-	_optimize_pre_far = new wizardFreFarField(_atn_problem, _problem_obj, this);
-	_optimize_axl = new wizardOptimizeAXL(_atn_problem, _problem_obj, this);
-	_optimize_vars = new wizardOptimizeVariables(_atn_problem, _problem_obj, this);
-	_optimize_alg = new wizardOptimizeAlg(_atn_problem, _algorithm_obj, _algorithm, this);
+	_optimize_pre_far = new wizardFreFarField(_atn_problem, _problem_obj);
+	_optimize_axl = new wizardOptimizeAXL(_atn_problem, _problem_obj);
+	_optimize_vars = new wizardOptimizeVariables(_atn_problem, _problem_obj);
+	_optimize_alg = new wizardOptimizeAlg(_atn_problem, _algorithm_obj, _algorithm);
 	//remove help menu
 	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setWindowTitle("优化向导");
@@ -26,8 +26,12 @@ optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject& problem_ob
 }
 
 void optimizeWizard::accept() {
-	for (iTemplate* iter : _optimize_pre_far->getTemplatesWidget(), _optimize_axl->getTemplatesWidget(),
-					_optimize_vars->getTemplatesWidget(), _optimize_alg->getTemplatesWidget())
+	QList<iTemplate*> design_list;
+	design_list.append(_optimize_pre_far->getTemplatesWidget());
+	design_list.append(_optimize_axl->getTemplatesWidget());
+	design_list.append(_optimize_vars->getTemplatesWidget());
+	design_list.append(_optimize_alg->getTemplatesWidget());
+	for (iTemplate* iter : design_list)
 		iter->updateJObj();
 	QDialog::accept();
 }

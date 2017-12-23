@@ -3,12 +3,12 @@
 #include "wizardDesignVariables.h"
 
 
-wizardDesignVariables::wizardDesignVariables(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent): QWizardPage(parent), 
+wizardDesignVariables::wizardDesignVariables(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent): QWizardPage(parent), 
 _atn_problem(atn_problem), _obj(obj){
 
 	setTitle("模型设置");
 	setSubTitle("模型设置");
-	_vars_value_widget = new varsDefaultValueTemplate(atn_problem, obj);
+	_vars_value_widget = new varsDefaultValueTemplate(atn_problem, _obj);
     //layout
 	QLayout* layout = _vars_value_widget->getLayout();
 	setLayout(layout);
@@ -22,7 +22,7 @@ QList<iTemplate*> wizardDesignVariables::getTemplatesWidget() const {
 	return QList<iTemplate*> {_vars_value_widget};
 }
 
-wizardDesignVariables::~wizardDesignVariables(){
+/*wizardDesignVariables::~wizardDesignVariables(){
 	delete _vars_value_widget;
 	_vars_value_widget = nullptr;
-}
+}*/

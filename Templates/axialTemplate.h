@@ -7,7 +7,7 @@
 class axialTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	axialTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent = 0);
+	axialTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~axialTemplate();
 
 	QLayout* getLayout();
@@ -24,7 +24,7 @@ private:
 
 public:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	QLayout* _layout;
 	tableTemplate* _axial_table;
 };

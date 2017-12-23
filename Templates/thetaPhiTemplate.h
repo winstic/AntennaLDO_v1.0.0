@@ -6,7 +6,7 @@
 class thetaPhiTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	thetaPhiTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent = 0);
+	thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~thetaPhiTemplate();
 
 	QLayout* getLayout();
@@ -21,7 +21,7 @@ private:
 
 public:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	QLayout* _layout;
 	QLabel* _theta_low_label;
 	QLabel* _theta_up_label;

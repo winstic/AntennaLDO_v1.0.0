@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "gainTemplate.h"
 
-gainTemplate::gainTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
+gainTemplate::gainTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
 	_gain_table = new tableTemplate();
 	_gain_table->setColumnCount(8);
@@ -14,12 +14,12 @@ _atn_problem(atn_problem), _obj(obj) {
 }
 
 void gainTemplate::initDefaultData() {
-	QJsonObject gain_obj = parseJson::getSubJsonObj(_obj, "GainSetting");
+	QJsonObject gain_obj = parseJson::getSubJsonObj(*_obj, "GainSetting");
 	if (gain_obj.isEmpty()) {
 		qCritical("get 'GainSetting' json object field.");
 		return;
 	}
-	QSignalMapper gain_signals_map;
+	QSignalMapper* gain_signals_map = new QSignalMapper;
 	QStringList str_list_theta_lower = dataPool::str2list(gain_obj.value("Theta_Lower_gain").toString());
 	QStringList str_list_theta_upper = dataPool::str2list(gain_obj.value("Theta_Upper_gain").toString());
 	QStringList str_list_phi_lower = dataPool::str2list(gain_obj.value("Phi_Lower_gain").toString());
@@ -35,30 +35,30 @@ void gainTemplate::initDefaultData() {
 		_gain_table->insert2table(i, cphilower, str_list_phi_lower[i]);
 		_gain_table->insert2table(i, cphiupper, str_list_phi_upper[i]);
 
-		QComboBox optimal_type;
-		initOptimalTypeComBox(&optimal_type);
-		optimal_type.setCurrentText(str_list_optimal_type[i]);
-		_gain_table->setCellWidget(i, coptimaltype, &optimal_type);
+		QComboBox* optimal_type = new QComboBox;
+		initOptimalTypeComBox(optimal_type);
+		optimal_type->setCurrentText(str_list_optimal_type[i]);
+		_gain_table->setCellWidget(i, coptimaltype, optimal_type);
 		//qDebug() << gainTable->item(i, coptimaltype)->text();
 		//map combobox signal
-		connect(&optimal_type, SIGNAL(currentIndexChanged(int)), &gain_signals_map, SLOT(map()));
-		gain_signals_map.setMapping(&optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
+		connect(optimal_type, SIGNAL(currentIndexChanged(int)), gain_signals_map, SLOT(map()));
+		gain_signals_map->setMapping(optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
 
 		_gain_table->insert2table(i, cdelta, str_list_delta[i]);
 		//setting cannot edit when optimize type is not delta
-		if (optimal_type.currentIndex() != 2)
+		if (optimal_type->currentIndex() != 2)
 			_gain_table->item(i, cdelta)->setFlags(Qt::NoItemFlags);
 
 		_gain_table->insert2table(i, cobjvalue, str_list_gain[i]);
 		_gain_table->insert2table(i, cweight, str_list_weight[i]);
 	}
-	connect(&gain_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_ChangeOptimaltype(QString)));
+	connect(gain_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_ChangeOptimaltype(QString)));
 }
 
 void gainTemplate::initLayout() {
-	QHBoxLayout layout;
-	layout.addWidget(_gain_table);
-	_layout = &layout;
+	QHBoxLayout* layout = new QHBoxLayout;
+	layout->addWidget(_gain_table);
+	_layout = layout;
 }
 
 QLayout* gainTemplate::getLayout() {
@@ -93,7 +93,7 @@ void gainTemplate::updateJObj() {
 	mgain_obj.insert("delta_gain", QString("[[%1]]").arg(gain_str[5].join(",")));
 	mgain_obj.insert("gainobj", QString("[[%1]]").arg(gain_str[6].join(",")));
 	mgain_obj.insert("weight_gain", QString("[[%1]]").arg(gain_str[7].join(",")));
-	_obj.insert("GainSetting", mgain_obj);
+	_obj->insert("GainSetting", mgain_obj);
 }
 
 void gainTemplate::slot_ChangeOptimaltype(QString pos) {

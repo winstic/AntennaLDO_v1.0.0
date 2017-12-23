@@ -4,16 +4,17 @@
 #include "../Utility/parseJson.h"
 #include "../Templates/iTemplate.h"
 
-designWizard::designWizard(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent) : QWizard(parent),
+designWizard::designWizard(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent) : QWizard(parent),
 _atn_problem(atn_problem), _obj(obj){
-	_design_performance = new wizardFreFarField(_atn_problem, _obj, this);
-	_design_variables = new wizardDesignVariables(_atn_problem, _obj, this);
+	_design_performance = new wizardFreFarField(_atn_problem, _obj);
+	_design_variables = new wizardDesignVariables(_atn_problem, _obj);
 	//remove help menu
 	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	//this->setWizardStyle(QWizard::ModernStyle);
 	setWindowTitle("设计向导");
 	setOption(QWizard::NoBackButtonOnStartPage);
 	//this->setOption(QWizard::NoCancelButton);
+	setButtonText(QWizard::BackButton, "<上一步");
 	setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");
 	setButtonText(QWizard::FinishButton, "完成");
@@ -23,9 +24,12 @@ _atn_problem(atn_problem), _obj(obj){
 }
 
 void designWizard::accept(){
-	for (iTemplate* iter : _design_performance->getTemplatesWidget(), _design_variables->getTemplatesWidget())
+	QList<iTemplate*> design_list;
+	design_list.append(_design_performance->getTemplatesWidget());
+	design_list.append(_design_variables->getTemplatesWidget());
+	for (iTemplate* iter : design_list)
 		iter->updateJObj();
 	QDialog::accept();
 }
 
-designWizard::~designWizard() {}
+/*designWizard::~designWizard() {}*/

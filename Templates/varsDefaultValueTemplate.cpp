@@ -2,24 +2,33 @@
 #include "../Utility/parseJson.h"
 #include "varsDefaultValueTemplate.h"
 
-varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) 
+varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) 
 	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj) {
 	_atn_image_label = new QLabel(this);
 	_vars_table = new tableTemplate();
 	_vars_table->setColumnCount(3);
 	QStringList header;
 	header << "变量" << "参数值" << "单位";
+	_vars_table->setHorizontalHeaderLabels(header);
 	_vars_table->horizontalHeader()->setSectionsClickable(false);
 	_vars_table->horizontalHeader()->setSectionResizeMode(varvalue, QHeaderView::Stretch);
-	_vars_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);
-	_vars_table->horizontalHeader()->resizeSection(0, 120);        //setting first column width is 150
+	_vars_table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
+	_vars_table->horizontalHeader()->resizeSection(0, 120);        //setting first column width is 120
+	_vars_table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
+	_vars_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
+	_vars_table->setShowGrid(false);                               //setting no grid line
+	_vars_table->setSelectionBehavior(QAbstractItemView::SelectRows);
+	_vars_table->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
+	_vars_table->setStyleSheet("selection-background-color:lightblue;");   //setting selected background
+	//_vars_table->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); //setting header background
+	_vars_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 
 	initDefaultData();
 	initLayout();
 }
 
 void varsDefaultValueTemplate::initDefaultData() {
-	QJsonObject vars_value_obj = parseJson::getSubJsonObj(_obj, "varsValue");
+	QJsonObject vars_value_obj = parseJson::getSubJsonObj(*_obj, "varsValue");
 	if (vars_value_obj.isEmpty()) {
 		qCritical("get 'varsValue' json object field.");
 		return;
@@ -27,7 +36,7 @@ void varsDefaultValueTemplate::initDefaultData() {
 	for (QJsonObject::iterator iter = vars_value_obj.begin(); iter != vars_value_obj.end(); ++iter) {
 		_default_vars[iter.key()] = iter.value().toString().trimmed();
 	}
-	QJsonObject vars_range_obj = parseJson::getSubJsonObj(_obj, "variables");
+	QJsonObject vars_range_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (vars_range_obj.isEmpty()) {
 		qCritical("get 'variables' json object field.");
 		return;
@@ -36,11 +45,11 @@ void varsDefaultValueTemplate::initDefaultData() {
 	QString var_key;
 	QStringList var_value;
 	int row_number = 0, value_list_length;
-	double real_value;
-	QSignalMapper signals_map_slider, signals_map_unit;	//use signalmaper manage signals in table
+	double real_value;	
 	QRegExp rx("^(-?\\d+)(\\.\\d+)?$");
 	QRegExpValidator float_valid(rx);      //float
-
+	QSignalMapper* signals_map_slider = new QSignalMapper;	//use signalmaper manage signals in table
+	QSignalMapper* signals_map_unit = new QSignalMapper;	//use signalmaper manage signals in table
 	_vars_table->setRowCount(vars_range_obj.count());
 
 	for (QJsonObject::iterator iter = vars_range_obj.begin(); iter != vars_range_obj.end(); ++iter) {
@@ -50,6 +59,7 @@ void varsDefaultValueTemplate::initDefaultData() {
 											 //get note infomation
 		QString key_note = var_obj.value("note").toString().trimmed();
 		_vars_table->insert2table(row_number, varnote, key_note);
+		_vars_table->item(row_number, varnote)->setWhatsThis(var_key);
 		// init text edit and layout
 		var_value = dataPool::str2list(var_obj.value(var_key).toString().trimmed());
 		value_list_length = var_value.length();
@@ -90,16 +100,15 @@ void varsDefaultValueTemplate::initDefaultData() {
 			//design inner space
 			v_layout->setSpacing(0);
 			// design outer space
-			//vLayout->setMargin(0);
+			v_layout->setMargin(0);
 			cell_widget->setLayout(v_layout);
 			//test begin
 			//QLineEdit *findEdit = cellWidget->findChild<QLineEdit *>();
 			//qDebug() << "findEdit: " << findEdit->text();
 			//test end
-			_vars_table->setCellWidget(row_number, varvalue, cell_widget);
-
-			connect(var_slider, SIGNAL(valueChanged(int)), &signals_map_slider, SLOT(map()));
-			signals_map_slider.setMapping(var_slider, QString("%1#%2#%3").arg(row_number).arg(up_value).arg(low_value));
+			_vars_table->setCellWidget(row_number, varvalue, cell_widget);			
+			connect(var_slider, SIGNAL(valueChanged(int)), signals_map_slider, SLOT(map()));
+			signals_map_slider->setMapping(var_slider, QString("%1#%2#%3").arg(row_number).arg(up_value).arg(low_value));
 		}
 		connect(value_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_LinetextChange(QString)));
 
@@ -111,18 +120,18 @@ void varsDefaultValueTemplate::initDefaultData() {
 		initUnitComBo(unit_combox);
 		unit_layout->addWidget(unit_combox);
 		unit_widget->setLayout(unit_layout);
-		_vars_table->setCellWidget(row_number, varunit, unit_widget);
+		_vars_table->setCellWidget(row_number, 2, unit_widget);
 
-		//map combobox signal
-		connect(unit_combox, SIGNAL(currentIndexChanged(int)), &signals_map_unit, SLOT(map()));
-		signals_map_unit.setMapping(unit_combox, QString("%1").arg(row_number));
+		//map combobox signal		
+		connect(unit_combox, SIGNAL(currentIndexChanged(int)), signals_map_unit, SLOT(map()));
+		signals_map_unit->setMapping(unit_combox, QString("%1").arg(row_number));
 		//in 'rownumber'th row, save default unitComBo current data
 		_vars_unit.insert(row_number, unit_combox->currentData(ROLE_MARK_UNIT).toInt());
 		row_number++;
 	}
 
-	connect(&signals_map_slider, SIGNAL(mapped(QString)), this, SLOT(slot_sliderValueChange(QString)));
-	connect(&signals_map_unit, SIGNAL(mapped(QString)), this, SLOT(slot_unitChange(QString)));
+	connect(signals_map_slider, SIGNAL(mapped(QString)), this, SLOT(slot_sliderValueChange(QString)));
+	connect(signals_map_unit, SIGNAL(mapped(QString)), this, SLOT(slot_unitChange(QString)));
 
 	//!add picture
 	QPixmap pm = QPixmap(_atn_problem->pImage);
@@ -133,10 +142,10 @@ void varsDefaultValueTemplate::initDefaultData() {
 }
 
 void varsDefaultValueTemplate::initLayout() {
-	QHBoxLayout h_layout;
-	h_layout.addWidget(_vars_table, 1);
-	h_layout.addWidget(_atn_image_label, 1);
-	_layout = &h_layout;
+	QHBoxLayout* h_layout = new QHBoxLayout;
+	h_layout->addWidget(_vars_table, 1);
+	h_layout->addWidget(_atn_image_label, 1);
+	_layout = h_layout;
 }
 
 void varsDefaultValueTemplate::initSliderSheet(QString& sheet) {
@@ -186,7 +195,7 @@ void varsDefaultValueTemplate::updateJObj() {
 		var_value = _vars_table->cellWidget(i, varvalue)->findChild<QLineEdit *>()->text().trimmed();
 		mvars_value_obj.insert(var_key, var_value);
 	}
-	_obj.insert("varsValue", mvars_value_obj);
+	_obj->insert("varsValue", mvars_value_obj);
 }
 
 //slots
@@ -212,7 +221,7 @@ void varsDefaultValueTemplate::slot_unitChange(QString pos) {
 	Q_ASSERT(!_vars_unit.isEmpty());
 	int row = pos.toInt();
 	int current_unit_data = _vars_unit[row];
-	QComboBox* select_combox = _vars_table->cellWidget(row, varunit)->findChild<QComboBox *>();
+	QComboBox* select_combox = _vars_table->cellWidget(row, 2)->findChild<QComboBox *>();
 	int new_unit_data = select_combox->currentData(ROLE_MARK_UNIT).toInt();
 	//unit conversion
 	if (current_unit_data != MARK_UNIT_LAMBDA && new_unit_data != MARK_UNIT_LAMBDA &&

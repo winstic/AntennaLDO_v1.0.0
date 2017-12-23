@@ -44,33 +44,36 @@ void parallelTemplate::initDefaultData() {
 }
 
 void parallelTemplate::initLayout() {
-	QHBoxLayout h_layout1, h_layout2, h_layout3;
-	QVBoxLayout v_layout, v_layout1;
-	h_layout1.addWidget(_thread_label);
-	h_layout1.addWidget(_thread_edit);
-	_single_group->setLayout(&h_layout1);
+	QHBoxLayout* h_layout1 = new QHBoxLayout;
+	QHBoxLayout* h_layout2 = new QHBoxLayout;
+	QHBoxLayout* h_layout3 = new QHBoxLayout;
+	QVBoxLayout* v_layout = new QVBoxLayout;
+	QVBoxLayout* v_layout1 = new QVBoxLayout;
+	h_layout1->addWidget(_thread_label);
+	h_layout1->addWidget(_thread_edit);
+	_single_group->setLayout(h_layout1);
 
-	h_layout2.addWidget(_node_label);
-	h_layout2.addWidget(_node_edit);
-	h_layout2.addWidget(_core_label);
-	h_layout2.addWidget(_core_edit);
-	h_layout2.addWidget(_add_button);
-	v_layout1.addLayout(&h_layout2);
+	h_layout2->addWidget(_node_label);
+	h_layout2->addWidget(_node_edit);
+	h_layout2->addWidget(_core_label);
+	h_layout2->addWidget(_core_edit);
+	h_layout2->addWidget(_add_button);
+	v_layout1->addLayout(h_layout2);
 
 
-	h_layout3.addWidget(_node_vars_table);
-	h_layout3.addWidget(_del_button);
-	v_layout1.addLayout(&h_layout3);
-	_multi_group->setLayout(&v_layout1);
+	h_layout3->addWidget(_node_vars_table);
+	h_layout3->addWidget(_del_button);
+	v_layout1->addLayout(h_layout3);
+	_multi_group->setLayout(v_layout1);
 
 	_single_group->setEnabled(true);
 	_multi_group->setEnabled(false);
 
-	v_layout.addWidget(_single_thread_checkbox);
-	v_layout.addWidget(_single_group);
-	v_layout.addWidget(_multi_thread_checkbox);
-	v_layout.addWidget(_multi_group);
-	_layout = &v_layout;
+	v_layout->addWidget(_single_thread_checkbox);
+	v_layout->addWidget(_single_group);
+	v_layout->addWidget(_multi_thread_checkbox);
+	v_layout->addWidget(_multi_group);
+	_layout = v_layout;
 }
 
 QLayout* parallelTemplate::getLayout() {

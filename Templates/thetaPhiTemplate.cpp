@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "thetaPhiTemplate.h"
 
-thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
+thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
 	_theta_low_label = new QLabel("起始θ:", this);
 	_theta_up_label = new QLabel("终止θ:", this);
@@ -33,7 +33,7 @@ void thetaPhiTemplate::initRegex() {
 }
 
 void thetaPhiTemplate::initDefaultData() {
-	QJsonObject far_field_obj = parseJson::getSubJsonObj(_obj, "ThetaPhiStep");
+	QJsonObject far_field_obj = parseJson::getSubJsonObj(*_obj, "ThetaPhiStep");
 	if (far_field_obj.isEmpty()) {
 		qCritical("get 'ThetaPhiStep' json object field.");
 		return;
@@ -54,20 +54,20 @@ void thetaPhiTemplate::initDefaultData() {
 }
 
 void thetaPhiTemplate::initLayout() {
-	QGridLayout far_field_layout;
-	far_field_layout.addWidget(_theta_low_label, 0, 0);
-	far_field_layout.addWidget(_theta_low_edit, 0, 1);
-	far_field_layout.addWidget(_theta_up_label, 0, 2);
-	far_field_layout.addWidget(_theta_up_edit, 0, 3);
-	far_field_layout.addWidget(_theta_step_label, 0, 4);
-	far_field_layout.addWidget(_theta_step_edit, 0, 5);
-	far_field_layout.addWidget(_phi_low_label, 1, 0);
-	far_field_layout.addWidget(_phi_low_edit, 1, 1);
-	far_field_layout.addWidget(_phi_up_label, 1, 2);
-	far_field_layout.addWidget(_phi_up_edit, 1, 3);
-	far_field_layout.addWidget(_phi_step_label, 1, 4);
-	far_field_layout.addWidget(_phi_step_edit, 1, 5);
-	_layout = &far_field_layout;
+	QGridLayout* far_field_layout = new QGridLayout;
+	far_field_layout->addWidget(_theta_low_label, 0, 0);
+	far_field_layout->addWidget(_theta_low_edit, 0, 1);
+	far_field_layout->addWidget(_theta_up_label, 0, 2);
+	far_field_layout->addWidget(_theta_up_edit, 0, 3);
+	far_field_layout->addWidget(_theta_step_label, 0, 4);
+	far_field_layout->addWidget(_theta_step_edit, 0, 5);
+	far_field_layout->addWidget(_phi_low_label, 1, 0);
+	far_field_layout->addWidget(_phi_low_edit, 1, 1);
+	far_field_layout->addWidget(_phi_up_label, 1, 2);
+	far_field_layout->addWidget(_phi_up_edit, 1, 3);
+	far_field_layout->addWidget(_phi_step_label, 1, 4);
+	far_field_layout->addWidget(_phi_step_edit, 1, 5);
+	_layout = far_field_layout;
 }
 
 QLayout* thetaPhiTemplate::getLayout() {
@@ -83,7 +83,7 @@ void thetaPhiTemplate::updateJObj() {
 	mfar_fiel_obj.insert("PhiLower", _phi_low_edit->text().trimmed());
 	mfar_fiel_obj.insert("PhiUpper", _phi_up_edit->text().trimmed());
 	mfar_fiel_obj.insert("PhiStep", _phi_step_edit->text().trimmed());
-	_obj.insert("ThetaPhiStep", mfar_fiel_obj);
+	_obj->insert("ThetaPhiStep", mfar_fiel_obj);
 }
 
 thetaPhiTemplate::~thetaPhiTemplate(){}

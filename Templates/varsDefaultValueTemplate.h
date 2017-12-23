@@ -7,7 +7,7 @@
 class varsDefaultValueTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent = 0);
+	varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~varsDefaultValueTemplate();
 
 	QLayout* getLayout();
@@ -26,7 +26,7 @@ private:
 
 public:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	QLayout* _layout;
 	tableTemplate* _vars_table;
 	QLabel* _atn_image_label;

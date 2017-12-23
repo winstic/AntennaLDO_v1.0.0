@@ -6,7 +6,7 @@
 class wizardOptimizeVariables : public QWizardPage{
     Q_OBJECT
 public:
-    wizardOptimizeVariables(parsProblem* atn_problem, QJsonObject& obj, QWidget *parent = 0);
+    wizardOptimizeVariables(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent = 0);
 	~wizardOptimizeVariables();
 	QList<iTemplate*> getTemplatesWidget() const;
 
@@ -15,6 +15,6 @@ protected:
 
 private:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	variablesTemplate* _variables_widget;
 };

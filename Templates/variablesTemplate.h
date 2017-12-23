@@ -7,7 +7,7 @@
 class variablesTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	variablesTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent = 0);
+	variablesTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~variablesTemplate();
 
 	QLayout* getLayout();
@@ -23,7 +23,7 @@ private:
 
 public:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	QLayout* _layout;
 	tableTemplate* _vars_table;
 	QLabel* _atn_image_label;

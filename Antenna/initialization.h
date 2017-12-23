@@ -51,10 +51,13 @@ void setConfigParameters(QJsonObject& obj) {
 }
 
 void loadData() {
+	const QString DEA4AD_path = "./DEA4AD/trunk";
 	const QString config_json_file = "config.json";
 	const QString problem_json_file = "Utility/problems.json";
 	const QString algorithm_json_file = "Utility/algorithms.json";
 	const QString associate_json_file = "Utility/associates.json";
+
+	dataPool::global::setGDEA4ADPath(DEA4AD_path);
 	
 	QJsonObject conf_obj, pro_obj, alg_obj, associate_obj;
 	conf_obj = parseJson::getJsonObj(config_json_file);

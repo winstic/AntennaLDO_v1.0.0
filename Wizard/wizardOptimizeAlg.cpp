@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "wizardOptimizeAlg.h"
 
-wizardOptimizeAlg::wizardOptimizeAlg(parsProblem* atn_problem, QJsonObject algorithm_obj, parsAlgorithm* palgorithm, QWidget *parent)
+wizardOptimizeAlg::wizardOptimizeAlg(parsProblem* atn_problem, QJsonObject* algorithm_obj, parsAlgorithm** palgorithm, QWidget *parent)
 	: QWizardPage(parent), _atn_problem(atn_problem), _algorithm_obj(algorithm_obj), _algorithm(palgorithm){
     setTitle("优化算法设置");
     setSubTitle("设置算法参数");

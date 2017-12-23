@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "variablesTemplate.h"
 
-variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent)
+variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent)
 	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj) {
 	_atn_image_label = new QLabel(this);
 	_vars_table = new tableTemplate();
@@ -17,7 +17,7 @@ variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject& obj,
 }
 
 void variablesTemplate::initDefaultData() {
-	QJsonObject variables_obj = parseJson::getSubJsonObj(_obj, "variables");
+	QJsonObject variables_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (variables_obj.isEmpty()) {
 		qCritical("get 'variables' json object field.");
 		return;
@@ -68,10 +68,10 @@ void variablesTemplate::initDefaultData() {
 }
 
 void variablesTemplate::initLayout() {
-	QHBoxLayout h_layout;
-	h_layout.addWidget(_vars_table, 1);
-	h_layout.addWidget(_atn_image_label, 1);
-	_layout = &h_layout;
+	QHBoxLayout* h_layout = new QHBoxLayout;
+	h_layout->addWidget(_vars_table, 1);
+	h_layout->addWidget(_atn_image_label, 1);
+	_layout = h_layout;
 }
 
 QLayout* variablesTemplate::getLayout() {
@@ -92,7 +92,7 @@ void variablesTemplate::updateJObj() {
 		itemobj.insert(var_key, var_value);
 		mvariables_obj.insert(var_key, itemobj);
 	}
-	_obj.insert("variables", mvariables_obj);
+	_obj->insert("variables", mvariables_obj);
 }
 
 //slots

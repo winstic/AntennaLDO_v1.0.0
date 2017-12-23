@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "frequencyTemplate.h"
 
-frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
+frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
 	_frequency_low_label = new QLabel("频段上限:", this);
 	_frequency_up_label = new QLabel("频段下限:", this);
@@ -42,7 +42,7 @@ void frequencyTemplate::initRegex() {
 
 void frequencyTemplate::initDefaultData() {
 	//setting default data
-	QJsonObject frequency_obj = parseJson::getSubJsonObj(_obj, "FreSetting");
+	QJsonObject frequency_obj = parseJson::getSubJsonObj(*_obj, "FreSetting");
 	if (frequency_obj.isEmpty()) {
 		qCritical("get 'FreSetting' json object field.");
 		return;
@@ -62,27 +62,27 @@ void frequencyTemplate::initDefaultData() {
 
 void frequencyTemplate::initLayout() {
 	//layout
-	QGridLayout frequency_layout;
+	QGridLayout* frequency_layout = new QGridLayout;
 	_frequency_low_label->setAlignment(Qt::AlignRight);
-	frequency_layout.addWidget(_frequency_low_label, 0, 0);
-	frequency_layout.addWidget(_frequency_low_edit, 0, 1);
-	QLabel hz_label("MHz");
-	frequency_layout.addWidget(&hz_label, 0, 2);
+	frequency_layout->addWidget(_frequency_low_label, 0, 0);
+	frequency_layout->addWidget(_frequency_low_edit, 0, 1);
+	QLabel* hz_label = new QLabel("MHz");
+	frequency_layout->addWidget(hz_label, 0, 2);
 	_frequency_up_label->setAlignment(Qt::AlignRight);
-	frequency_layout.addWidget(_frequency_up_label, 1, 0);
-	frequency_layout.addWidget(_frequency_up_edit, 1, 1);
-	QLabel hz_label2("MHz");
-	frequency_layout.addWidget(&hz_label2, 1, 2);
+	frequency_layout->addWidget(_frequency_up_label, 1, 0);
+	frequency_layout->addWidget(_frequency_up_edit, 1, 1);
+	QLabel* hz_label2 = new QLabel("MHz");
+	frequency_layout->addWidget(hz_label2, 1, 2);
 	_frequency_num_label->setAlignment(Qt::AlignRight);
-	frequency_layout.addWidget(_frequency_num_label, 2, 0);
-	frequency_layout.addWidget(_frequency_num_edit, 2, 1);
+	frequency_layout->addWidget(_frequency_num_label, 2, 0);
+	frequency_layout->addWidget(_frequency_num_edit, 2, 1);
 	_sweep_type_label->setAlignment(Qt::AlignRight);
-	frequency_layout.addWidget(_sweep_type_label, 3, 0);
-	frequency_layout.addWidget(_sweep_type_combox, 3, 1);
+	frequency_layout->addWidget(_sweep_type_label, 3, 0);
+	frequency_layout->addWidget(_sweep_type_combox, 3, 1);
 	_polarization_label->setAlignment(Qt::AlignRight);
-	frequency_layout.addWidget(_polarization_label, 4, 0);
-	frequency_layout.addWidget(_polarization_combox, 4, 1);
-	_layout = &frequency_layout;
+	frequency_layout->addWidget(_polarization_label, 4, 0);
+	frequency_layout->addWidget(_polarization_combox, 4, 1);
+	_layout = frequency_layout;
 }
 
 QLayout* frequencyTemplate::getLayout() {
@@ -97,7 +97,7 @@ void frequencyTemplate::updateJObj() {
 	mfrequency_obj.insert("FreNumber", _frequency_num_edit->text().trimmed());
 	mfrequency_obj.insert("SweepType", _sweep_type_combox->currentIndex());
 	mfrequency_obj.insert("PM", _polarization_combox->currentIndex());
-	_obj.insert("FreSetting", mfrequency_obj);
+	_obj->insert("FreSetting", mfrequency_obj);
 }
 
 frequencyTemplate::~frequencyTemplate(){}

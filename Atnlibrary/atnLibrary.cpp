@@ -201,7 +201,7 @@ atnLibrary::~atnLibrary() {
 	//delete action_new;
 	//delete action_property;
 
-	for (QList<antennaCell*>::iterator iter = _atn_cell_list.begin(); iter != _atn_cell_list.end(); ++iter) {
+	/*for (QList<antennaCell*>::iterator iter = _atn_cell_list.begin(); iter != _atn_cell_list.end(); ++iter) {
 		if ((*iter) != nullptr) {
 			delete (*iter);
 			//(*iter) = nullptr;
@@ -209,5 +209,5 @@ atnLibrary::~atnLibrary() {
 	}
 	
 	delete _model_info;
-	_model_info = nullptr;
+	_model_info = nullptr;*/
 }

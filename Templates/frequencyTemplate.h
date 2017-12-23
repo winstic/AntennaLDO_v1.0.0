@@ -6,7 +6,7 @@
 class frequencyTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	frequencyTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent = 0);
+	frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~frequencyTemplate();
 	
 	QLayout* getLayout();
@@ -22,7 +22,7 @@ private:
 
 public:
 	parsProblem* _atn_problem;
-	QJsonObject _obj;
+	QJsonObject* _obj;
 	QLayout* _layout;
 	QLabel* _frequency_low_label;
 	QLabel* _frequency_up_label;

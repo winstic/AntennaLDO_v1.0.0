@@ -2,39 +2,44 @@
 #include "../Utility/parseJson.h"
 #include "algorithmTemplate.h"
 
-algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject algorithm_obj, parsAlgorithm* palgorithm, iTemplate *parent)
+algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* algorithm_obj, parsAlgorithm** palgorithm, iTemplate *parent)
 	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj){
 	_alg_label = new QLabel("选择算法:", this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
 	_alg_vars_table = new tableTemplate();
+	_alg_vars_table->horizontalHeader()->setVisible(false);
 	_alg_vars_table->setColumnCount(2);
 	_alg_vars_table->horizontalHeader()->setSectionResizeMode(valueFlag, QHeaderView::Stretch);
-	initAlgComboItem();
-	initLayout();
-	if (_algorithm == 0 || _algorithm == nullptr) {
+	initAlgComboItem();	
+	if (_algorithm == nullptr) {
+		qCritical("nullptr pointer");
+		exit(1);
+	}
+	if (*_algorithm == nullptr || *_algorithm == 0) {
 		//set default algorithm
 		_alg_combox->setCurrentIndex(0);
-		_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toInt());
+		*_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toInt());
 	}
 	else
-		_alg_combox->setCurrentText(_algorithm->name);
+		_alg_combox->setCurrentText((*_algorithm)->name);
 	initDefaultData();
+	initLayout();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
 }
 
 void algorithmTemplate::initLayout() {
-	QVBoxLayout v_layout;
-	QHBoxLayout h_layout;
-	h_layout.addWidget(_alg_label);
-	h_layout.addWidget(_alg_combox);
-	v_layout.addLayout(&h_layout);
-	v_layout.addWidget(_alg_vars_table);
-	_layout = &v_layout;
+	QVBoxLayout* v_layout = new QVBoxLayout;
+	QHBoxLayout* h_layout = new QHBoxLayout;
+	h_layout->addWidget(_alg_label);
+	h_layout->addWidget(_alg_combox);
+	v_layout->addLayout(h_layout);
+	v_layout->addWidget(_alg_vars_table);
+	_layout = v_layout;
 }
 
 void algorithmTemplate::initDefaultData() {
-	QString alg_json_path = QString("%1/%2_conf.json").arg(_algorithm->path).arg(_algorithm->name);
+	QString alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
 		qCritical("cannot parse algorithm json file: '%s'", qUtf8Printable(alg_json_path));
@@ -87,12 +92,12 @@ void algorithmTemplate::updateJObj() {
 		QJsonObject itemobj;
 		itemobj.insert(varKey, varValue);
 		itemobj.insert("note", varNote);
-		_algorithm_obj.insert(varKey, itemobj);
+		_algorithm_obj->insert(varKey, itemobj);
 	}
 }
 
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
-	_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
+	*_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
 	initDefaultData();
 }

@@ -1,4 +1,5 @@
-﻿#include "iTemplate.h"
+﻿#pragma execution_character_set("utf-8")
+#include "iTemplate.h"
 
 iTemplate::iTemplate(QWidget* parent) : QWidget(parent){}
 

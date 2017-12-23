@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "axialTemplate.h"
 
-axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
+axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
 	_axial_table = new tableTemplate();
 	_axial_table->setColumnCount(8);
@@ -14,12 +14,12 @@ _atn_problem(atn_problem), _obj(obj) {
 }
 
 void axialTemplate::initDefaultData() {
-	QJsonObject axial_obj = parseJson::getSubJsonObj(_obj, "AxialratioSetting");
+	QJsonObject axial_obj = parseJson::getSubJsonObj(*_obj, "AxialratioSetting");
 	if (axial_obj.isEmpty()) {
 		qCritical("get 'AxialratioSetting' json object field.");
 		return;
 	}
-	QSignalMapper axial_signals_map;
+	QSignalMapper* axial_signals_map = new QSignalMapper;
 	QStringList strListThetaLower = dataPool::str2list(axial_obj.value("Theta_Lower_axial").toString());
 	QStringList strListThetaUpper = dataPool::str2list(axial_obj.value("Theta_Upper_axial").toString());
 	QStringList strListPhiLower = dataPool::str2list(axial_obj.value("Phi_Lower_axial").toString());
@@ -35,29 +35,29 @@ void axialTemplate::initDefaultData() {
 		_axial_table->insert2table(i, cphilower, strListPhiLower[i]);
 		_axial_table->insert2table(i, cphiupper, strListPhiUpper[i]);
 
-		QComboBox optimal_type;
-		initOptimalTypeComBox(&optimal_type);
-		optimal_type.setCurrentText(strListOptimaltype[i]);
-		_axial_table->setCellWidget(i, coptimaltype, &optimal_type);
+		QComboBox* optimal_type = new QComboBox;
+		initOptimalTypeComBox(optimal_type);
+		optimal_type->setCurrentText(strListOptimaltype[i]);
+		_axial_table->setCellWidget(i, coptimaltype, optimal_type);
 		//map combobox signal
-		connect(&optimal_type, SIGNAL(currentIndexChanged(int)), &axial_signals_map, SLOT(map()));
-		axial_signals_map.setMapping(&optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
+		connect(optimal_type, SIGNAL(currentIndexChanged(int)), axial_signals_map, SLOT(map()));
+		axial_signals_map->setMapping(optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
 
 		_axial_table->insert2table(i, cdelta, strListDelta[i]);
 		//setting cannot edit when optimize type is delta
-		if (optimal_type.currentIndex() != 2)
+		if (optimal_type->currentIndex() != 2)
 			_axial_table->item(i, cdelta)->setFlags(Qt::NoItemFlags);
 
 		_axial_table->insert2table(i, cobjvalue, strListGainobj[i]);
 		_axial_table->insert2table(i, cweight, strListWeight[i]);
 	}
-	connect(&axial_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_axialChangeOptimaltype(QString)));
+	connect(axial_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_changeOptimaltype(QString)));
 }
 
 void axialTemplate::initLayout() {
-	QHBoxLayout layout;
-	layout.addWidget(_axial_table);
-	_layout = &layout;
+	QHBoxLayout* layout = new QHBoxLayout;
+	layout->addWidget(_axial_table);
+	_layout = layout;
 }
 
 QLayout* axialTemplate::getLayout() {
@@ -91,7 +91,7 @@ void axialTemplate::updateJObj() {
 	maxial_obj.insert("delta_axial", QString("[[%1]]").arg(axialStr[5].join(",")));
 	maxial_obj.insert("axialobj", QString("[[%1]]").arg(axialStr[6].join(",")));
 	maxial_obj.insert("weight_axial", QString("[[%1]]").arg(axialStr[7].join(",")));
-	_obj.insert("AxialratioSetting", maxial_obj);
+	_obj->insert("AxialratioSetting", maxial_obj);
 }
 
 void axialTemplate::slot_changeOptimaltype(QString pos) {
@@ -101,7 +101,6 @@ void axialTemplate::slot_changeOptimaltype(QString pos) {
 	QComboBox *selectCombox = (QComboBox *)_axial_table->cellWidget(row, col);
 	//setting edit when optimize type is delta
 	if (selectCombox->currentIndex() == 2) {
-		qDebug() << selectCombox->currentIndex();
 		_axial_table->item(row, cdelta)->setFlags(Qt::ItemIsEnabled | Qt::ItemIsEditable);
 	}
 	else

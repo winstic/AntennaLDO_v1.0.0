@@ -11,7 +11,7 @@
 class optimizeTab : public QDialog{
     Q_OBJECT
 public:
-    optimizeTab(parsProblem* atn_problem, QJsonObject& problem_obj, parsAlgorithm* palgorithm, QWidget *parent = 0);
+    optimizeTab(parsProblem* atn_problem, QJsonObject* problem_obj, parsAlgorithm* palgorithm, QWidget *parent = 0);
     ~optimizeTab(){}
 
 public slots:
@@ -23,8 +23,8 @@ private:
 private:
 	parsProblem* _atn_problem;
 	parsAlgorithm* _algorithm;
-	QJsonObject _problem_obj;
-	QJsonObject _algorithm_obj;
+	QJsonObject* _problem_obj;
+	QJsonObject* _algorithm_obj;
     QTabWidget* _tab_widget;
     QWidget* _first_tab;
     QWidget* _second_tab;

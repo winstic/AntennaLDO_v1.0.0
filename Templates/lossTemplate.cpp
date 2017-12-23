@@ -2,7 +2,7 @@
 #include "../Utility/parseJson.h"
 #include "lossTemplate.h"
 
-lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject& obj, iTemplate *parent) : iTemplate(parent),
+lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj) {
 	_loss_table = new tableTemplate();
 	_loss_table->setColumnCount(9);
@@ -17,12 +17,12 @@ _atn_problem(atn_problem), _obj(obj) {
 
 
 void lossTemplate::initDefaultData() {
-	QJsonObject loss_obj = parseJson::getSubJsonObj(_obj, "VSWRSetting");
+	QJsonObject loss_obj = parseJson::getSubJsonObj(*_obj, "VSWRSetting");
 	if (loss_obj.isEmpty()) {
 		qCritical("get 'VSWRSetting' json object field.");
 		return;
 	}
-	QSignalMapper loss_signals_map;
+	QSignalMapper* loss_signals_map = new QSignalMapper;
 	QStringList strListR0Real = dataPool::str2list(loss_obj.value("R0_real").toString());
 	QStringList strListR0imag = dataPool::str2list(loss_obj.value("R0_imag").toString());
 	QStringList strListReturnLossType = dataPool::str2list(loss_obj.value("ReturnLossType").toString());
@@ -39,42 +39,42 @@ void lossTemplate::initDefaultData() {
 		_loss_table->insert2table(i, cz0real, strListR0Real[i]);
 		_loss_table->insert2table(i, cz0imag, strListR0imag[i]);
 
-		QComboBox loss_type;;
-		initLossTypeComBox(&loss_type);
-		loss_type.setCurrentIndex(QString(strListReturnLossType[i]).toInt());
-		_loss_table->setCellWidget(i, closstype, &loss_type);
+		QComboBox* loss_type = new QComboBox;
+		initLossTypeComBox(loss_type);
+		loss_type->setCurrentIndex(QString(strListReturnLossType[i]).toInt());
+		_loss_table->setCellWidget(i, closstype, loss_type);
 		//map combobox signal
-		connect(&loss_type, SIGNAL(currentIndexChanged(int)), &loss_signals_map, SLOT(map()));
-		loss_signals_map.setMapping(&loss_type, QString("%1-%2").arg(i).arg(closstype));
+		connect(loss_type, SIGNAL(currentIndexChanged(int)), loss_signals_map, SLOT(map()));
+		loss_signals_map->setMapping(loss_type, QString("%1-%2").arg(i).arg(closstype));
 
-		QComboBox optimal_type;
-		initOptimalTypeComBox(&optimal_type);
-		optimal_type.setCurrentText(strListOptimaltype[i]);
-		_loss_table->setCellWidget(i, clossoptimaltype, &optimal_type);
+		QComboBox* optimal_type = new QComboBox;
+		initOptimalTypeComBox(optimal_type);
+		optimal_type->setCurrentText(strListOptimaltype[i]);
+		_loss_table->setCellWidget(i, clossoptimaltype, optimal_type);
 		//map combobox signal
-		connect(&optimal_type, SIGNAL(currentIndexChanged(int)), &loss_signals_map, SLOT(map()));
-		loss_signals_map.setMapping(&optimal_type, QString("%1-%2").arg(i).arg(clossoptimaltype));
+		connect(optimal_type, SIGNAL(currentIndexChanged(int)), loss_signals_map, SLOT(map()));
+		loss_signals_map->setMapping(optimal_type, QString("%1-%2").arg(i).arg(clossoptimaltype));
 
 		_loss_table->insert2table(i, cdeltareal, strListDeltaReal[i]);
 		_loss_table->insert2table(i, cdeltaimag, strListDeltaImag[i]);
 		//setting cannot edit when optimize type is delta
-		if (2 != optimal_type.currentIndex()) {
+		if (2 != optimal_type->currentIndex()) {
 			_loss_table->item(i, cdeltareal)->setFlags(Qt::NoItemFlags);
 			_loss_table->item(i, cdeltaimag)->setFlags(Qt::NoItemFlags);
 		}
-		if (0 == loss_type.currentIndex()) {
+		if (0 == loss_type->currentIndex()) {
 			//loss type is vswr
 			_loss_table->insert2table(i, cobjreal, strListVswrobj[i]);
 			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
 			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
 		}
-		else if (1 == loss_type.currentIndex()) {
+		else if (1 == loss_type->currentIndex()) {
 			//loss type is S11
 			_loss_table->insert2table(i, cobjreal, strListS11[i]);
 			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
 			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
 		}
-		else if (2 == loss_type.currentIndex()) {
+		else if (2 == loss_type->currentIndex()) {
 			//loss type is R
 			_loss_table->insert2table(i, cobjreal, strListR1Real[i]);
 			_loss_table->insert2table(i, cobjimag, strListR1Imag[i]);
@@ -88,7 +88,7 @@ void lossTemplate::initDefaultData() {
 		}
 		_loss_table->insert2table(i, clossweight, strListWeight[i]);
 	}
-	connect(&loss_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_lossChangeType(QString)));
+	connect(loss_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_ChangeOptimaltype(QString)));
 }
 
 void lossTemplate::initLossTypeComBox(QComboBox *combox) {
@@ -101,9 +101,9 @@ void lossTemplate::initLossTypeComBox(QComboBox *combox) {
 
 
 void lossTemplate::initLayout() {
-	QHBoxLayout layout;
-	layout.addWidget(_loss_table);
-	_layout = &layout;
+	QHBoxLayout* layout = new QHBoxLayout;
+	layout->addWidget(_loss_table);
+	_layout = layout;
 }
 
 QLayout* lossTemplate::getLayout() {
@@ -150,7 +150,6 @@ void lossTemplate::updateJObj() {
 		lossStr[9] << _loss_table->item(i, cobjimag)->text().trimmed();
 		lossStr[10] << _loss_table->item(i, clossweight)->text().trimmed();
 	}
-	qDebug() << lossStr[2];
 	mloss_obj.insert("R0_real", QString("[[%1]]").arg(lossStr[0].join(",")));
 	mloss_obj.insert("R0_imag", QString("[[%1]]").arg(lossStr[1].join(",")));
 	mloss_obj.insert("ReturnLossType", QString("[[%1]]").arg(lossStr[2].join(",")));
@@ -162,7 +161,7 @@ void lossTemplate::updateJObj() {
 	mloss_obj.insert("R1_real", QString("[[%1]]").arg(lossStr[8].join(",")));
 	mloss_obj.insert("R1_imag", QString("[[%1]]").arg(lossStr[9].join(",")));
 	mloss_obj.insert("weight_vswr", QString("[[%1]]").arg(lossStr[10].join(",")));
-	_obj.insert("VSWRSetting", mloss_obj);
+	_obj->insert("VSWRSetting", mloss_obj);
 }
 
 void lossTemplate::slot_ChangeOptimaltype(QString pos) {
