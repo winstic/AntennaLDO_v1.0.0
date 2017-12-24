@@ -2,11 +2,12 @@
 #include "../Utility/parseJson.h"
 #include "algorithmTemplate.h"
 
-algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* algorithm_obj, parsAlgorithm** palgorithm, iTemplate *parent)
+algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject** algorithm_obj, parsAlgorithm** palgorithm, iTemplate *parent)
 	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj){
 	_alg_label = new QLabel("选择算法:", this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
+	_alg_combox->setMinimumSize(200, 25);
 	_alg_vars_table = new tableTemplate();
 	_alg_vars_table->horizontalHeader()->setVisible(false);
 	_alg_vars_table->setColumnCount(2);
@@ -35,15 +36,21 @@ void algorithmTemplate::initLayout() {
 	h_layout->addWidget(_alg_combox);
 	v_layout->addLayout(h_layout);
 	v_layout->addWidget(_alg_vars_table);
+	v_layout->setSpacing(20);
 	_layout = v_layout;
 }
 
 void algorithmTemplate::initDefaultData() {
-	QString alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
+	//当前优化目录下如果没有对应的算法配置文件，就去DEA4AD中找。
+	QString alg_json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentOptimizePath()).arg((*_algorithm)->name);
+	QDir* dir = new QDir;
+	if(!dir->exists(alg_json_path))
+		alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
+
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
 		qCritical("cannot parse algorithm json file: '%s'", qUtf8Printable(alg_json_path));
-		QMessageBox::critical(0, QString("Error"), QString("error: Cannot parse algorithm json file"));
+		QMessageBox::critical(0, QString("错误"), QString("读取算法配置文件失败！"));
 		return;
 	}
 	_alg_vars_table->setRowCount(alg_obj.count());
@@ -84,6 +91,8 @@ QLayout* algorithmTemplate::getLayout() {
 }
 //update _obj
 void algorithmTemplate::updateJObj() {
+	//初始化*_algorithm_obj
+	*_algorithm_obj = new QJsonObject;
 	QString varKey, varValue, varNote;
 	for (int i = 0; i < _alg_vars_table->rowCount(); ++i) {
 		varKey = _alg_vars_table->item(i, keyFlag)->whatsThis().trimmed();
@@ -92,7 +101,7 @@ void algorithmTemplate::updateJObj() {
 		QJsonObject itemobj;
 		itemobj.insert(varKey, varValue);
 		itemobj.insert("note", varNote);
-		_algorithm_obj->insert(varKey, itemobj);
+		(*_algorithm_obj)->insert(varKey, itemobj);
 	}
 }
 

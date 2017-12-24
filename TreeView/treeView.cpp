@@ -492,14 +492,16 @@ void treeModel::slot_addOptimize() {
 		if (MARK_NODE_OPTIMIZE == var_node.toInt()) {
 			QString working_path = dataPool::global::getGWorkingProjectPath();
 			QString problem_json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);			
-			QJsonObject problem_obj, algorithm_obj;	//do not know which algorithm right now.
+			QJsonObject problem_obj;
 			problem_obj = parseJson::getJsonObj(problem_json_path);
 			if (problem_obj.isEmpty()) {
 				qCritical("get json object field.");
 				return;
 			}
-			//pass by reference or point
+			//pass by pointer
+			QJsonObject* algorithm_obj = nullptr;	//do not know which algorithm right now.
 			parsAlgorithm* pars_algorithm = nullptr;
+			//在引导页面根据选择的算法为pars_algorithm实例化，所以传递指针的地址；
 			optimizeWizard wizard(_atn_problem, &problem_obj, &algorithm_obj, &pars_algorithm, this);
 			if (wizard.exec() == 1) {
 				//json obj already updated.
@@ -545,7 +547,7 @@ void treeModel::slot_addOptimize() {
 				//update json file
 				parseJson::write(QString("%1/global_conf.json").arg(optimize_path), &global_obj);
 				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name), &problem_obj);
-				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name), &algorithm_obj);
+				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name), algorithm_obj);
 				//update xml file
 				updateXMLFile(QString("%1/%2.xml").arg(working_path).arg(dataPool::global::getGProjectName()), item, child);					
 				delete dir;
@@ -583,7 +585,7 @@ void treeModel::slot_modifyOptimizeVar() {
 	problem_obj  = parseJson::getJsonObj(problem_json_path);
 	if (global_obj.isEmpty() || problem_obj.isEmpty()) {
 		qCritical("something wrong in file: '%s' or '%s'", qUtf8Printable(global_json_path), qUtf8Printable(problem_json_path));
-		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1] or [%2]").arg(global_json_path).arg(problem_json_path));
+		QMessageBox::critical(0, QString("错误"), QString("读取数据失败！"));
 		return;
 	}
 	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());

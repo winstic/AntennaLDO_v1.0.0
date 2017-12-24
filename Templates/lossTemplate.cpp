@@ -9,6 +9,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	QStringList header;
 	header << "Z0实部" << "Z0虚部" << "损失方式" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";
 	_loss_table->setHorizontalHeaderLabels(header);
+	_loss_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	_loss_table->resizeColumnToContents(6);
 	_loss_table->resizeColumnToContents(7);
 	initDefaultData();

@@ -22,13 +22,14 @@ wizardAddSetting::wizardAddSetting(QWidget *parent) : QWizardPage(parent){
 	registerField("is_default_path", _always_path);
 
 	//读取默认路径
-	QDir dir;
+	QDir* dir = new QDir;
 	QString default_path = dataPool::global::getGDefaultProjectPath();
-    if(default_path.isNull() || default_path.isEmpty() || !dir.exists(default_path))
+    if(default_path.isNull() || default_path.isEmpty() || !dir->exists(default_path))
 		default_path = QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation);
     _project_path_edit->setText(default_path);
     _project_path_edit->setReadOnly(true);
-
+	delete dir;
+	dir = nullptr;
 	initSettingLayout();
     connect(_select_path_btn, SIGNAL(clicked()), this, SLOT(slot_selectPath()));
 }
@@ -53,6 +54,8 @@ void wizardAddSetting::initSettingLayout() {
 	hlayout3->addWidget(_hint);
 	hlayout3->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 	vlayout->addLayout(hlayout3);
+	vlayout->setSpacing(20);
+	vlayout->setContentsMargins(2, 20, 10, 2);
 
 	setLayout(vlayout);
 }

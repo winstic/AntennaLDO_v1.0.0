@@ -9,6 +9,8 @@ _antenna_problem(antenna_problem){
     //remove help menu
     this->setWindowFlags(windowFlags() &~ Qt::WindowContextHelpButtonHint);
     setButtonText(QWizard::NextButton, "下一步>");
+	setButtonText(QWizard::CancelButton, "取消");
+	setButtonText(QWizard::FinishButton, "完成");
     _introduce = new wizardIntroduce(_antenna_problem, this);
     _add_setting = new wizardAddSetting(this);
     // need improve

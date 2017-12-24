@@ -9,6 +9,7 @@ _atn_problem(atn_problem), _obj(obj) {
 	QStringList header;
 	header << "起始θ" << "终止θ" << "起始φ" << "终止φ" << "优化方式" << "误差值" << "增益(dB)" << "权值";
 	_gain_table->setHorizontalHeaderLabels(header);
+	_gain_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	initDefaultData();
 	initLayout();
 }

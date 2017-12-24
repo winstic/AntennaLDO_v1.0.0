@@ -4,7 +4,7 @@
 #include "../Utility/parseJson.h"
 #include "../Templates/iTemplate.h"
 
-optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject* problem_obj, QJsonObject* algorithm_obj, parsAlgorithm** palgorithm, QWidget *parent)
+optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject* problem_obj, QJsonObject** algorithm_obj, parsAlgorithm** palgorithm, QWidget *parent)
 	: QWizard(parent),_atn_problem(atn_problem), _problem_obj(problem_obj), _algorithm_obj(algorithm_obj), _algorithm(palgorithm) {
 	_optimize_pre_far = new wizardFreFarField(_atn_problem, _problem_obj);
 	_optimize_axl = new wizardOptimizeAXL(_atn_problem, _problem_obj);

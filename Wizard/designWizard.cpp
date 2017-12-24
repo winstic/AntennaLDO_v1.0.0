@@ -14,7 +14,6 @@ _atn_problem(atn_problem), _obj(obj){
 	setWindowTitle("设计向导");
 	setOption(QWizard::NoBackButtonOnStartPage);
 	//this->setOption(QWizard::NoCancelButton);
-	setButtonText(QWizard::BackButton, "<上一步");
 	setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");
 	setButtonText(QWizard::FinishButton, "完成");

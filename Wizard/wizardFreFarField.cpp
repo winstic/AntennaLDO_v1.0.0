@@ -4,8 +4,7 @@
 
 wizardFreFarField::wizardFreFarField(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent) : QWizardPage(parent),
  _atn_problem(atn_problem), _obj(obj){    
-	setTitle("性能参数设置");
-    setSubTitle("设置频率信息并指定远场范围");
+	setTitle("辐射频率及远场范围参数设置");
 	_frequency_widget = new frequencyTemplate(atn_problem, _obj);
 	_theta_phi_widget = new thetaPhiTemplate(atn_problem, _obj);
 	//layout
@@ -19,7 +18,7 @@ wizardFreFarField::wizardFreFarField(parsProblem* atn_problem, QJsonObject* obj,
 	v_layout->addWidget(frequency_group_box);
 	v_layout->addWidget(far_field_group_box);
 	v_layout->setSpacing(50);
-	v_layout->setContentsMargins(2, 20, 2, 2);
+	v_layout->setContentsMargins(2, 20, 10, 2);
 	setLayout(v_layout);
 	//QHBoxLayout l_ayout;
 	//l_ayout.addLayout(&v_layout);

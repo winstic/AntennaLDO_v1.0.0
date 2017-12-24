@@ -17,7 +17,6 @@ _atn_problem(atn_problem), _obj(obj){
 	_theta_phi_widget = new thetaPhiTemplate(_atn_problem, _obj);
 	_vars_value_widget = new varsDefaultValueTemplate(_atn_problem, _obj);
 	_save_all_button = new QPushButton(QString("保存所有"), this);
-
 	_tab_widget->addTab(_first_tab, QIcon(""), "性能参数设置");
 	//firstTab->setWindowTitle(tr("设置频率信息并指定远场范围"));
 	_tab_widget->addTab(_second_tab, QIcon(""), "模型设置");
@@ -42,14 +41,16 @@ void designTab::initLayout() {
 	v_layout->addWidget(far_field_group_box);
 	v_layout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
 	v_layout->setSpacing(100);
-	v_layout->setContentsMargins(2, 50, 2, 50);
+	v_layout->setContentsMargins(10, 20, 10, 2);
 	_first_tab->setLayout(v_layout);
 	//second tab
 	QLayout* layout = _vars_value_widget->getLayout();
+	layout->setContentsMargins(10, 20, 10, 2);
 	_second_tab->setLayout(layout);
 
 	QHBoxLayout* button_layout = new QHBoxLayout;
-	button_layout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	//在按钮左侧添加伸缩，让按钮居右
+	button_layout->addStretch();
 	button_layout->addWidget(_save_all_button);
 	QVBoxLayout* vlayout = new QVBoxLayout;
 	vlayout->addWidget(_tab_widget);

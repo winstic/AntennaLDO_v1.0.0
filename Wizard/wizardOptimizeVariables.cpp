@@ -4,11 +4,11 @@
 
 wizardOptimizeVariables::wizardOptimizeVariables(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent)
 	: QWizardPage(parent), _atn_problem(atn_problem), _obj(obj){
-	setTitle("优化变量设置");
-	setSubTitle("设置需要优化的变量参数");
+	setTitle("几何结构变量范围设置");
 	_variables_widget = new variablesTemplate(_atn_problem, _obj);
 	//layout
 	QLayout* layout = _variables_widget->getLayout();
+	layout->setContentsMargins(2, 20, 10, 2);
 	setLayout(layout);
 }
 

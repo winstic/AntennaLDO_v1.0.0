@@ -21,6 +21,7 @@ void wizardIntroduce::initIntroduceLayout() {
 	QHBoxLayout *layout = new QHBoxLayout;
 	layout->addWidget(_atn_info_text);
 	layout->addWidget(_atn_image_label);
+	layout->setContentsMargins(2, 20, 10, 2);
 	setLayout(layout);
 }
 

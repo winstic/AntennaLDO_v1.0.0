@@ -4,7 +4,7 @@
 #include "../Utility/parseJson.h"
 
 optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject* problem_obj, parsAlgorithm* palgorithm, QWidget *parent)
-	: QDialog(parent), _atn_problem(atn_problem), _problem_obj(problem_obj), _algorithm(palgorithm){
+	: QDialog(parent), _atn_problem(atn_problem), _problem_obj(problem_obj), _algorithm(palgorithm), _algorithm_obj(nullptr){
     setWindowTitle("天线优化");
 	setMinimumSize(880, 580);
 	//remove help menu
@@ -15,7 +15,7 @@ optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject* problem_obj, par
 	_second_tab = new QWidget(this);
 	_third_tab = new QWidget(this);
 	_fourth_tab = new QWidget(this);
-	_save_all_button = new QPushButton(QString("保存所有."), this);
+	_save_all_button = new QPushButton(QString("保存所有"), this);
 
 	_frequency_widgete = new frequencyTemplate(_atn_problem, _problem_obj);
 	_theta_phi_widget = new thetaPhiTemplate(_atn_problem, _problem_obj);
@@ -24,7 +24,7 @@ optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject* problem_obj, par
 	_loss_widget = new lossTemplate(_atn_problem, _problem_obj);
 	_variables_widget = new variablesTemplate(_atn_problem, _problem_obj);
 	//if _algorithm not nullptr, get _algorithm infomation
-	_algorithm_widget = new algorithmTemplate(_atn_problem, _algorithm_obj, &_algorithm);
+	_algorithm_widget = new algorithmTemplate(_atn_problem, &_algorithm_obj, &_algorithm);
 
 	_tab_widget->addTab(_first_tab, QIcon(""), "性能参数设置");
 	_tab_widget->addTab(_second_tab, QIcon(""), "增益轴比设置");
@@ -45,8 +45,10 @@ void optimizeTab::initLayout() {
 	QVBoxLayout* v_layout1 = new QVBoxLayout;
 	v_layout1->addWidget(frequency_group_box);
 	v_layout1->addWidget(far_field_group_box);
-	v_layout1->setSpacing(50);
-	v_layout1->setContentsMargins(2, 20, 2, 2);
+	v_layout1->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	v_layout1->setSpacing(100);
+	//设置tab页面内容与边界的距离
+	v_layout1->setContentsMargins(10, 20, 10, 2);
 	_first_tab->setLayout(v_layout1);
 	//second tab
 	QGroupBox* group_box_gain = new QGroupBox("增益设置");
@@ -65,22 +67,26 @@ void optimizeTab::initLayout() {
 	v_layout2->addWidget(group_box_gain);
 	v_layout2->addWidget(group_box_axial);
 	v_layout2->addWidget(group_box_loss);
+	v_layout2->setContentsMargins(10, 20, 10, 2);
 	_second_tab->setLayout(v_layout2);
 	//third tab
 	QLayout* h_layout3 = _variables_widget->getLayout();
+	h_layout3->setContentsMargins(10, 20, 10, 2);
 	_third_tab->setLayout(h_layout3);
 	//fourth tab
 	QLayout* h_layout4 = _algorithm_widget->getLayout();
+	h_layout4->setContentsMargins(10, 20, 10, 2);
 	_fourth_tab->setLayout(h_layout4);
 	//layout
 	QHBoxLayout* button_layout = new QHBoxLayout;
-	button_layout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	//在按钮左侧添加伸缩，让按钮居右
+	button_layout->addStretch();
 	button_layout->addWidget(_save_all_button);
 
 	QVBoxLayout* layout = new QVBoxLayout;
 	layout->addWidget(_tab_widget);
 	layout->addLayout(button_layout);
-	this->setLayout(layout);
+	setLayout(layout);
 }
 
 void optimizeTab::slot_saveAllButton(bool){

@@ -6,11 +6,11 @@
 wizardDesignVariables::wizardDesignVariables(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent): QWizardPage(parent), 
 _atn_problem(atn_problem), _obj(obj){
 
-	setTitle("模型设置");
-	setSubTitle("模型设置");
+	setTitle("几何结构模型设置");
 	_vars_value_widget = new varsDefaultValueTemplate(atn_problem, _obj);
     //layout
 	QLayout* layout = _vars_value_widget->getLayout();
+	layout->setContentsMargins(2, 20, 10, 2);
 	setLayout(layout);
 }
 
