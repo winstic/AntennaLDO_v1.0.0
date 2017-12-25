@@ -50,6 +50,8 @@ namespace dataPool{
 		static void setGWindowHeight(int value);
 		static QString getGDEA4ADPath();
 		static void setGDEA4ADPath(QString value);
+		static QString getGConfigFile();
+		static void setGConfigFile(QString value);
 		static QString getGProjectName();
 		static void setGProjectName(QString value);
 		static QString getGDefaultProjectPath();
@@ -68,6 +70,7 @@ namespace dataPool{
 		static int g_window_width;
 		static int g_window_height;
 		static QString g_DEA4AD_path;
+		static QString g_CONFIG_FILE;
 		static QString g_project_name;
 		static QString g_default_project_path;
 		static QString g_working_project_path;
@@ -76,5 +79,5 @@ namespace dataPool{
 	};
 	bool copyFile(QString source_file, QString target_file, bool cover_file_if_exist = true);
 	QStringList str2list(QString str);
-	QString getInfoFromRelFile(const QString &key);
+	QString getInfoFromRelFile(const QString &path, const QString &key);
 }

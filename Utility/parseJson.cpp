@@ -59,7 +59,7 @@ bool parseJson::write(const QString &path, QJsonObject* obj) {
 }
 
 void parseJson::updateConfigFile(const QString& key, const QString& value) {
-	const QString config_json_file = "config.json";
+	const QString config_json_file = dataPool::global::getGConfigFile();
 	QJsonObject conf_obj = getJsonObj(config_json_file);
 	if (conf_obj.isEmpty()) {
 		qCritical("something wrong about config.json.");

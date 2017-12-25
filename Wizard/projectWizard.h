@@ -15,8 +15,6 @@ class projectWizard :public QWizard{
 public:
     projectWizard(parsProblem* antenna_problem, QWidget *parent = 0);
 	~projectWizard();
-
-protected:
 	//after click finish trigger accept() slot function
     void accept() override;
 

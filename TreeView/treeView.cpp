@@ -413,7 +413,7 @@ void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
 			QString current_optimize_path = QString("%1/optimize%2").arg(dataPool::global::getGWorkingProjectPath()).arg(d_o_index);
 			dataPool::global::setGCurrentOptimizePath(current_optimize_path);
 			slot_modifyOptimizeVar();
-			qInfo("current optimize path change to '%1'", qUtf8Printable(current_optimize_path));
+			qInfo("current optimize path change to '%s'", qUtf8Printable(current_optimize_path));
 		}
 		else if (item_int == MARK_ITEM_OPENFILE)
 			slot_openFile();

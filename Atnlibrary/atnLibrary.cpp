@@ -119,8 +119,8 @@ void atnLibrary::newProject() {
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);
 			QTextStream out(&inFile);
-			out << "PID:" << _atn_problem->id << endl;
-			out << "PROBLEM:" << _atn_problem->name << endl;			
+			out << PROBLEM_ID << ":" << _atn_problem->id << endl;
+			out << PROBLEM_NAME << ":" << _atn_problem->name << endl;			
 			inFile.close();
 			qInfo("successfully create project.");
 			//memory leak

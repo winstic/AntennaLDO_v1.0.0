@@ -1,4 +1,5 @@
 ﻿#pragma once
+#include "../Utility/macrodefined.h"
 #include "../Utility/global.h"
 #include "../Utility/parseJson.h"
 
@@ -45,19 +46,21 @@ void setProNdAlgAssociateParameters(QJsonObject& obj) {
 }
 
 void setConfigParameters(QJsonObject& obj) {
-	dataPool::global::setGDefaultProjectPath(obj.value("DEFAULT_PATH").toString().trimmed());
-	dataPool::global::setGWindowWidth(obj.value("WINDOW_WIDTH").toString().trimmed().toInt());
-	dataPool::global::setGWindowHeight(obj.value("WINDOW_HEIGHT").toString().trimmed().toInt());
+	dataPool::global::setGDefaultProjectPath(obj.value(DEFAULT_PROJECT_PATH).toString().trimmed());
+	dataPool::global::setGWindowWidth(obj.value(MAIN_WINDOW_WIDTH).toString().trimmed().toInt());
+	dataPool::global::setGWindowHeight(obj.value(MAIN_WINDOW_HEIGHT).toString().trimmed().toInt());
 }
 
 void loadData() {
-	const QString DEA4AD_path = "./DEA4AD/trunk";
+	//使用相对路径
+	const QString DEA4AD_path = "DEA4AD/trunk";
 	const QString config_json_file = "config.json";
 	const QString problem_json_file = "Utility/problems.json";
 	const QString algorithm_json_file = "Utility/algorithms.json";
 	const QString associate_json_file = "Utility/associates.json";
 
 	dataPool::global::setGDEA4ADPath(DEA4AD_path);
+	dataPool::global::setGConfigFile(config_json_file);
 	
 	QJsonObject conf_obj, pro_obj, alg_obj, associate_obj;
 	conf_obj = parseJson::getJsonObj(config_json_file);
