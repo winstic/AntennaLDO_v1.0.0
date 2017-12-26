@@ -8,6 +8,9 @@ _antenna_problem(antenna_problem){
     setWindowTitle(_antenna_problem->name + " 工程向导");
     //remove help menu
     this->setWindowFlags(windowFlags() &~ Qt::WindowContextHelpButtonHint);
+	
+	setWizardStyle(QWizard::ClassicStyle);
+	setButtonText(QWizard::BackButton, "<上一步");
     setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");
 	setButtonText(QWizard::FinishButton, "完成");
