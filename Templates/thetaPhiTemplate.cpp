@@ -77,12 +77,12 @@ QLayout* thetaPhiTemplate::getLayout() {
 //update json obj
 void thetaPhiTemplate::updateJObj() {
 	QJsonObject mfar_fiel_obj;
-	mfar_fiel_obj.insert("ThetaLower", _theta_low_edit->text().trimmed());
-	mfar_fiel_obj.insert("ThetaUpper", _theta_up_edit->text().trimmed());
-	mfar_fiel_obj.insert("ThetaStep", _theta_step_edit->text().trimmed());
-	mfar_fiel_obj.insert("PhiLower", _phi_low_edit->text().trimmed());
-	mfar_fiel_obj.insert("PhiUpper", _phi_up_edit->text().trimmed());
-	mfar_fiel_obj.insert("PhiStep", _phi_step_edit->text().trimmed());
+	mfar_fiel_obj.insert("ThetaLower", QString("[%1]").arg(_theta_low_edit->text().trimmed()));
+	mfar_fiel_obj.insert("ThetaUpper", QString("[%1]").arg(_theta_up_edit->text().trimmed()));
+	mfar_fiel_obj.insert("ThetaStep", QString("[%1]").arg(_theta_step_edit->text().trimmed()));
+	mfar_fiel_obj.insert("PhiLower", QString("[%1]").arg(_phi_low_edit->text().trimmed()));
+	mfar_fiel_obj.insert("PhiUpper", QString("[%1]").arg(_phi_up_edit->text().trimmed()));
+	mfar_fiel_obj.insert("PhiStep", QString("[%1]").arg(_phi_step_edit->text().trimmed()));
 	_obj->insert("ThetaPhiStep", mfar_fiel_obj);
 }
 

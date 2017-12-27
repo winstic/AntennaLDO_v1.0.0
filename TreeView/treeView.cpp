@@ -9,7 +9,7 @@
 #include "designRun.h"
 #include "optimizeRun.h"
 
-treeModel::treeModel(QWidget* parent) : QTreeView(parent), _atn_problem(nullptr), _model_info(nullptr){
+treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
 	_pro_tree = new QTreeView(this);
 	_project_menu = new QMenu(this);
 	_atn_design_menu = new QMenu(this);
@@ -19,6 +19,7 @@ treeModel::treeModel(QWidget* parent) : QTreeView(parent), _atn_problem(nullptr)
 	_item_view_menu = new QMenu(this);
 	_result_menu = new QMenu(this);
 	_curr_item_index = new QModelIndex();
+	_atn_problem = new parsProblem;
 	
 	initMenu();
 	initIcon();
@@ -37,6 +38,7 @@ QTreeView* treeModel::getTreeWidget() {
 	return _pro_tree;
 }
 
+//外部接口
 bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
 	QFile file(file_name);
@@ -132,6 +134,7 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 	return true;
 }
 
+//外部接口
 bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
 	QFile file(file_name);
@@ -340,6 +343,7 @@ QList<QStandardItem*> treeModel::getFolderNode() {
 // slot function
 //create project tree by xml file
 void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem) {
+	//该槽函数是treeView与AntennaLibrary的唯一接口
 	writeXMLFile(path, atn_problem);
 	parseXML(path, atn_problem);
 	qInfo("create project tree.");

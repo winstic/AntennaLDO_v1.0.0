@@ -2,7 +2,7 @@
 #include <QTextStream>
 #include "designRun.h"
 
-designRun::designRun(parsProblem* atn_problem, QJsonObject& obj) : _atn_problem(_atn_problem), _obj(obj){
+designRun::designRun(parsProblem* atn_problem, QJsonObject& obj) : _atn_problem(atn_problem), _obj(obj){
 	_design_path = dataPool::global::getGCurrentDesignPath();
 }
 

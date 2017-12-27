@@ -92,11 +92,11 @@ QLayout* frequencyTemplate::getLayout() {
 //update json obj
 void frequencyTemplate::updateJObj() {
 	QJsonObject mfrequency_obj;
-	mfrequency_obj.insert("FreStart", _frequency_low_edit->text().trimmed());
-	mfrequency_obj.insert("FreEnd", _frequency_up_edit->text().trimmed());
-	mfrequency_obj.insert("FreNumber", _frequency_num_edit->text().trimmed());
-	mfrequency_obj.insert("SweepType", _sweep_type_combox->currentIndex());
-	mfrequency_obj.insert("PM", _polarization_combox->currentIndex());
+	mfrequency_obj.insert("FreStart", QString("[%1]").arg(_frequency_low_edit->text().trimmed()));
+	mfrequency_obj.insert("FreEnd", QString("[%1]").arg(_frequency_up_edit->text().trimmed()));
+	mfrequency_obj.insert("FreNumber", QString("[%1]").arg(_frequency_num_edit->text().trimmed()));
+	mfrequency_obj.insert("SweepType", QString("[%1]").arg(_sweep_type_combox->currentIndex()));
+	mfrequency_obj.insert("PM", QString("[%1]").arg(_polarization_combox->currentIndex()));
 	_obj->insert("FreSetting", mfrequency_obj);
 }
 

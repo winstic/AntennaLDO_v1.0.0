@@ -6,14 +6,16 @@
 
 optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject* problem_obj, QJsonObject** algorithm_obj, parsAlgorithm** palgorithm, QWidget *parent)
 	: QWizard(parent),_atn_problem(atn_problem), _problem_obj(problem_obj), _algorithm_obj(algorithm_obj), _algorithm(palgorithm) {
+	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
+	setWindowTitle("优化向导");
+
 	_optimize_pre_far = new wizardFreFarField(_atn_problem, _problem_obj);
 	_optimize_axl = new wizardOptimizeAXL(_atn_problem, _problem_obj);
 	_optimize_vars = new wizardOptimizeVariables(_atn_problem, _problem_obj);
-	_optimize_alg = new wizardOptimizeAlg(_atn_problem, _algorithm_obj, _algorithm);
-	//remove help menu
-	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
-	setWindowTitle("优化向导");
-	setOption(QWizard::NoBackButtonOnStartPage);
+	_optimize_alg = new wizardOptimizeAlg(_atn_problem, _algorithm_obj, _algorithm);	
+	
+	setWizardStyle(QWizard::ClassicStyle);
+	setButtonText(QWizard::BackButton, "<上一步");
 	setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");
 	setButtonText(QWizard::FinishButton, "完成");
