@@ -26,7 +26,7 @@ void variablesTemplate::initDefaultData() {
 	QString var_key;
 	QStringList var_value;
 	int row_number = 0, value_list_length;
-	QSignalMapper signals_map_unit;	//use signalmaper manage signals in table
+	QSignalMapper* signals_map_unit = new QSignalMapper;	//use signalmaper manage signals in table
 
 	_vars_table->setRowCount(variables_obj.count());
 
@@ -51,13 +51,13 @@ void variablesTemplate::initDefaultData() {
 		initUnitComBo(unit_combox);
 		_vars_table->setCellWidget(row_number, varunit, unit_combox);
 		//map combobox signal
-		connect(unit_combox, SIGNAL(currentIndexChanged(int)), &signals_map_unit, SLOT(map()));
-		signals_map_unit.setMapping(unit_combox, QString("%1-%2").arg(row_number).arg(varunit));
+		connect(unit_combox, SIGNAL(currentIndexChanged(int)), signals_map_unit, SLOT(map()));
+		signals_map_unit->setMapping(unit_combox, QString("%1-%2").arg(row_number).arg(varunit));
 		//in 'rownumber'th row of table, save default unitComBo current data
 		_vars_unit.insert(row_number, unit_combox->currentData(ROLE_MARK_UNIT).toInt());
 		row_number++;
 	}
-	connect(&signals_map_unit, SIGNAL(mapped(QString)), this, SLOT(slot_unitChange(QString)));
+	connect(signals_map_unit, SIGNAL(mapped(QString)), this, SLOT(slot_unitChange(QString)));
 
 	//!add picture
 	QPixmap pm = QPixmap(_atn_problem->pImage);
@@ -103,19 +103,28 @@ void variablesTemplate::slot_unitChange(QString pos) {
 	int col = coordinates.at(1).toInt();
 	int currentUnitData = _vars_unit[row];
 	QComboBox *selectCombox = (QComboBox *)_vars_table->cellWidget(row, col);
-	qDebug() << selectCombox->currentText();
 	int newUnitData = selectCombox->currentData(ROLE_MARK_UNIT).toInt();
-	//qDebug() << varTable->item(row, varnote)->whatsThis();
-	if (currentUnitData != MARK_UNIT_LAMBDA && newUnitData != MARK_UNIT_LAMBDA &&
-		newUnitData != currentUnitData) {
-		double preValueMin = _vars_table->item(row, varmin)->text().trimmed().toDouble();
-		double preValueMax = _vars_table->item(row, varmax)->text().trimmed().toDouble();
-		double currentValueMin = unitConversion(preValueMin, currentUnitData, newUnitData);
-		double currentValueMax = unitConversion(preValueMax, currentUnitData, newUnitData);
-		qDebug() << currentValueMin << currentValueMax;
-		_vars_table->insert2table(row, varmin, QString::number(currentValueMin));
-		_vars_table->insert2table(row, varmax, QString::number(currentValueMax));
+	//when "newUnitData == currentUnitData", do nothing
+	if (newUnitData == currentUnitData)
+		return;
+
+	double pre_min_value, pre_max_value, curr_min_value, curr_max_value;
+	pre_min_value = _vars_table->item(row, varmin)->text().trimmed().toDouble();
+	pre_max_value = _vars_table->item(row, varmax)->text().trimmed().toDouble();
+
+	if (currentUnitData != MARK_UNIT_LAMBDA && newUnitData != MARK_UNIT_LAMBDA ){	
+		//unit conversion without lambda
+		curr_min_value = unitConversion(pre_min_value, currentUnitData, newUnitData);
+		curr_max_value = unitConversion(pre_max_value, currentUnitData, newUnitData);
 	}
+	else {
+		//unit conversion with lambda
+		curr_min_value = unitConversion(pre_min_value, currentUnitData, newUnitData, _atn_problem->max_frequency);
+		curr_max_value = unitConversion(pre_max_value, currentUnitData, newUnitData, _atn_problem->max_frequency);
+	}
+	_vars_table->insert2table(row, varmin, QString::number(curr_min_value));
+	_vars_table->insert2table(row, varmax, QString::number(curr_max_value));
+	//update current unit
 	_vars_unit[row] = newUnitData;
 }
 

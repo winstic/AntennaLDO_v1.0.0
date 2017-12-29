@@ -22,14 +22,14 @@ _atn_problem(atn_problem), _obj(obj) {
 }
 
 void thetaPhiTemplate::initRegex() {
-	QRegExpValidator nonNegFloatValid(QRegExp("^(\\d+)(\\.\\d+)?$"));    //non negative float
-	QRegExpValidator floatValid(QRegExp("^-?(180|1?[0-7]?\\d(\\.\\d+)?)$"));      //float [-180. 180]
-	_theta_low_edit->setValidator(&floatValid);
-	_theta_up_edit->setValidator(&floatValid);
-	_theta_step_edit->setValidator(&nonNegFloatValid);
-	_phi_low_edit->setValidator(&floatValid);
-	_phi_up_edit->setValidator(&floatValid);
-	_phi_step_edit->setValidator(&nonNegFloatValid);
+	QRegExpValidator* nonNegFloatValid = getNonNegativeFloatReg();    //non negative float
+	QRegExpValidator* rangeFloatValid = getAngleReg();     //float [-180, 180]
+	_theta_low_edit->setValidator(rangeFloatValid);
+	_theta_up_edit->setValidator(rangeFloatValid);
+	_phi_low_edit->setValidator(rangeFloatValid);
+	_phi_up_edit->setValidator(rangeFloatValid);
+	_theta_step_edit->setValidator(nonNegFloatValid);	
+	_phi_step_edit->setValidator(nonNegFloatValid);
 }
 
 void thetaPhiTemplate::initDefaultData() {

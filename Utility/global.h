@@ -16,6 +16,8 @@ struct parsProblem {
 	QString info;
 	unsigned int type;
 	QString oper;
+	unsigned int max_frequency;
+	parsProblem() : id(0), name(""), path(""), pImage("./images/antenna.png"), info(""), type(0), oper("i"){}
 };
 
 struct parsAlgorithm {

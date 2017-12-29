@@ -33,11 +33,11 @@ void frequencyTemplate::initSweepNDPMComBox() {
 
 void frequencyTemplate::initRegex() {
 	//setting some input rules
-	QRegExpValidator nonNegFloatValid(QRegExp("^(\\d+)(\\.\\d+)?$"));    //non negative float
-	QRegExpValidator posIntValid(QRegExp("^[0-9]*[1-9][0-9]*$"));		//positive int
-	_frequency_low_edit->setValidator(&nonNegFloatValid);
-	_frequency_up_edit->setValidator(&nonNegFloatValid);
-	_frequency_num_edit->setValidator(&posIntValid);
+	QRegExpValidator *nonNegFloatValid = getNonNegativeFloatReg();    //non negative float
+	QRegExpValidator *posIntValid = getPositiveIntReg();		//positive int
+	_frequency_low_edit->setValidator(nonNegFloatValid);
+	_frequency_up_edit->setValidator(nonNegFloatValid);
+	_frequency_num_edit->setValidator(posIntValid);
 }
 
 void frequencyTemplate::initDefaultData() {

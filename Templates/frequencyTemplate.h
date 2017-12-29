@@ -9,9 +9,13 @@ public:
 	frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~frequencyTemplate();
 	
+public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();
+	inline QLineEdit* getFrequencyLowEdit() const { return _frequency_low_edit; }
+	inline QLineEdit* getFrequencyUpEdit() const { return _frequency_up_edit; }
+	inline QLineEdit* getFrequencyNumEdit() const { return _frequency_num_edit; }
 
 private:
 	void initSweepNDPMComBox();

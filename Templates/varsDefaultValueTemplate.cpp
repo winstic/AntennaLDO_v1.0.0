@@ -224,14 +224,21 @@ void varsDefaultValueTemplate::slot_unitChange(QString pos) {
 	QComboBox* select_combox = _vars_table->cellWidget(row, 2)->findChild<QComboBox *>();
 	int new_unit_data = select_combox->currentData(ROLE_MARK_UNIT).toInt();
 	//unit conversion
-	if (current_unit_data != MARK_UNIT_LAMBDA && new_unit_data != MARK_UNIT_LAMBDA &&
-		new_unit_data != current_unit_data) {
-		//get QLineEdit widget
-		QLineEdit* curr_line_edit = _vars_table->cellWidget(row, varvalue)->findChild<QLineEdit *>();
-		double pre_value = curr_line_edit->text().trimmed().toDouble();
-		double curr_value = unitConversion(pre_value, current_unit_data, new_unit_data);
-		curr_line_edit->setText(QString::number(curr_value));
+	//when "newUnitData == currentUnitData", do nothing
+	if (new_unit_data == current_unit_data)
+		return;
+	//get QLineEdit widget
+	QLineEdit* curr_line_edit = _vars_table->cellWidget(row, varvalue)->findChild<QLineEdit *>();
+	double pre_value, curr_value;
+	pre_value = curr_line_edit->text().trimmed().toDouble();
+	if (current_unit_data != MARK_UNIT_LAMBDA && new_unit_data != MARK_UNIT_LAMBDA ) {		
+		curr_value = unitConversion(pre_value, current_unit_data, new_unit_data);
 	}
+	else {
+		//unit conversion with lambda
+		curr_value = unitConversion(pre_value, current_unit_data, new_unit_data, _atn_problem->max_frequency);
+	}
+	curr_line_edit->setText(QString::number(curr_value));
 	//update unit item user data
 	_vars_unit[row] = new_unit_data;
 }
