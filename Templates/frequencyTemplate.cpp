@@ -14,10 +14,15 @@ _atn_problem(atn_problem), _obj(obj) {
 	_frequency_num_edit = new QLineEdit(this);
 	_sweep_type_combox = new QComboBox(this);
 	_polarization_combox = new QComboBox(this);
+
 	initSweepNDPMComBox();
 	initRegex();
 	initDefaultData(); 
 	initLayout();
+
+	connect(_frequency_low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_frequency_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_frequency_num_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 }
 
 void frequencyTemplate::initSweepNDPMComBox() {
@@ -87,6 +92,29 @@ void frequencyTemplate::initLayout() {
 
 QLayout* frequencyTemplate::getLayout() {
 	return _layout;
+}
+
+//check input
+checkInfo* frequencyTemplate::checkInputValid() {
+	checkInfo* cio = new checkInfo;
+	QString frequency_low = _frequency_low_edit->text().trimmed();
+	QString frequency_up = _frequency_up_edit->text().trimmed();
+	QString frequency_num = _frequency_num_edit->text().trimmed();
+
+	if (frequency_low.isEmpty() || frequency_low.isNull() || frequency_up.isEmpty() || frequency_up.isNull() ||
+		frequency_num.isEmpty() || frequency_num.isNull()) {
+		cio->code = 1;
+		cio->message = "设置参数不能为空。";
+	}
+	unsigned int frequency_low_int = frequency_low.toInt();
+	unsigned int frequency_up_int = frequency_up.toInt();
+	if (frequency_low_int > frequency_up_int) {
+		cio->code = 1;
+		cio->message = "频率范围设置有误。";
+	}
+	//实时保存设置的最大频率
+	_atn_problem->max_frequency = frequency_up_int;
+	return cio;
 }
 
 //update json obj

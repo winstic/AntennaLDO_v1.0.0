@@ -16,8 +16,12 @@ optimizeTab::optimizeTab(parsProblem* atn_problem, QJsonObject* problem_obj, par
 	_third_tab = new QWidget(this);
 	_fourth_tab = new QWidget(this);
 	_save_all_button = new QPushButton(QString("保存所有"), this);
+	_hint = new QLabel(this);
+	QFont font;
+	font.setPixelSize(20);
+	_hint->setFont(font);
 
-	_frequency_widgete = new frequencyTemplate(_atn_problem, _problem_obj);
+	_frequency_widget = new frequencyTemplate(_atn_problem, _problem_obj);
 	_theta_phi_widget = new thetaPhiTemplate(_atn_problem, _problem_obj);
 	_gain_widget = new gainTemplate(_atn_problem, _problem_obj);
 	_axial_widget = new axialTemplate(_atn_problem, _problem_obj);
@@ -38,7 +42,7 @@ void optimizeTab::initLayout() {
 	//first tab
 	QGroupBox* frequency_group_box = new QGroupBox("频率设置");
 	QGroupBox* far_field_group_box = new QGroupBox("远场范围设置");
-	QLayout* frequency_layout = _frequency_widgete->getLayout();
+	QLayout* frequency_layout = _frequency_widget->getLayout();
 	frequency_group_box->setLayout(frequency_layout);
 	QLayout* far_field_layout = _theta_phi_widget->getLayout();
 	far_field_group_box->setLayout(far_field_layout);
@@ -80,6 +84,7 @@ void optimizeTab::initLayout() {
 	//layout
 	QHBoxLayout* button_layout = new QHBoxLayout;
 	//在按钮左侧添加伸缩，让按钮居右
+	button_layout->addWidget(_hint);
 	button_layout->addStretch();
 	button_layout->addWidget(_save_all_button);
 
@@ -90,7 +95,17 @@ void optimizeTab::initLayout() {
 }
 
 void optimizeTab::slot_saveAllButton(bool){
-	QList<iTemplate*> templates{ _frequency_widgete, _theta_phi_widget, _gain_widget, _axial_widget, _loss_widget,
+	_hint->clear();
+	QList<checkInfo*> cios;
+	cios.append(_frequency_widget->checkInputValid());
+	cios.append(_theta_phi_widget->checkInputValid());
+	for (checkInfo* cio : cios) {
+		if (cio->code != 0) {
+			_hint->setText(cio->message);
+			return;
+		}
+	}
+	QList<iTemplate*> templates{ _frequency_widget, _theta_phi_widget, _gain_widget, _axial_widget, _loss_widget,
 		_variables_widget, _algorithm_widget};
 	for (iTemplate* iter : templates)
 		iter->updateJObj();

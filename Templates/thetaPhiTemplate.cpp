@@ -19,6 +19,13 @@ _atn_problem(atn_problem), _obj(obj) {
 	initRegex();
 	initDefaultData();
 	initLayout();
+
+	connect(_theta_low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_theta_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_theta_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_phi_low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_phi_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_phi_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 }
 
 void thetaPhiTemplate::initRegex() {
@@ -72,6 +79,50 @@ void thetaPhiTemplate::initLayout() {
 
 QLayout* thetaPhiTemplate::getLayout() {
 	return _layout;
+}
+
+checkInfo* thetaPhiTemplate::checkInputValid() {
+	checkInfo* cio = new checkInfo;
+	QString theta_low = _theta_low_edit->text().trimmed();
+	QString theta_up = _theta_up_edit->text().trimmed();
+	QString theta_step = _theta_step_edit->text().trimmed();
+	QString phi_low = _phi_low_edit->text().trimmed();
+	QString phi_up = _phi_up_edit->text().trimmed();
+	QString phi_step = _phi_step_edit->text().trimmed();
+	if (theta_low.isEmpty() || theta_low.isNull() || theta_up.isEmpty() || theta_up.isNull() || theta_step.isEmpty() || 
+		theta_step.isNull() || phi_low.isEmpty() || phi_low.isNull() || phi_up.isEmpty() || phi_up.isNull() ||
+		phi_step.isEmpty() || phi_step.isNull()) {
+		cio->code = 1;
+		cio->message = "设置参数不能为空。";
+	}
+	if (theta_low == "-" || theta_up == "-" || phi_low == "-" || phi_up == "-") {
+		cio->code = 1;
+		cio->message = "设置参数输入不完整。";
+	}
+	int theta_low_int, theta_up_int, theta_step_int, phi_low_int, phi_up_int, phi_step_int;
+	theta_low_int = theta_low.toInt();
+	theta_up_int = theta_up.toInt();
+	theta_step_int = theta_step.toInt();
+	phi_low_int = phi_low.toInt();
+	phi_up_int = phi_up.toInt();
+	phi_step_int = phi_step.toInt();
+	if (theta_low_int > theta_up_int) {
+		cio->code = 1;
+		cio->message = "theta角范围设置有误。";
+	}
+	if (theta_step_int > (theta_up_int - theta_low_int)) {
+		cio->code = 1;
+		cio->message = "theta角步长设置过大。";
+	}
+	if (phi_low_int > phi_up_int) {
+		cio->code = 1;
+		cio->message = "phi角范围设置有误。";
+	}
+	if (phi_step_int > (phi_up_int - phi_low_int)) {
+		cio->code = 1;
+		cio->message = "phi角步长设置过大。";
+	}
+	return cio;
 }
 
 //update json obj

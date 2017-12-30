@@ -31,11 +31,12 @@ private:
     QWidget* _third_tab;
     QWidget* _fourth_tab;   
     QPushButton* _save_all_button;
-	frequencyTemplate* _frequency_widgete;
+	frequencyTemplate* _frequency_widget;
 	thetaPhiTemplate* _theta_phi_widget;
 	gainTemplate* _gain_widget;
 	axialTemplate* _axial_widget;
 	lossTemplate* _loss_widget;
 	variablesTemplate* _variables_widget;
 	algorithmTemplate* _algorithm_widget;
+	QLabel* _hint;
 };

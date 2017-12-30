@@ -13,12 +13,9 @@ public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();	
-	inline QLineEdit* getThetaLowEdit() const { return _theta_low_edit; }
-	inline QLineEdit* getThetaUpEdit() const { return _theta_up_edit; }
-	inline QLineEdit* getThetaStepEdit() const { return _theta_step_edit; }
-	inline QLineEdit* getPhiLowEdit() const { return _phi_low_edit; }
-	inline QLineEdit* getPhiUpEdit() const { return _phi_up_edit; }
-	inline QLineEdit* getPhiStepEdit() const { return _phi_step_edit; }
+	checkInfo* checkInputValid();
+signals:
+	void signal_checkValid();
 
 private:
 	void initRegex();

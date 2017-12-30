@@ -11,7 +11,7 @@ _atn_problem(atn_problem), _obj(obj){
 
 	_design_performance = new wizardFreFarField(_atn_problem, _obj);
 	_design_variables = new wizardDesignVariables(_atn_problem, _obj);	
-	
+
 	setWizardStyle(QWizard::ClassicStyle);
 	setButtonText(QWizard::BackButton, "<上一步");
 	setButtonText(QWizard::NextButton, "下一步>");

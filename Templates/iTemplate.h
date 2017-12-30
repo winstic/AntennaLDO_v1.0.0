@@ -2,6 +2,13 @@
 #include <QtWidgets>
 #include "../Utility/macrodefined.h"
 
+//0 : normal; 1: null input; 2:invalid input; 3:others
+struct checkInfo {
+	int code;
+	QString message;
+	checkInfo() : code(0), message("") {}
+};
+
 class iTemplate : public QWidget {
 	Q_OBJECT
 public:
@@ -9,6 +16,7 @@ public:
 	virtual ~iTemplate() {};
 	virtual void updateJObj() {};
 	virtual QLayout* getLayout() { return nullptr; }
+	virtual checkInfo* checkInputValid() { return new checkInfo; }
 	void initOptimalTypeComBox(QComboBox *combox);
 	void initUnitComBo(QComboBox *comb);
 	double unitConversion(double source_data, int pre_unit, int curr_unit, double max_frequency = 0.0);

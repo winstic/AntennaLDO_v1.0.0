@@ -26,4 +26,5 @@ private:
     QWidget* _first_tab;
     QWidget* _second_tab;    
 	QPushButton* _save_all_button;
+	QLabel* _hint;
 };

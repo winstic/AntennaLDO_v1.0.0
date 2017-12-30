@@ -17,6 +17,11 @@ _atn_problem(atn_problem), _obj(obj){
 	_theta_phi_widget = new thetaPhiTemplate(_atn_problem, _obj);
 	_vars_value_widget = new varsDefaultValueTemplate(_atn_problem, _obj);
 	_save_all_button = new QPushButton(QString("保存所有"), this);
+	_hint = new QLabel(this);
+	QFont font;
+	font.setPixelSize(20);
+	_hint->setFont(font);
+
 	_tab_widget->addTab(_first_tab, QIcon(""), "性能参数设置");
 	//firstTab->setWindowTitle(tr("设置频率信息并指定远场范围"));
 	_tab_widget->addTab(_second_tab, QIcon(""), "模型设置");
@@ -48,17 +53,34 @@ void designTab::initLayout() {
 	layout->setContentsMargins(10, 20, 10, 2);
 	_second_tab->setLayout(layout);
 
+	/*QHBoxLayout *hlayout = new QHBoxLayout;
+	hlayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
+	hlayout->addWidget(_hint);
+	hlayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));*/
+
 	QHBoxLayout* button_layout = new QHBoxLayout;
 	//在按钮左侧添加伸缩，让按钮居右
+	button_layout->addWidget(_hint);
 	button_layout->addStretch();
 	button_layout->addWidget(_save_all_button);
 	QVBoxLayout* vlayout = new QVBoxLayout;
 	vlayout->addWidget(_tab_widget);
+	//vlayout->addLayout(hlayout);
 	vlayout->addLayout(button_layout);
 	setLayout(vlayout);
 }
 
 void designTab::slot_saveAllButton(bool isChecked){
+	_hint->clear();
+	QList<checkInfo*> cios;
+	cios.append(_frequency_widget->checkInputValid());
+	cios.append(_theta_phi_widget->checkInputValid());
+	for (checkInfo* cio : cios) {
+		if (cio->code != 0) {
+			_hint->setText(cio->message);
+			return;
+		}
+	}
 	QList<iTemplate*> templates{ _frequency_widget, _theta_phi_widget, _vars_value_widget };
 	for (iTemplate* iter : templates)
 		iter->updateJObj();
