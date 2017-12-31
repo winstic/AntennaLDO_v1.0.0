@@ -3,7 +3,7 @@
 #include "frequencyTemplate.h"
 
 frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj) {
+_atn_problem(atn_problem), _obj(obj), _is_valid(true) {
 	_frequency_low_label = new QLabel("频段上限:", this);
 	_frequency_up_label = new QLabel("频段下限:", this);
 	_frequency_num_label = new QLabel("频点个数:", this);
@@ -50,6 +50,10 @@ void frequencyTemplate::initDefaultData() {
 	QJsonObject frequency_obj = parseJson::getSubJsonObj(*_obj, "FreSetting");
 	if (frequency_obj.isEmpty()) {
 		qCritical("get 'FreSetting' json object field.");
+		checkInfo->code = eOther;
+		checkInfo->message = "问题json文件格式不正确。";
+		_is_valid = false;
+		emit signal_checkValid();
 		return;
 	}
 	QStringList str_list;
@@ -95,26 +99,28 @@ QLayout* frequencyTemplate::getLayout() {
 }
 
 //check input
-checkInfo* frequencyTemplate::checkInputValid() {
-	checkInfo* cio = new checkInfo;
+bool frequencyTemplate::checkInputValid() {
+	if (!_is_valid) return false;
 	QString frequency_low = _frequency_low_edit->text().trimmed();
 	QString frequency_up = _frequency_up_edit->text().trimmed();
 	QString frequency_num = _frequency_num_edit->text().trimmed();
 
 	if (frequency_low.isEmpty() || frequency_low.isNull() || frequency_up.isEmpty() || frequency_up.isNull() ||
 		frequency_num.isEmpty() || frequency_num.isNull()) {
-		cio->code = 1;
-		cio->message = "设置参数不能为空。";
+		checkInfo->code = eNull;
+		checkInfo->message = "设置参数不能为空。";
+		return false;
 	}
-	unsigned int frequency_low_int = frequency_low.toInt();
-	unsigned int frequency_up_int = frequency_up.toInt();
-	if (frequency_low_int > frequency_up_int) {
-		cio->code = 1;
-		cio->message = "频率范围设置有误。";
+	double frequency_low_d = frequency_low.toDouble();
+	double frequency_up_d = frequency_up.toDouble();
+	if (frequency_low_d > frequency_up_d) {
+		checkInfo->code = eInvalid;
+		checkInfo->message = "频率范围设置有误。";
+		return false;
 	}
 	//实时保存设置的最大频率
-	_atn_problem->max_frequency = frequency_up_int;
-	return cio;
+	_atn_problem->max_frequency = frequency_up_d;
+	return true;
 }
 
 //update json obj

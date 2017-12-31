@@ -96,7 +96,7 @@ void optimizeTab::initLayout() {
 
 void optimizeTab::slot_saveAllButton(bool){
 	_hint->clear();
-	QList<checkInfo*> cios;
+	/*QList<checkInfo*> cios;
 	cios.append(_frequency_widget->checkInputValid());
 	cios.append(_theta_phi_widget->checkInputValid());
 	for (checkInfo* cio : cios) {
@@ -104,7 +104,7 @@ void optimizeTab::slot_saveAllButton(bool){
 			_hint->setText(cio->message);
 			return;
 		}
-	}
+	}*/
 	QList<iTemplate*> templates{ _frequency_widget, _theta_phi_widget, _gain_widget, _axial_widget, _loss_widget,
 		_variables_widget, _algorithm_widget};
 	for (iTemplate* iter : templates)

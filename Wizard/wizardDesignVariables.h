@@ -16,4 +16,5 @@ private:
 	QJsonObject* _obj;
 	parsProblem* _atn_problem;
 	varsDefaultValueTemplate* _vars_value_widget;
+	QLabel* _hint;
 };

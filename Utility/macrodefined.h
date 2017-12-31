@@ -6,7 +6,10 @@
 #define DEFAULT_PROJECT_PATH "DEFAULT_PATH"
 #define PROBLEM_ID "PID"
 #define PROBLEM_NAME "PROBLEM"
+#define VARLOW "LOW"
+#define VARUP "UP"
 
+//size
 #define SUBWINDOW_WIDTH 880
 #define SUBWINDOW_HEIGHT 580
 #define PROJECT_TREE_WIDTH 260
@@ -54,6 +57,12 @@
 #define MARK_UNIT_M 4
 #define MARK_UNIT_KM 7
 //
+
+//slider value
+#define MINSLIDERNUMBER 0
+#define MAXSLIDERNUMBER 100
+#define STEPSLIDERNUMBER 1
+
 //
 //
 //enum pyFlag { proPy = 0, algPy };
@@ -63,6 +72,8 @@
 //2017-6-19 new add
 //enum problemType { TEST = 0, HFSS, FEKO, NEC };
 
+enum ERRORCODE {eNormal = 0, eNull, eInvalid, eOther};
+enum PROBLEMTYPE { TEST = 0, HFSS, FEKO, NEC };
 enum GACOLUMN { cthetalower = 0, cthetaupper, cphilower, cphiupper, coptimaltype, cdelta, cobjvalue, cweight };
 enum LOSSCOLUMN { cz0real = 0, cz0imag, closstype, clossoptimaltype, cdeltareal, cdeltaimag, cobjreal, cobjimag, clossweight };
 enum NODESCOLUMN { nodeFlag = 0, coreFlag };

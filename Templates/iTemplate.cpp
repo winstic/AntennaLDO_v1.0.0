@@ -1,7 +1,7 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "iTemplate.h"
 
-iTemplate::iTemplate(QWidget* parent) : QWidget(parent){}
+iTemplate::iTemplate(QWidget* parent) : QWidget(parent), checkInfo(new errorInfo){}
 
 void iTemplate::initOptimalTypeComBox(QComboBox *combox) {
 	combox->addItem("max");
@@ -49,6 +49,10 @@ double iTemplate::unitConversion(double source_data, int pre_unit, int curr_unit
 }
 
 //setting regular expression
+QRegExpValidator* iTemplate::getFloatReg() {
+	return new QRegExpValidator(QRegExp("^(-?\\d+)(\\.\\d+)?$"));
+}
+
 QRegExpValidator* iTemplate::getNonNegativeFloatReg() {
 	//return new QRegExpValidator(QRegExp("^(\\d+)(\\.\\d+)?$"));
 	return new QRegExpValidator(QRegExp("^\\d+(\\.\\d+)?$"));

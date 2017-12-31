@@ -13,7 +13,7 @@ public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();	
-	checkInfo* checkInputValid();
+	bool checkInputValid();
 signals:
 	void signal_checkValid();
 
@@ -39,4 +39,5 @@ public:
 	QLineEdit* _phi_low_edit;
 	QLineEdit* _phi_up_edit;
 	QLineEdit* _phi_step_edit;
+	bool _is_valid;
 };

@@ -11,6 +11,7 @@ public:
     ~designTab(){}
 
 public slots:
+	void slot_clearHint();
     void slot_saveAllButton(bool);
 
 private:

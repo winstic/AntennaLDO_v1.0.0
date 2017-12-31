@@ -3,6 +3,7 @@
 #include "../Utility/global.h"
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 
 designTab::designTab(parsProblem* atn_problem, QJsonObject* obj, QWidget *parent) : QDialog(parent),
 _atn_problem(atn_problem), _obj(obj){
@@ -18,9 +19,7 @@ _atn_problem(atn_problem), _obj(obj){
 	_vars_value_widget = new varsDefaultValueTemplate(_atn_problem, _obj);
 	_save_all_button = new QPushButton(QString("保存所有"), this);
 	_hint = new QLabel(this);
-	QFont font;
-	font.setPixelSize(20);
-	_hint->setFont(font);
+	commonStyle::setHintStyle(_hint);
 
 	_tab_widget->addTab(_first_tab, QIcon(""), "性能参数设置");
 	//firstTab->setWindowTitle(tr("设置频率信息并指定远场范围"));
@@ -30,6 +29,9 @@ _atn_problem(atn_problem), _obj(obj){
 	//scrollArea->setWidget(tabWidget);
 	initLayout();
 
+	connect(_frequency_widget, SIGNAL(signal_checkValid()), this, SLOT(slot_clearHint()));
+	connect(_theta_phi_widget, SIGNAL(signal_checkValid()), this, SLOT(slot_clearHint()));
+	connect(_vars_value_widget, SIGNAL(signal_checkValid()), this, SLOT(slot_clearHint()));
     connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));	
 }
 
@@ -71,17 +73,15 @@ void designTab::initLayout() {
 }
 
 void designTab::slot_saveAllButton(bool isChecked){
+	QList<iTemplate*> templates{ _frequency_widget, _theta_phi_widget, _vars_value_widget };
+
 	_hint->clear();
-	QList<checkInfo*> cios;
-	cios.append(_frequency_widget->checkInputValid());
-	cios.append(_theta_phi_widget->checkInputValid());
-	for (checkInfo* cio : cios) {
-		if (cio->code != 0) {
-			_hint->setText(cio->message);
+	for (iTemplate* iter : templates) {
+		if (!iter->checkInputValid()) {
+			_hint->setText(iter->checkInfo->message);
 			return;
 		}
-	}
-	QList<iTemplate*> templates{ _frequency_widget, _theta_phi_widget, _vars_value_widget };
+	}	
 	for (iTemplate* iter : templates)
 		iter->updateJObj();
 
@@ -91,4 +91,8 @@ void designTab::slot_saveAllButton(bool isChecked){
 		qCritical("save failed in design tabWidget.");
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
 	}
+}
+
+void designTab::slot_clearHint() {
+	_hint->clear();
 }

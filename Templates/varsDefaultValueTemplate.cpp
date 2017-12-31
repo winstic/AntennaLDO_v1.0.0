@@ -1,9 +1,12 @@
 ﻿#pragma execution_character_set("utf-8")
+#include "../Utility/macrodefined.h"
+#include "../Utility/commonStyle.h"
 #include "../Utility/parseJson.h"
+#include "sliderTemplate.h"
 #include "varsDefaultValueTemplate.h"
 
 varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) 
-	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj) {
+	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj), _is_valid(true) {
 	_atn_image_label = new QLabel(this);
 	_vars_table = new tableTemplate();
 	_vars_table->setColumnCount(3);
@@ -31,6 +34,10 @@ void varsDefaultValueTemplate::initDefaultData() {
 	QJsonObject vars_value_obj = parseJson::getSubJsonObj(*_obj, "varsValue");
 	if (vars_value_obj.isEmpty()) {
 		qCritical("get 'varsValue' json object field.");
+		checkInfo->code = eOther;
+		checkInfo->message = "问题json文件格式不正确。";
+		_is_valid = false;
+		emit signal_checkValid();
 		return;
 	}
 	for (QJsonObject::iterator iter = vars_value_obj.begin(); iter != vars_value_obj.end(); ++iter) {
@@ -39,17 +46,20 @@ void varsDefaultValueTemplate::initDefaultData() {
 	QJsonObject vars_range_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (vars_range_obj.isEmpty()) {
 		qCritical("get 'variables' json object field.");
+		checkInfo->code = eOther;
+		checkInfo->message = "问题json文件格式不正确。";
+		_is_valid = false;
+		emit signal_checkValid();
 		return;
 	}
 	QJsonObject var_obj;
 	QString var_key;
 	QStringList var_value;
-	int row_number = 0, value_list_length;
+	int row_number = 0;
 	double real_value;	
-	QRegExp rx("^(-?\\d+)(\\.\\d+)?$");
-	QRegExpValidator float_valid(rx);      //float
 	QSignalMapper* signals_map_slider = new QSignalMapper;	//use signalmaper manage signals in table
-	QSignalMapper* signals_map_unit = new QSignalMapper;	//use signalmaper manage signals in table
+	QSignalMapper* signals_map_line = new QSignalMapper;	
+	QSignalMapper* signals_map_unit = new QSignalMapper;	
 	_vars_table->setRowCount(vars_range_obj.count());
 
 	for (QJsonObject::iterator iter = vars_range_obj.begin(); iter != vars_range_obj.end(); ++iter) {
@@ -62,55 +72,51 @@ void varsDefaultValueTemplate::initDefaultData() {
 		_vars_table->item(row_number, varnote)->setWhatsThis(var_key);
 		// init text edit and layout
 		var_value = dataPool::str2list(var_obj.value(var_key).toString().trimmed());
-		value_list_length = var_value.length();
-		QLineEdit *value_edit = new QLineEdit(this);
-		value_edit->setValidator(&float_valid);
-		if (value_list_length == 1) {
-			//no range
-			value_edit->setText(var_value[0]);
-			value_edit->setReadOnly(true);
-			_vars_table->setCellWidget(row_number, varvalue, value_edit);
+		if (var_value.length() != 2) {
+			qCritical("get 'variables' json unregular.");
+			checkInfo->code = eOther;
+			checkInfo->message = "问题json文件格式不规则（'variables'变量未设上下限）。";
+			_is_valid = false;
+			emit signal_checkValid();
+			return;
+		}
+		QLineEdit *value_edit = new QLineEdit(this);		
+		value_edit->setValidator(getFloatReg());
+		
+		QWidget *cell_widget = new QWidget(this);
+		QVBoxLayout *v_layout = new QVBoxLayout(this);
+		//init slider
+		double low_value = QString(var_value[0]).trimmed().toDouble();
+		double up_value = QString(var_value[1]).trimmed().toDouble();
+		sliderTemplate *value_slider = new sliderTemplate(low_value, up_value);
+			
+		real_value = _default_vars[var_key].trimmed().toDouble();
+		if (up_value == low_value) {
+			value_slider->setValue(MAXSLIDERNUMBER);
+			value_slider->setEnabled(false);
+			value_edit->setEnabled(false);
 		}
 		else {
-			QWidget *cell_widget = new QWidget(this);
-			QVBoxLayout *v_layout = new QVBoxLayout(this);
-			QSlider *var_slider = new QSlider(Qt::Horizontal, this);
-			QString sheet;
-			initSliderSheet(sheet);
-			var_slider->setStyleSheet(sheet);
-			var_slider->setMinimum(0);
-			var_slider->setMaximum(100);
-			var_slider->setSingleStep(1);
-			//init slider
-			double low_value = QString(var_value[0]).trimmed().toDouble();
-			double up_value = QString(var_value[1]).trimmed().toDouble();
-			real_value = _default_vars[var_key].trimmed().toDouble();
-			if (up_value == low_value) {
-				var_slider->setValue(100);
-				var_slider->setEnabled(false);
-			}
-			else {
-				int sliderValue = 100 * (real_value - low_value) / (up_value - low_value);
-				var_slider->setValue(sliderValue);
-			}
-			//!conversion slider value and edit value
-			value_edit->setText(QString::number(real_value));
-			v_layout->addWidget(value_edit);
-			v_layout->addWidget(var_slider);
-			//design inner space
-			v_layout->setSpacing(0);
-			// design outer space
-			v_layout->setMargin(0);
-			cell_widget->setLayout(v_layout);
-			//test begin
-			//QLineEdit *findEdit = cellWidget->findChild<QLineEdit *>();
-			//qDebug() << "findEdit: " << findEdit->text();
-			//test end
-			_vars_table->setCellWidget(row_number, varvalue, cell_widget);			
-			connect(var_slider, SIGNAL(valueChanged(int)), signals_map_slider, SLOT(map()));
-			signals_map_slider->setMapping(var_slider, QString("%1#%2#%3").arg(row_number).arg(up_value).arg(low_value));
+			int sliderValue = MINSLIDERNUMBER + (MAXSLIDERNUMBER - MINSLIDERNUMBER) * (real_value - low_value) / (up_value - low_value);
+			value_slider->setValue(sliderValue);
 		}
-		connect(value_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_LinetextChange(QString)));
+		//!conversion slider value and edit value
+		value_edit->setText(QString::number(real_value));
+		value_edit->setProperty(VARLOW, low_value);
+		value_edit->setProperty(VARUP, up_value);
+		v_layout->addWidget(value_edit);
+		v_layout->addWidget(value_slider);
+		//design inner space
+		v_layout->setSpacing(0);
+		// design outer space
+		v_layout->setMargin(0);
+		cell_widget->setLayout(v_layout);
+		_vars_table->setCellWidget(row_number, varvalue, cell_widget);			
+		connect(value_slider, SIGNAL(valueChanged(int)), signals_map_slider, SLOT(map()));
+		signals_map_slider->setMapping(value_slider, QString("%1").arg(row_number));
+
+		connect(value_edit, SIGNAL(textChanged(QString)), signals_map_line, SLOT(map()));
+		signals_map_line->setMapping(value_edit, QString("%1").arg(row_number));
 
 		//valueEdit->installEventFilter(this);        //install filter in this dialog(在对话框上为QLineEdit安装过滤器)
 		QWidget* unit_widget = new QWidget(this);
@@ -127,10 +133,14 @@ void varsDefaultValueTemplate::initDefaultData() {
 		signals_map_unit->setMapping(unit_combox, QString("%1").arg(row_number));
 		//in 'rownumber'th row, save default unitComBo current data
 		_vars_unit.insert(row_number, unit_combox->currentData(ROLE_MARK_UNIT).toInt());
+
+		//当文本框输入改变时，触发校验信号；
+		connect(value_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 		row_number++;
 	}
 
 	connect(signals_map_slider, SIGNAL(mapped(QString)), this, SLOT(slot_sliderValueChange(QString)));
+	//connect(signals_map_line, SIGNAL(mapped(QString)), this, SLOT(slot_LinetextChange(QString)));
 	connect(signals_map_unit, SIGNAL(mapped(QString)), this, SLOT(slot_unitChange(QString)));
 
 	//!add picture
@@ -148,96 +158,120 @@ void varsDefaultValueTemplate::initLayout() {
 	_layout = h_layout;
 }
 
-void varsDefaultValueTemplate::initSliderSheet(QString& sheet) {
-	sheet = QString("  \
-         QSlider\
-         {     \
-            spacing: 0px;\
-            min-height:8px;\
-            max-height:8px;\
-         }\
-         QSlider::add-page:Horizontal\
-         {     \
-            background-color: rgb(222, 231, 234);\
-            height:8px;\
-         }\
-         QSlider::sub-page:Horizontal \
-        {\
-            background-color: rgb(37, 168, 198);\
-            height:8px;\
-         }\
-        QSlider::groove:Horizontal \
-        {\
-            background:transparent;\
-            height:8px;\
-        }\
-        QSlider::handle:Horizontal \
-        {\
-             height: 13px;\
-            width:13px;\
-            border-image: url(./images/dot_16px.png);\
-             margin: 0px; \
-         }\
-        ");
-}
-
-
 QLayout* varsDefaultValueTemplate::getLayout() {
 	return _layout;
+}
+
+//check input
+bool varsDefaultValueTemplate::checkInputValid() {
+	if (!_is_valid) return false;
+	QLineEdit* curr_edit;
+	QString var_value;
+	for (int i = 0; i < _vars_table->rowCount(); i++) {
+		curr_edit = _vars_table->cellWidget(i, varvalue)->findChild<QLineEdit *>();
+		var_value = curr_edit->text().trimmed();
+		if (var_value.isEmpty() || var_value.isNull()) {
+			checkInfo->code = eNull;
+			checkInfo->message = "几何结构参数不能为空。";
+			commonStyle::setLineEditWarningStyle(curr_edit);
+			return false;
+		}
+		if (var_value == "-") {
+			checkInfo->code = eInvalid;
+			checkInfo->message = "几何结构参数输入不完整。";
+			commonStyle::setLineEditWarningStyle(curr_edit);
+			return false;
+		}
+		double var_value_d = var_value.toDouble();
+		double var_value_low_d = curr_edit->property(VARLOW).toDouble();
+		double var_value_up_d = curr_edit->property(VARUP).toDouble();
+		//注意浮点数比较
+		if ((var_value_d + 0.000001) < var_value_low_d || (var_value_d - 0.000001) > var_value_up_d) {
+			checkInfo->code = eInvalid;
+			checkInfo->message = QString("几何结构参数超出上下界范围[%1,%2]。").arg(var_value_low_d).arg(var_value_up_d);
+			commonStyle::setLineEditWarningStyle(curr_edit);
+			return false;
+		}
+		commonStyle::clearLineEditWarningStyle(curr_edit);
+	}
+	return true;
 }
 
 //update json obj
 void varsDefaultValueTemplate::updateJObj() {
 	QJsonObject mvars_value_obj;
-	QString var_key, var_value;
+	QString var_key;
+	double var_value;
+	int unit_data;
 	for (int i = 0; i < _vars_table->rowCount(); i++) {
 		var_key = _vars_table->item(i, varnote)->whatsThis().trimmed();
-		var_value = _vars_table->cellWidget(i, varvalue)->findChild<QLineEdit *>()->text().trimmed();
-		mvars_value_obj.insert(var_key, var_value);
+		var_value = _vars_table->cellWidget(i, varvalue)->findChild<QLineEdit *>()->text().trimmed().toDouble();
+		unit_data = _vars_table->cellWidget(i, 2)->findChild<QComboBox *>()->currentData(ROLE_MARK_UNIT).toInt();
+		if(unit_data == MARK_UNIT_LAMBDA)
+			var_value = unitConversion(var_value, unit_data, MARK_UNIT_M, _atn_problem->max_frequency);
+		else if(unit_data != MARK_UNIT_M)
+			var_value = unitConversion(var_value, unit_data, MARK_UNIT_M);
+		mvars_value_obj.insert(var_key, QString::number(var_value));
 	}
 	_obj->insert("varsValue", mvars_value_obj);
 }
 
 //slots
-void varsDefaultValueTemplate::slot_LinetextChange(QString text) {
-	//qDebug() << text;
-}
-
-void varsDefaultValueTemplate::slot_sliderValueChange(QString s_parameter) {
-	QStringList parameterList = s_parameter.split("#");
-	int row_number = parameterList.at(0).toInt();        //table rowth
-	double upper = parameterList.at(1).toDouble();
-	double lower = parameterList.at(2).toDouble();
+void varsDefaultValueTemplate::slot_LinetextChange(QString pos) {
+	int row_number = pos.toInt();        //table rowth
 	//get widget
 	QSlider* select_slider = _vars_table->cellWidget(row_number, varvalue)->findChild<QSlider *>();
 	QLineEdit* select_line_edit = _vars_table->cellWidget(row_number, varvalue)->findChild<QLineEdit *>();
+	double lower = select_line_edit->property(VARLOW).toDouble();
+	double upper = select_line_edit->property(VARUP).toDouble();
+	double line_value = select_line_edit->text().trimmed().toDouble();
+
+	int slider_value = MINSLIDERNUMBER + (MAXSLIDERNUMBER - MINSLIDERNUMBER) * (line_value - lower) / (upper - lower);
+	select_slider->setValue(slider_value);
+}
+
+void varsDefaultValueTemplate::slot_sliderValueChange(QString pos) {
+	int row_number = pos.toInt();        //table rowth
+	//get widget
+	QSlider* select_slider = _vars_table->cellWidget(row_number, varvalue)->findChild<QSlider *>();
+	QLineEdit* select_line_edit = _vars_table->cellWidget(row_number, varvalue)->findChild<QLineEdit *>();
+	double lower = select_line_edit->property(VARLOW).toDouble();
+	double upper = select_line_edit->property(VARUP).toDouble();
 	int s_value = select_slider->value();
 	//get new edit value by slider value
-	double new_line_edit_value = (upper - lower) / 100.0 * s_value + lower;
+	double new_line_edit_value = (upper - lower) / (MAXSLIDERNUMBER - MINSLIDERNUMBER) * s_value + lower;
 	select_line_edit->setText(QString::number(new_line_edit_value));
 }
 
 void varsDefaultValueTemplate::slot_unitChange(QString pos) {
 	Q_ASSERT(!_vars_unit.isEmpty());
 	int row = pos.toInt();
-	int current_unit_data = _vars_unit[row];
 	QComboBox* select_combox = _vars_table->cellWidget(row, 2)->findChild<QComboBox *>();
+	QLineEdit* curr_line_edit = _vars_table->cellWidget(row, varvalue)->findChild<QLineEdit *>();
+
+	int current_unit_data = _vars_unit[row];
 	int new_unit_data = select_combox->currentData(ROLE_MARK_UNIT).toInt();
 	//unit conversion
 	//when "newUnitData == currentUnitData", do nothing
 	if (new_unit_data == current_unit_data)
 		return;
-	//get QLineEdit widget
-	QLineEdit* curr_line_edit = _vars_table->cellWidget(row, varvalue)->findChild<QLineEdit *>();
-	double pre_value, curr_value;
+	
+	double pre_value, curr_value, low_value, up_value;
 	pre_value = curr_line_edit->text().trimmed().toDouble();
 	if (current_unit_data != MARK_UNIT_LAMBDA && new_unit_data != MARK_UNIT_LAMBDA ) {		
 		curr_value = unitConversion(pre_value, current_unit_data, new_unit_data);
+		low_value = unitConversion(curr_line_edit->property(VARLOW).toDouble(), current_unit_data, new_unit_data);
+		up_value = unitConversion(curr_line_edit->property(VARUP).toDouble(), current_unit_data, new_unit_data);
 	}
 	else {
 		//unit conversion with lambda
 		curr_value = unitConversion(pre_value, current_unit_data, new_unit_data, _atn_problem->max_frequency);
+		low_value = unitConversion(curr_line_edit->property(VARLOW).toDouble(), current_unit_data, new_unit_data, _atn_problem->max_frequency);
+		up_value = unitConversion(curr_line_edit->property(VARUP).toDouble(), current_unit_data, new_unit_data, _atn_problem->max_frequency);
 	}
+	//注意顺序，当单位改变时会间接导致文本框输入值改变，会触发校验信号；所以先更新上下限值。
+	curr_line_edit->setProperty(VARLOW, low_value);
+	curr_line_edit->setProperty(VARUP, up_value);
 	curr_line_edit->setText(QString::number(curr_value));
 	//update unit item user data
 	_vars_unit[row] = new_unit_data;

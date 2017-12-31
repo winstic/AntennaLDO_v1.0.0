@@ -10,9 +10,14 @@ public:
 	varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~varsDefaultValueTemplate();
 
+public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();
+	bool checkInputValid();
+
+signals:
+	void signal_checkValid();
 
 public slots:
 	void slot_LinetextChange(QString);
@@ -22,7 +27,6 @@ public slots:
 private:
 	void initDefaultData();
 	void initLayout();
-	void initSliderSheet(QString& sheet);
 
 public:
 	parsProblem* _atn_problem;
@@ -31,5 +35,6 @@ public:
 	tableTemplate* _vars_table;
 	QLabel* _atn_image_label;
 	QMap<QString, QString> _default_vars;
-	QMap<int, int> _vars_unit;				//save combobox unit
+	QMap<int, int> _vars_unit;				//save unit combobox 
+	bool _is_valid;
 };

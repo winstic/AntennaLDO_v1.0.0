@@ -6,7 +6,6 @@
 #include <qpair.h>
 
 typedef QPair<int, int> alg4pro;
-enum problemType { TEST = 0, HFSS, FEKO, NEC };
 
 struct parsProblem {
 	unsigned int id;
@@ -16,8 +15,8 @@ struct parsProblem {
 	QString info;
 	unsigned int type;
 	QString oper;
-	unsigned int max_frequency;
-	parsProblem() : id(0), name(""), path(""), pImage("./images/antenna.png"), info(""), type(0), oper("i"){}
+	double max_frequency;
+	parsProblem() : id(0), name(""), path(""), pImage("./images/antenna.png"), info(""), type(0), oper("i"), max_frequency(0.000001){}
 };
 
 struct parsAlgorithm {

@@ -13,7 +13,7 @@ public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();
-	checkInfo* checkInputValid();
+	bool checkInputValid();
 
 signals:
 	void signal_checkValid();
@@ -39,4 +39,5 @@ public:
 	QLineEdit* _frequency_num_edit;
 	QComboBox* _sweep_type_combox;
 	QComboBox* _polarization_combox;
+	bool _is_valid;
 };

@@ -313,6 +313,18 @@
     <ClCompile Include="Templates\tableTemplate.cpp">
       <Filter>Templates</Filter>
     </ClCompile>
+    <ClCompile Include="Templates\sliderTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_sliderTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_sliderTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\commonStyle.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -404,6 +416,12 @@
     </CustomBuild>
     <CustomBuild Include="Templates\parallelTemplate.h">
       <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\sliderTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Utility\commonStyle.h">
+      <Filter>Utility</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
