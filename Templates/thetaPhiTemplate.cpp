@@ -1,41 +1,54 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 #include "thetaPhiTemplate.h"
 
 thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _is_valid(true) {
-	_theta_low_label = new QLabel("起始θ:", this);
-	_theta_up_label = new QLabel("终止θ:", this);
-	_theta_step_label = new QLabel("θ步长:", this);
-	_phi_low_label = new QLabel("起始φ:", this);
-	_phi_up_label = new QLabel("终止φ:", this);
-	_phi_step_label = new QLabel("φ步长:", this);
+
+	_far_field_table = new tableTemplate();
+	_far_field_table->setColumnCount(6);
+	QStringList header;
+	header << "起始θ" << "终止θ" << "θ步长" << "起始φ" << "终止φ" << "φ步长";
+	_far_field_table->setHorizontalHeaderLabels(header);
+	_far_field_table->verticalHeader()->setVisible(false);              //setting no vertical header
+	_far_field_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	_far_field_table->setFixedHeight(60);
+	_far_field_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
+	_far_field_table->setShowGrid(false);                               //setting no grid line
+
+	_confirm_button = new QPushButton("确认"); 
+
 	_theta_low_edit = new QLineEdit(this);
 	_theta_up_edit = new QLineEdit(this);
 	_theta_step_edit = new QLineEdit(this);
 	_phi_low_edit = new QLineEdit(this);
 	_phi_up_edit = new QLineEdit(this);
 	_phi_step_edit = new QLineEdit(this);
-	initRegex();
-	initDefaultData();
+
+	initReg();
+	initDefaultData();	
 	initLayout();
 
+	connect(_confirm_button, SIGNAL(clicked(bool)), this, SLOT(slot_confirmButton(bool)));
+	//当文本框输入改变时，触发校验信号；
 	connect(_theta_low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 	connect(_theta_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
-	connect(_theta_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 	connect(_phi_low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 	connect(_phi_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	connect(_theta_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 	connect(_phi_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 }
 
-void thetaPhiTemplate::initRegex() {
+void thetaPhiTemplate::initReg() {
+	//设置正则表达式
 	QRegExpValidator* nonNegFloatValid = getNonNegativeFloatReg();    //non negative float
 	QRegExpValidator* rangeFloatValid = getAngleReg();     //float [-180, 180]
 	_theta_low_edit->setValidator(rangeFloatValid);
 	_theta_up_edit->setValidator(rangeFloatValid);
 	_phi_low_edit->setValidator(rangeFloatValid);
 	_phi_up_edit->setValidator(rangeFloatValid);
-	_theta_step_edit->setValidator(nonNegFloatValid);	
+	_theta_step_edit->setValidator(nonNegFloatValid);
 	_phi_step_edit->setValidator(nonNegFloatValid);
 }
 
@@ -49,6 +62,8 @@ void thetaPhiTemplate::initDefaultData() {
 		emit signal_checkValid();
 		return;
 	}
+	_far_field_table->setRowCount(1);
+
 	QStringList str_list;
 	str_list = dataPool::str2list(far_field_obj.value("ThetaLower").toString().trimmed());
 	_theta_low_edit->setText(str_list[0]);
@@ -62,23 +77,19 @@ void thetaPhiTemplate::initDefaultData() {
 	_phi_up_edit->setText(str_list[0]);
 	str_list = dataPool::str2list(far_field_obj.value("PhiStep").toString().trimmed());
 	_phi_step_edit->setText(str_list[0]);
+	_far_field_table->setCellWidget(0, fthetastart, _theta_low_edit);
+	_far_field_table->setCellWidget(0, fthetaend, _theta_up_edit);
+	_far_field_table->setCellWidget(0, fthetastep, _theta_step_edit);
+	_far_field_table->setCellWidget(0, fphistart, _phi_low_edit);
+	_far_field_table->setCellWidget(0, fphiend, _phi_up_edit);
+	_far_field_table->setCellWidget(0, fphistep, _phi_step_edit);
 }
 
 void thetaPhiTemplate::initLayout() {
-	QGridLayout* far_field_layout = new QGridLayout;
-	far_field_layout->addWidget(_theta_low_label, 0, 0);
-	far_field_layout->addWidget(_theta_low_edit, 0, 1);
-	far_field_layout->addWidget(_theta_up_label, 0, 2);
-	far_field_layout->addWidget(_theta_up_edit, 0, 3);
-	far_field_layout->addWidget(_theta_step_label, 0, 4);
-	far_field_layout->addWidget(_theta_step_edit, 0, 5);
-	far_field_layout->addWidget(_phi_low_label, 1, 0);
-	far_field_layout->addWidget(_phi_low_edit, 1, 1);
-	far_field_layout->addWidget(_phi_up_label, 1, 2);
-	far_field_layout->addWidget(_phi_up_edit, 1, 3);
-	far_field_layout->addWidget(_phi_step_label, 1, 4);
-	far_field_layout->addWidget(_phi_step_edit, 1, 5);
-	_layout = far_field_layout;
+	QHBoxLayout *hlayout = new QHBoxLayout;
+	hlayout->addWidget(_far_field_table);
+	hlayout->addWidget(_confirm_button);
+	_layout = hlayout;
 }
 
 QLayout* thetaPhiTemplate::getLayout() {
@@ -93,17 +104,22 @@ bool thetaPhiTemplate::checkInputValid() {
 	QString phi_low = _phi_low_edit->text().trimmed();
 	QString phi_up = _phi_up_edit->text().trimmed();
 	QString phi_step = _phi_step_edit->text().trimmed();
-	if (theta_low.isEmpty() || theta_low.isNull() || theta_up.isEmpty() || theta_up.isNull() || theta_step.isEmpty() || 
-		theta_step.isNull() || phi_low.isEmpty() || phi_low.isNull() || phi_up.isEmpty() || phi_up.isNull() ||
-		phi_step.isEmpty() || phi_step.isNull()) {
-		checkInfo->code = eNull;
-		checkInfo->message = "设置参数不能为空。";
-		return false;
+	QList<QLineEdit *> angles{ _theta_low_edit, _theta_up_edit, _theta_step_edit, _phi_low_edit, _phi_up_edit, _phi_step_edit };
+	for (QLineEdit* item : angles) {
+		if (item->text().trimmed().isEmpty() || item->text().trimmed().isNull()) {
+			checkInfo->code = eNull;
+			checkInfo->message = "设置参数不能为空。";
+			commonStyle::setLineEditWarningStyle(item);
+			return false;
+		}
 	}
-	if (theta_low == "-" || theta_up == "-" || phi_low == "-" || phi_up == "-") {
-		checkInfo->code = eOther;
-		checkInfo->message = "设置参数输入不完整。";
-		return false;
+	for (QLineEdit* item : angles) {
+		if (item->text().trimmed() == "-") {
+			checkInfo->code = eOther;
+			checkInfo->message = "设置参数输入不完整。";
+			commonStyle::setLineEditWarningStyle(item);
+			return false;
+		}
 	}
 	double theta_low_d, theta_up_d, theta_step_d, phi_low_d, phi_up_d, phi_step_d;
 	theta_low_d = theta_low.toDouble();
@@ -115,23 +131,35 @@ bool thetaPhiTemplate::checkInputValid() {
 	if (theta_low_d > theta_up_d) {
 		checkInfo->code = eInvalid;
 		checkInfo->message = "theta角范围设置有误。";
+		commonStyle::setLineEditWarningStyle(_theta_low_edit);
+		commonStyle::setLineEditWarningStyle(_theta_up_edit);
 		return false;
 	}
 	if (theta_step_d > (theta_up_d - theta_low_d)) {
 		checkInfo->code = eInvalid;
 		checkInfo->message = "theta角步长设置过大。";
+		commonStyle::setLineEditWarningStyle(_theta_step_edit);
 		return false;
 	}
 	if (phi_low_d > phi_up_d) {
 		checkInfo->code = eInvalid;
 		checkInfo->message = "phi角范围设置有误。";
+		commonStyle::setLineEditWarningStyle(_phi_low_edit);
+		commonStyle::setLineEditWarningStyle(_phi_up_edit);
 		return false;
 	}
 	if (phi_step_d > (phi_up_d - phi_low_d)) {
 		checkInfo->code = eInvalid;
 		checkInfo->message = "phi角步长设置过大。";
+		commonStyle::setLineEditWarningStyle(_phi_step_edit);
 		return false;
 	}
+	commonStyle::clearLineEditWarningStyle(_theta_low_edit);
+	commonStyle::clearLineEditWarningStyle(_theta_up_edit);
+	commonStyle::clearLineEditWarningStyle(_theta_step_edit);
+	commonStyle::clearLineEditWarningStyle(_phi_low_edit);
+	commonStyle::clearLineEditWarningStyle(_phi_up_edit);
+	commonStyle::clearLineEditWarningStyle(_phi_step_edit);
 	return true;
 }
 
@@ -145,6 +173,15 @@ void thetaPhiTemplate::updateJObj() {
 	mfar_fiel_obj.insert("PhiUpper", QString("[%1]").arg(_phi_up_edit->text().trimmed()));
 	mfar_fiel_obj.insert("PhiStep", QString("[%1]").arg(_phi_step_edit->text().trimmed()));
 	_obj->insert("ThetaPhiStep", mfar_fiel_obj);
+}
+
+
+//slots
+void thetaPhiTemplate::slot_confirmButton(bool){
+	QString info = QString("%1#%2#%3#%4#%5#%6").arg(_theta_low_edit->text().trimmed()).arg(_theta_up_edit->text().trimmed())
+		.arg(_theta_step_edit->text().trimmed()).arg(_phi_low_edit->text().trimmed())
+		.arg(_phi_up_edit->text().trimmed()).arg(_phi_step_edit->text().trimmed());
+	emit signal_confirmFarField(info);
 }
 
 thetaPhiTemplate::~thetaPhiTemplate(){}

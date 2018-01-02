@@ -3,13 +3,15 @@
 #include "lossTemplate.h"
 
 lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj) {
+_atn_problem(atn_problem), _obj(obj), _is_valid(true) {
 	_loss_table = new tableTemplate();
 	_loss_table->setColumnCount(9);
 	QStringList header;
 	header << "Z0实部" << "Z0虚部" << "损失方式" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";
 	_loss_table->setHorizontalHeaderLabels(header);
 	_loss_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	_loss_table->setShowGrid(false);                               //setting no grid line
+
 	_loss_table->resizeColumnToContents(6);
 	_loss_table->resizeColumnToContents(7);
 	initDefaultData();
@@ -21,6 +23,10 @@ void lossTemplate::initDefaultData() {
 	QJsonObject loss_obj = parseJson::getSubJsonObj(*_obj, "VSWRSetting");
 	if (loss_obj.isEmpty()) {
 		qCritical("get 'VSWRSetting' json object field.");
+		checkInfo->code = eOther;
+		checkInfo->message = "问题json文件格式不正确。";
+		_is_valid = false;
+		emit signal_checkValid();
 		return;
 	}
 	QSignalMapper* loss_signals_map = new QSignalMapper;
@@ -37,8 +43,15 @@ void lossTemplate::initDefaultData() {
 	QStringList strListWeight = dataPool::str2list(loss_obj.value("weight_vswr").toString());
 	_loss_table->setRowCount(strListR0Real.length());
 	for (int i = 0; i < strListR0Real.length(); i++) {
-		_loss_table->insert2table(i, cz0real, strListR0Real[i]);
-		_loss_table->insert2table(i, cz0imag, strListR0imag[i]);
+		QRegExpValidator* floatValidReg = getFloatReg();    //float
+		QLineEdit* Z0_real_edit = new QLineEdit;
+		Z0_real_edit->setValidator(floatValidReg);
+		Z0_real_edit->setText(strListR0Real[i]);
+		QLineEdit* Z0_image_edit = new QLineEdit;
+		Z0_image_edit->setValidator(floatValidReg);
+		Z0_image_edit->setText(strListR0imag[i]);
+		_loss_table->setCellWidget(i, cz0real, Z0_real_edit);
+		_loss_table->setCellWidget(i, cz0imag, Z0_image_edit);
 
 		QComboBox* loss_type = new QComboBox;
 		initLossTypeComBox(loss_type);
@@ -50,44 +63,66 @@ void lossTemplate::initDefaultData() {
 
 		QComboBox* optimal_type = new QComboBox;
 		initOptimalTypeComBox(optimal_type);
-		optimal_type->setCurrentText(strListOptimaltype[i]);
+		if(optimal_type->findText(strListOptimaltype[i]) != -1)
+			optimal_type->setCurrentText(strListOptimaltype[i]);
 		_loss_table->setCellWidget(i, clossoptimaltype, optimal_type);
 		//map combobox signal
 		connect(optimal_type, SIGNAL(currentIndexChanged(int)), loss_signals_map, SLOT(map()));
 		loss_signals_map->setMapping(optimal_type, QString("%1-%2").arg(i).arg(clossoptimaltype));
 
-		_loss_table->insert2table(i, cdeltareal, strListDeltaReal[i]);
-		_loss_table->insert2table(i, cdeltaimag, strListDeltaImag[i]);
-		//setting cannot edit when optimize type is delta
+		QLineEdit* delta_real_edit = new QLineEdit;
+		delta_real_edit->setValidator(floatValidReg);		
+		QLineEdit* delta_image_edit = new QLineEdit;
+		delta_image_edit->setValidator(floatValidReg);		
 		if (2 != optimal_type->currentIndex()) {
-			_loss_table->item(i, cdeltareal)->setFlags(Qt::NoItemFlags);
-			_loss_table->item(i, cdeltaimag)->setFlags(Qt::NoItemFlags);
+			delta_real_edit->setText("----");
+			delta_real_edit->setEnabled(false);
+			delta_image_edit->setText("----");
+			delta_image_edit->setEnabled(false);
 		}
+		else {
+			delta_real_edit->setText(strListDeltaReal[i]);
+			delta_image_edit->setText(strListDeltaImag[i]);
+		}
+		_loss_table->setCellWidget(i, cdeltareal, delta_real_edit);
+		_loss_table->setCellWidget(i, cdeltaimag, delta_image_edit);
+		//setting cannot edit when optimize type is delta
+
+		QLineEdit* obj_real_edit = new QLineEdit;
+		obj_real_edit->setValidator(floatValidReg);
+		QLineEdit* obj_image_edit = new QLineEdit;
+		obj_image_edit->setValidator(floatValidReg);
 		if (0 == loss_type->currentIndex()) {
 			//loss type is vswr
-			_loss_table->insert2table(i, cobjreal, strListVswrobj[i]);
-			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
-			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
+			obj_real_edit->setText(strListVswrobj[i]);
+			obj_image_edit->setText("----");
+			obj_image_edit->setEnabled(false);
 		}
 		else if (1 == loss_type->currentIndex()) {
 			//loss type is S11
-			_loss_table->insert2table(i, cobjreal, strListS11[i]);
-			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
-			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
+			obj_real_edit->setText(strListS11[i]);
+			obj_image_edit->setText("----");
+			obj_image_edit->setEnabled(false);
 		}
 		else if (2 == loss_type->currentIndex()) {
 			//loss type is R
-			_loss_table->insert2table(i, cobjreal, strListR1Real[i]);
-			_loss_table->insert2table(i, cobjimag, strListR1Imag[i]);
+			obj_real_edit->setText(strListR1Real[i]);
+			obj_image_edit->setText(strListR1Imag[i]);
 		}
 		else {
 			//loss type is None
-			_loss_table->setItem(i, cobjreal, new QTableWidgetItem("None"));
-			_loss_table->setItem(i, cobjimag, new QTableWidgetItem("None"));
-			_loss_table->item(i, cobjreal)->setFlags(Qt::NoItemFlags);
-			_loss_table->item(i, cobjimag)->setFlags(Qt::NoItemFlags);
+			obj_real_edit->setText("----");
+			obj_real_edit->setEnabled(false);
+			obj_image_edit->setText("----");
+			obj_image_edit->setEnabled(false);
 		}
-		_loss_table->insert2table(i, clossweight, strListWeight[i]);
+		_loss_table->setCellWidget(i, cobjreal, obj_real_edit);
+		_loss_table->setCellWidget(i, cobjimag, obj_real_edit);
+
+		QLineEdit* weight_edit = new QLineEdit;
+		weight_edit->setValidator(floatValidReg);
+		weight_edit->setText(strListWeight[i]);
+		_loss_table->setCellWidget(i, clossweight, weight_edit);
 	}
 	connect(loss_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_ChangeOptimaltype(QString)));
 }

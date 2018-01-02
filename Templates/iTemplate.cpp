@@ -25,6 +25,15 @@ void iTemplate::initUnitComBo(QComboBox *comb) {
 	comb->setCurrentIndex(3);
 }
 
+void iTemplate::initAngleComboBox(QComboBox* comb, const double low, const double up, const double step) {
+	double dangle = 0.0;
+	for (dangle = low; dangle < up; dangle += step) {
+		comb->addItem(QString::number(dangle));
+	}
+	comb->addItem(QString::number(up));
+	//comb->setCurrentIndex(0);
+}
+
 double iTemplate::unitConversion(double source_data, int pre_unit, int curr_unit, double max_frequency) {
 	double result = 0.0;
 	if (max_frequency >= -0.000001 && max_frequency <= 0.000001) {

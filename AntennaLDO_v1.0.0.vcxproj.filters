@@ -154,15 +154,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeAlg.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Wizard\wizardOptimizeGainAxialLoss.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeGainAxialLoss.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeGainAxialLoss.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="Wizard\wizardOptimizeVariables.cpp">
       <Filter>Wizard</Filter>
     </ClCompile>
@@ -325,6 +316,15 @@
     <ClCompile Include="Utility\commonStyle.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeGainAxial.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeGainAxial.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardOptimizeGainAxial.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -367,9 +367,6 @@
       <Filter>Wizard</Filter>
     </CustomBuild>
     <CustomBuild Include="Wizard\wizardOptimizeAlg.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\wizardOptimizeGainAxialLoss.h">
       <Filter>Wizard</Filter>
     </CustomBuild>
     <CustomBuild Include="Wizard\wizardOptimizeVariables.h">
@@ -422,6 +419,9 @@
     </CustomBuild>
     <CustomBuild Include="Utility\commonStyle.h">
       <Filter>Utility</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardOptimizeGainAxial.h">
+      <Filter>Wizard</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

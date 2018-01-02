@@ -19,6 +19,7 @@ public:
 	virtual bool checkInputValid() { return true; }
 	void initOptimalTypeComBox(QComboBox *combox);
 	void initUnitComBo(QComboBox *comb);
+	void initAngleComboBox(QComboBox* comb, const double low, const double up, const double step);
 	double unitConversion(double source_data, int pre_unit, int curr_unit, double max_frequency = 0.0);
 	QRegExpValidator* getFloatReg();
 	QRegExpValidator* getNonNegativeFloatReg();

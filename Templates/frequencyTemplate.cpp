@@ -1,5 +1,6 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 #include "frequencyTemplate.h"
 
 frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
@@ -105,21 +106,29 @@ bool frequencyTemplate::checkInputValid() {
 	QString frequency_up = _frequency_up_edit->text().trimmed();
 	QString frequency_num = _frequency_num_edit->text().trimmed();
 
-	if (frequency_low.isEmpty() || frequency_low.isNull() || frequency_up.isEmpty() || frequency_up.isNull() ||
-		frequency_num.isEmpty() || frequency_num.isNull()) {
-		checkInfo->code = eNull;
-		checkInfo->message = "设置参数不能为空。";
-		return false;
+	QList<QLineEdit *> fres{ _frequency_low_edit, _frequency_up_edit, _frequency_num_edit };
+	for (QLineEdit* item : fres) {
+		if (item->text().trimmed().isEmpty() || item->text().trimmed().isNull()) {
+			checkInfo->code = eNull;
+			checkInfo->message = "设置参数不能为空。";
+			commonStyle::setLineEditWarningStyle(item);
+			return false;
+		}
 	}
 	double frequency_low_d = frequency_low.toDouble();
 	double frequency_up_d = frequency_up.toDouble();
 	if (frequency_low_d > frequency_up_d) {
 		checkInfo->code = eInvalid;
 		checkInfo->message = "频率范围设置有误。";
+		commonStyle::setLineEditWarningStyle(_frequency_low_edit);
+		commonStyle::setLineEditWarningStyle(_frequency_up_edit);
 		return false;
 	}
 	//实时保存设置的最大频率
 	_atn_problem->max_frequency = frequency_up_d;
+	commonStyle::clearLineEditWarningStyle(_frequency_low_edit);
+	commonStyle::clearLineEditWarningStyle(_frequency_up_edit);
+	commonStyle::clearLineEditWarningStyle(_frequency_num_edit);
 	return true;
 }
 

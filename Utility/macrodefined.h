@@ -79,3 +79,5 @@ enum LOSSCOLUMN { cz0real = 0, cz0imag, closstype, clossoptimaltype, cdeltareal,
 enum NODESCOLUMN { nodeFlag = 0, coreFlag };
 enum VARVALUECOLUMN { keyFlag = 0, valueFlag };
 enum VARCOLUMN { varnote = 0, varmin, varmax, varunit, varvalue = 1 };	//since i want make varvalue at column-2
+enum FARFIELDCOLUMN { fthetastart = 0, fthetaend, fthetastep, fphistart, fphiend, fphistep };
+enum OPTIMIZETYPE {omax = 0, omin, odelta, onone};

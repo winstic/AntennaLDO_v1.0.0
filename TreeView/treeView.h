@@ -54,6 +54,8 @@ public slots:
 	void slot_designStop();
 	void slot_optimizeStop();
 	void slot_del();
+	void slot_designDel();
+	void slot_optimizeDel();
 	void slot_openFile();
 	void slot_modifyDesignVar();
 	void slot_modifyOptimizeVar();

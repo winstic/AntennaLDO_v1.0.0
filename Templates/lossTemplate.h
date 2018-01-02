@@ -10,11 +10,16 @@ public:
 	lossTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
 	~lossTemplate();
 
+public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();
+	bool checkInputValid();
 
-	public slots:
+signals:
+	void signal_checkValid();
+
+public slots:
 	void slot_ChangeOptimaltype(QString);
 
 private:
@@ -28,4 +33,5 @@ public:
 	QJsonObject* _obj;
 	QLayout* _layout;
 	tableTemplate* _loss_table;
+	bool _is_valid;
 };

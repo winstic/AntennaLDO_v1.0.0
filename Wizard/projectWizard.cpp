@@ -9,7 +9,7 @@ _antenna_problem(antenna_problem){
     //remove help menu
     this->setWindowFlags(windowFlags() &~ Qt::WindowContextHelpButtonHint);
 	
-	setWizardStyle(QWizard::ClassicStyle);
+	setWizardStyle(QWizard::ModernStyle);
 	setButtonText(QWizard::BackButton, "<上一步");
     setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");

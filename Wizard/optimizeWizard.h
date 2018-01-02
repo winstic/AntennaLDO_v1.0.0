@@ -3,7 +3,7 @@
 #include <QWizard>
 #include <QWizardPage>
 #include "wizardFreFarField.h"
-#include "wizardOptimizeGainAxialLoss.h"
+#include "wizardOptimizeGainAxial.h"
 #include "wizardOptimizeVariables.h"
 #include "wizardOptimizeAlg.h"
 
@@ -23,7 +23,7 @@ private:
 	QJsonObject* _problem_obj;
 	QJsonObject** _algorithm_obj;
 	wizardFreFarField* _optimize_pre_far;
-    wizardOptimizeAXL* _optimize_axl;
+    wizardOptimizeAX* _optimize_axl;
     wizardOptimizeVariables* _optimize_vars;
     wizardOptimizeAlg* _optimize_alg;
 };

@@ -13,6 +13,10 @@ public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();
+	bool checkInputValid();
+
+signals:
+	void signal_checkValid();
 
 public slots:
 	void slot_unitChange(QString);
@@ -20,6 +24,8 @@ public slots:
 private:
 	void initDefaultData();
 	void initLayout();
+	void setCheckNullInfo();
+	void setCheckUncompleteInfo();
 
 public:
 	parsProblem* _atn_problem;
@@ -28,4 +34,5 @@ public:
 	tableTemplate* _vars_table;
 	QLabel* _atn_image_label;
 	QMap<int, int> _vars_unit;				//save combobox unit
+	bool _is_valid;
 };

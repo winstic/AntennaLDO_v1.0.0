@@ -72,10 +72,10 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 	element.setAttribute("flag", "optimize");
 	root.appendChild(element);
 
-	element = doc.createElement("node");
+	/*element = doc.createElement("node");
 	element.setAttribute("name", "结果查看");
 	element.setAttribute("flag", "result");
-	root.appendChild(element);
+	root.appendChild(element);*/
 
 	out.setCodec("UTF-8");
 	doc.save(out, 4);   //4 spaces
@@ -239,8 +239,8 @@ void treeModel::parseItemElement(const QDomElement &element, QStandardItem *pare
 
 void treeModel::initMenu() {
 	QAction* act_close = new QAction("关闭", _pro_tree);
-	QAction* act_del = new QAction("删除", _pro_tree);
-	connect(act_del, &QAction::triggered, this, &treeModel::slot_del);
+	//QAction* act_del = new QAction("删除", _pro_tree);
+	//connect(act_del, &QAction::triggered, this, &treeModel::slot_del);
 	QAction* act_hide_all = new QAction("全部折叠", _pro_tree);
 	connect(act_hide_all, &QAction::triggered, this, &treeModel::slot_hideAll);
 	QAction* act_show_all = new QAction("全部展开", _pro_tree);
@@ -250,16 +250,20 @@ void treeModel::initMenu() {
 	QAction* act_add_optimize = new QAction("添加优化", _pro_tree);
 	connect(act_add_optimize, &QAction::triggered, this, &treeModel::slot_addOptimize);
 	//design run
+	//QAction* act_design_del = new QAction("删除", _pro_tree);
+	//connect(act_design_del, &QAction::triggered, this, &treeModel::slot_designDel);
 	QAction* act_design_run = new QAction("运行", _pro_tree);
 	connect(act_design_run, &QAction::triggered, this, &treeModel::slot_designRun);
 	//optimize run
+	//QAction* act_optimize_del = new QAction("删除", _pro_tree);
+	//connect(act_optimize_del, &QAction::triggered, this, &treeModel::slot_optimizeDel);
 	QAction* act_optimize_run = new QAction("运行", _pro_tree);
 	connect(act_optimize_run, &QAction::triggered, this, &treeModel::slot_optimizeRun);
-	QAction* act_interrupt = new QAction("暂停", _pro_tree);
-	connect(act_interrupt, &QAction::triggered, this, &treeModel::slot_interrupt);
-	QAction* act_design_stop = new QAction("终止", _pro_tree);
-	connect(act_design_stop, &QAction::triggered, this, &treeModel::slot_designStop);
-	QAction* act_optimize_stop = new QAction("终止", _pro_tree);
+	//QAction* act_interrupt = new QAction("暂停", _pro_tree);
+	//connect(act_interrupt, &QAction::triggered, this, &treeModel::slot_interrupt);
+	//QAction* act_design_stop = new QAction("终止", _pro_tree);
+	//connect(act_design_stop, &QAction::triggered, this, &treeModel::slot_designStop);
+	QAction* act_optimize_stop = new QAction("结束", _pro_tree);
 	connect(act_optimize_stop, &QAction::triggered, this, &treeModel::slot_optimizeStop);
 	QAction* act_open_file = new QAction("打开", _pro_tree);
 	connect(act_open_file, &QAction::triggered, this, &treeModel::slot_openFile);
@@ -267,12 +271,12 @@ void treeModel::initMenu() {
 	connect(act_modify_design_var, &QAction::triggered, this, &treeModel::slot_modifyDesignVar);
 	QAction* act_modify_optimize_var = new QAction("修改参数", _pro_tree);
 	connect(act_modify_optimize_var, &QAction::triggered, this, &treeModel::slot_modifyOptimizeVar);
-	QAction* act_show_result = new QAction("结果查看", _pro_tree);
+	//QAction* act_show_result = new QAction("结果查看", _pro_tree);
 	//actShowResult->setEnabled(false);
-	connect(act_show_result, &QAction::triggered, this, &treeModel::slot_showResult);
+	//connect(act_show_result, &QAction::triggered, this, &treeModel::slot_showResult);
 
 	_project_menu->addAction(act_close);
-	_project_menu->addAction(act_del);
+	//_project_menu->addAction(act_del);
 	_project_menu->addSeparator();
 	_project_menu->addAction(act_hide_all);
 	_project_menu->addAction(act_show_all);
@@ -286,20 +290,20 @@ void treeModel::initMenu() {
 	_item_design_menu->addAction(act_modify_design_var);
 	_item_design_menu->addSeparator();
 	_item_design_menu->addAction(act_design_run);
-	_item_design_menu->addAction(act_interrupt);
-	_item_design_menu->addAction(act_design_stop);
+	//_item_design_menu->addAction(act_interrupt);
+	//_item_design_menu->addAction(act_design_stop);
 	_item_design_menu->addSeparator();
-	_item_design_menu->addAction(act_del);
-	_item_design_menu->addAction(act_show_result);
+	//_item_design_menu->addAction(act_del);
+	//_item_design_menu->addAction(act_show_result);
 
 	_item_optimize_menu->addAction(act_modify_optimize_var);
 	_item_optimize_menu->addSeparator();
 	_item_optimize_menu->addAction(act_optimize_run);
-	_item_optimize_menu->addAction(act_interrupt);
+	//_item_optimize_menu->addAction(act_interrupt);
 	_item_optimize_menu->addAction(act_optimize_stop);
 	_item_optimize_menu->addSeparator();
-	_item_optimize_menu->addAction(act_del);
-	_item_optimize_menu->addAction(act_show_result);
+	//_item_optimize_menu->addAction(act_del);
+	//_item_optimize_menu->addAction(act_show_result);
 }
 
 QList<QStandardItem*> treeModel::getRoots() {
@@ -655,6 +659,24 @@ void treeModel::slot_del() {
 	p.waitForFinished();
 	QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
 	qDebug() << str;
+}
+
+void treeModel::slot_designDel() {
+	QDir* dir = new QDir;
+	QString curr_design_path = dataPool::global::getGCurrentDesignPath();	
+	dir->rmdir(curr_design_path);	
+	delete dir;
+	dir = nullptr;
+	qCritical("delete sub-project '%s' failed", qUtf8Printable(curr_design_path));
+}
+
+void treeModel::slot_optimizeDel() {
+	QDir* dir = new QDir;
+	QString curr_optimize_path = dataPool::global::getGCurrentOptimizePath();
+	qCritical("delete sub-project '%s' failed", qUtf8Printable(curr_optimize_path));
+	dir->rmdir(curr_optimize_path);
+	delete dir;
+	dir = nullptr;
 }
 
 //optimize run process to read pipe

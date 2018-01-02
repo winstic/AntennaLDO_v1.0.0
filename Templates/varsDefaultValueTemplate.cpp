@@ -13,17 +13,12 @@ varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJs
 	QStringList header;
 	header << "变量" << "参数值" << "单位";
 	_vars_table->setHorizontalHeaderLabels(header);
-	_vars_table->horizontalHeader()->setSectionsClickable(false);
 	_vars_table->horizontalHeader()->setSectionResizeMode(varvalue, QHeaderView::Stretch);
 	_vars_table->horizontalHeader()->setSectionResizeMode(2, QHeaderView::ResizeToContents);
-	_vars_table->horizontalHeader()->resizeSection(0, 120);        //setting first column width is 120
+	_vars_table->horizontalHeader()->resizeSection(varnote, 120);        //setting first column width is 120
 	_vars_table->verticalHeader()->setSectionResizeMode(QHeaderView::ResizeToContents);
 	_vars_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
 	_vars_table->setShowGrid(false);                               //setting no grid line
-	_vars_table->setSelectionBehavior(QAbstractItemView::SelectRows);
-	_vars_table->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
-	_vars_table->setStyleSheet("selection-background-color:lightblue;");   //setting selected background
-	//_vars_table->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); //setting header background
 	_vars_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 
 	initDefaultData();

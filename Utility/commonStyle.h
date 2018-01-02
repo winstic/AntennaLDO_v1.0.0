@@ -8,4 +8,6 @@ public:
 	static void setHintStyle(QLabel* hint);
 	static void setLineEditWarningStyle(QLineEdit* edit);
 	static void clearLineEditWarningStyle(QLineEdit* edit);
+	static void setComboBoxWarningStyle(QComboBox* comb);
+	static void clearComboBoxWarningStyle(QComboBox* comb);
 };

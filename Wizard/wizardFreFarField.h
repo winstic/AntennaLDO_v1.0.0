@@ -21,6 +21,5 @@ private:
 	QJsonObject* _obj;
 	parsProblem* _atn_problem;
 	frequencyTemplate* _frequency_widget;
-	thetaPhiTemplate* _theta_phi_widget;
 	QLabel* _hint;
 };

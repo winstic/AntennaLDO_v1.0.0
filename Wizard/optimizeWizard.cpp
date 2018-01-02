@@ -10,11 +10,11 @@ optimizeWizard::optimizeWizard(parsProblem* atn_problem, QJsonObject* problem_ob
 	setWindowTitle("优化向导");
 
 	_optimize_pre_far = new wizardFreFarField(_atn_problem, _problem_obj);
-	_optimize_axl = new wizardOptimizeAXL(_atn_problem, _problem_obj);
+	_optimize_axl = new wizardOptimizeAX(_atn_problem, _problem_obj);
 	_optimize_vars = new wizardOptimizeVariables(_atn_problem, _problem_obj);
 	_optimize_alg = new wizardOptimizeAlg(_atn_problem, _algorithm_obj, _algorithm);	
 	
-	setWizardStyle(QWizard::ClassicStyle);
+	setWizardStyle(QWizard::ModernStyle);
 	setButtonText(QWizard::BackButton, "<上一步");
 	setButtonText(QWizard::NextButton, "下一步>");
 	setButtonText(QWizard::CancelButton, "取消");
