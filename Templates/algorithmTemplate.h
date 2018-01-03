@@ -13,6 +13,10 @@ public:
 	QLayout* getLayout();
 	//update _obj
 	void updateJObj();
+	bool checkInputValid();
+
+signals:
+	void signal_checkValid();
 
 public slots:
 	void slot_algName(const int index);
@@ -30,4 +34,5 @@ public:
 	QComboBox* _alg_combox;
 	tableTemplate* _alg_vars_table;
 	QLayout* _layout;
+	bool _is_valid;
 };

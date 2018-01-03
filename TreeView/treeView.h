@@ -7,6 +7,7 @@
 #include <QTextStream>
 #include <QProcess>
 #include "../Antenna/modeInfo.h"
+#include "../Antenna/geometryModel.h"
 
 class treeModel : public QTreeView {
 	Q_OBJECT
@@ -14,14 +15,14 @@ public:
 	explicit treeModel(QWidget* parent = 0);
 	QTreeView* getTreeWidget();
 	bool updateXMLFile(const QString &fileName, const QStandardItem *item, const QStandardItem *child);
-	bool parseXML(const QString& file_name, parsProblem* atn_problem);
+	bool parseXML(const QString& file_name, parsProblem* atn_problem, QJsonObject* obj);
 	~treeModel() {}
 
 private:
 	void parseProjectElement(const QDomElement &element, QStandardItem* parent);
 	void parseNodeElement(const QDomElement &element, QStandardItem *parent);
 	void parseItemElement(const QDomElement &element, QStandardItem *parent);	
-	bool writeXMLFile(const QString& file_name, parsProblem* atn_problem);
+	bool writeXMLFile(const QString& file_name, parsProblem* atn_problem, QJsonObject* obj);
 
 	//make no sence
 	QList<QStandardItem*> getRoots();           //获取所有节点
@@ -30,15 +31,6 @@ private:
 
 	void initMenu();
 	void initIcon();
-	//void showTree();
-
-	inline QMenu* getProjectMenu() { return _project_menu; }
-	inline QMenu* getAtnDesignMenu() { return _atn_design_menu; }
-	inline QMenu* getAtnOptimizeMenu() { return _atn_optimize_menu; }
-	inline QMenu* getResultMenu() { return _result_menu; }
-	inline QMenu* getItemViewMenu() { return _item_view_menu; }
-	inline QMenu* getItemDesignMenu() { return _item_design_menu; }
-	inline QMenu* getItemOptimizeMenu() { return _item_optimize_menu; }
 
 signals:
 	void signal_outputMessage(QString);
@@ -46,8 +38,6 @@ signals:
 public slots:
 	void slot_showAll();
 	void slot_hideAll();
-	void slot_addDesign();
-	void slot_addOptimize();
 	void slot_designRun();
 	void slot_optimizeRun();
 	void slot_interrupt();
@@ -60,6 +50,8 @@ public slots:
 	void slot_modifyDesignVar();
 	void slot_modifyOptimizeVar();
 	void slot_showResult();
+
+	void slot_modifyGeometryVariables();
 	//实时读取标准输出
 	void slot_readyRead();
 
@@ -67,21 +59,20 @@ public slots:
 	void slot_customContextMenuRequested(const QPoint &pos);
 	void slot_doubleClicked(const QModelIndex& item_index);
 	void slot_clicked(const QModelIndex& item_index);
-	void slot_creatProTreeByXML(QString&, parsProblem*);
+	void slot_creatProTreeByXML(QString&, parsProblem*, QJsonObject*);
 
 private:
 	parsProblem* _atn_problem;
+	QJsonObject* _obj;
 	QTreeView *_pro_tree;
 	modelInfo* _model_info;
 	QMap<QString, QIcon> _icon_map;
 	//different menu can respond different right click
 	QMenu* _project_menu;
 	QMenu* _atn_design_menu;
-	QMenu* _atn_optimize_menu;
-	QMenu* _result_menu;
-	QMenu* _item_design_menu;
-	QMenu* _item_optimize_menu;
-	QMenu* _item_view_menu;
+	QMenu* _performance_menu;
+	QMenu* _item_performance_menu;
+
 	QModelIndex* _curr_item_index;
 
 	//optimizal process

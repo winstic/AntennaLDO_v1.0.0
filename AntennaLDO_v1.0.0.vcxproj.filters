@@ -325,6 +325,24 @@
     <ClCompile Include="Wizard\wizardOptimizeGainAxial.cpp">
       <Filter>Wizard</Filter>
     </ClCompile>
+    <ClCompile Include="Antenna\algorithmModel.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_algorithmModel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_algorithmModel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\geometryModel.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_geometryModel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_geometryModel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -422,6 +440,12 @@
     </CustomBuild>
     <CustomBuild Include="Wizard\wizardOptimizeGainAxial.h">
       <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\algorithmModel.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\geometryModel.h">
+      <Filter>Antenna</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

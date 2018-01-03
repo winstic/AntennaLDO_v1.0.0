@@ -13,8 +13,11 @@ treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
 	_pro_tree = new QTreeView(this);
 	_project_menu = new QMenu(this);
 	_atn_design_menu = new QMenu(this);
-	_performance_menu = new QMenu(this);
-	_item_performance_menu = new QMenu(this);
+	_atn_optimize_menu = new QMenu(this);
+	_item_design_menu = new QMenu(this);
+	_item_optimize_menu = new QMenu(this);
+	_item_view_menu = new QMenu(this);
+	_result_menu = new QMenu(this);
 	_curr_item_index = new QModelIndex();
 	_atn_problem = new parsProblem;
 	
@@ -35,15 +38,15 @@ QTreeView* treeModel::getTreeWidget() {
 	return _pro_tree;
 }
 
-bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem, QJsonObject* obj) {
+//外部接口
+bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
-	_obj = obj;
 	QFile file(file_name);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 		return false;
 	QTextStream out(&file);
 	QDomDocument doc;
-	QDomElement root, element, design_element, performance_element;
+	QDomElement root, element;
 	QDomText text;
 	QDomProcessingInstruction instruction = doc.createProcessingInstruction("xml", "version = \'1.0\' encoding = \'UTF-8\'");
 	doc.appendChild(instruction);
@@ -59,36 +62,20 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem,
 	element.setAttribute("flag", "viewOnly");
 	root.appendChild(element);
 
-	design_element = doc.createElement("node");
-	design_element.setAttribute("name", "设计");
-	design_element.setAttribute("flag", "design");
-	root.appendChild(design_element);
+	element = doc.createElement("node");
+	element.setAttribute("name", "设计");
+	element.setAttribute("flag", "design");
+	root.appendChild(element);
 
-	performance_element = doc.createElement("node");
-	performance_element.setAttribute("name", "性能参数");
-	performance_element.setAttribute("flag", "performance");
-	design_element.appendChild(performance_element);
+	element = doc.createElement("node");
+	element.setAttribute("name", "优化");
+	element.setAttribute("flag", "optimize");
+	root.appendChild(element);
 
-	element = doc.createElement("item");
-	text = doc.createTextNode("几何参数");
-	element.setAttribute("flag", "geometry");
-	element.appendChild(text);
-	design_element.appendChild(element);
-
-	element = doc.createElement("item");
-	text = doc.createTextNode("算法参数");
-	element.setAttribute("flag", "algorithm");
-	element.appendChild(text);
-	design_element.appendChild(element);
-
-	QJsonObject frequency_obj = parseJson::getSubJsonObj(*obj, "FreSetting");
-	QStringList str_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
-	for (int i = 0; i < str_list.size(); ++i) {
-		element = doc.createElement("item");
-		text = doc.createTextNode(QString("频段%1").arg(i+1));
-		element.appendChild(text);
-		performance_element.appendChild(element);
-	}
+	/*element = doc.createElement("node");
+	element.setAttribute("name", "结果查看");
+	element.setAttribute("flag", "result");
+	root.appendChild(element);*/
 
 	out.setCodec("UTF-8");
 	doc.save(out, 4);   //4 spaces
@@ -96,7 +83,6 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem,
 	return true;
 }
 
-//外部接口
 bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *item, const QStandardItem *child) {
 	//!get xml root node
 	QFile in_file(file_name);
@@ -124,10 +110,12 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 	while (!root_child.isNull()) {
 		root_child_element = root_child.toElement();
 		if (("node" == root_child_element.tagName()) && root_child_element.hasAttribute("flag")) {
-			if (MARK_NODE_DESIGN == item->data(ROLE_MARK_NODE) && "performance" == root_child_element.attribute("flag")) {
+			if ((MARK_NODE_DESIGN == item->data(ROLE_MARK_NODE) && "design" == root_child_element.attribute("flag")) ||
+				(MARK_NODE_OPTIMIZE == item->data(ROLE_MARK_NODE) && "optimize" == root_child_element.attribute("flag"))) {
 				QDomElement design_element = doc.createElement("item");
 				QDomText design_text = doc.createTextNode(child->text());
 				design_element.appendChild(design_text);
+				design_element.setAttribute("id", root_child_element.childNodes().count() + 1);
 				root_child_element.appendChild(design_element);
 				break;
 			}
@@ -147,7 +135,7 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 }
 
 //外部接口
-bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem, QJsonObject* obj) {
+bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
 	QFile file(file_name);
 	if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -207,9 +195,13 @@ void treeModel::parseNodeElement(const QDomElement &element, QStandardItem *pare
 		item->setData(MARK_NODE, ROLE_MARK);
 		item->setData(MARK_NODE_DESIGN, ROLE_MARK_NODE);
 	}
-	else if (element.hasAttribute("flag") && "performance" == element.attribute("flag")) {
+	else if (element.hasAttribute("flag") && "optimize" == element.attribute("flag")) {
 		item->setData(MARK_NODE, ROLE_MARK);
-		item->setData(MARK_NODE_PERFORMANCE, ROLE_MARK_NODE);
+		item->setData(MARK_NODE_OPTIMIZE, ROLE_MARK_NODE);
+	}
+	else {
+		item->setData(MARK_NODE, ROLE_MARK);
+		item->setData(MARK_NODE_RESULT, ROLE_MARK_NODE);
 	}
 	parent->appendRow(item);
 
@@ -234,46 +226,84 @@ void treeModel::parseItemElement(const QDomElement &element, QStandardItem *pare
 		item->setData(MARK_ITEM, ROLE_MARK);
 		item->setData(MARK_ITEM_OPENFILE, ROLE_MARK_ITEM);
 	}
-	else if (element.hasAttribute("flag") && "geometry" == element.attribute("flag")) {
+	else if (MARK_NODE_DESIGN == parent->data(ROLE_MARK_NODE)) {
 		item->setData(MARK_ITEM, ROLE_MARK);
-		item->setData(MARK_ITEM_GEOMETRYDESIGN, ROLE_MARK_ITEM);
+		item->setData(MARK_ITEM_ATNDESIGN, ROLE_MARK_ITEM);
 	}
-	else if (element.hasAttribute("flag") && "algorithm" == element.attribute("flag")) {
+	else if (MARK_NODE_OPTIMIZE == parent->data(ROLE_MARK_NODE)) {
 		item->setData(MARK_ITEM, ROLE_MARK);
-		item->setData(MARK_ITEM_ALGORITHMDESIGN, ROLE_MARK_ITEM);
-	}
-	else if (MARK_NODE_PERFORMANCE == parent->data(ROLE_MARK_NODE)) {
-		item->setData(MARK_ITEM, ROLE_MARK);
-		item->setData(MARK_ITEM_PERFORMANCEDESIGN, ROLE_MARK_ITEM);
+		item->setData(MARK_ITEM_ATNOPTIMIZE, ROLE_MARK_ITEM);
 	}
 	parent->appendRow(item);
 }
 
 void treeModel::initMenu() {
 	QAction* act_close = new QAction("关闭", _pro_tree);
-	QAction* act_del = new QAction("删除", _pro_tree);
+	//QAction* act_del = new QAction("删除", _pro_tree);
 	//connect(act_del, &QAction::triggered, this, &treeModel::slot_del);
-
-	QAction* act_design_copy = new QAction("复制", _pro_tree);
-	QAction* act_design_run = new QAction("运行", _pro_tree);	
-	QAction* act_design_stop = new QAction("停止", _pro_tree);
-	QAction* act_design_del = new QAction("删除", _pro_tree);
-
-	QAction* act_performance_add = new QAction("新增", _pro_tree);
-
-	QAction* act_performance_item_del = new QAction("删除", _pro_tree);
+	QAction* act_hide_all = new QAction("全部折叠", _pro_tree);
+	connect(act_hide_all, &QAction::triggered, this, &treeModel::slot_hideAll);
+	QAction* act_show_all = new QAction("全部展开", _pro_tree);
+	connect(act_show_all, &QAction::triggered, this, &treeModel::slot_showAll);
+	QAction* act_add_design = new QAction("添加设计", _pro_tree);
+	connect(act_add_design, &QAction::triggered, this, &treeModel::slot_addDesign);
+	QAction* act_add_optimize = new QAction("添加优化", _pro_tree);
+	connect(act_add_optimize, &QAction::triggered, this, &treeModel::slot_addOptimize);
+	//design run
+	//QAction* act_design_del = new QAction("删除", _pro_tree);
+	//connect(act_design_del, &QAction::triggered, this, &treeModel::slot_designDel);
+	QAction* act_design_run = new QAction("运行", _pro_tree);
+	connect(act_design_run, &QAction::triggered, this, &treeModel::slot_designRun);
+	//optimize run
+	//QAction* act_optimize_del = new QAction("删除", _pro_tree);
+	//connect(act_optimize_del, &QAction::triggered, this, &treeModel::slot_optimizeDel);
+	QAction* act_optimize_run = new QAction("运行", _pro_tree);
+	connect(act_optimize_run, &QAction::triggered, this, &treeModel::slot_optimizeRun);
+	//QAction* act_interrupt = new QAction("暂停", _pro_tree);
+	//connect(act_interrupt, &QAction::triggered, this, &treeModel::slot_interrupt);
+	//QAction* act_design_stop = new QAction("终止", _pro_tree);
+	//connect(act_design_stop, &QAction::triggered, this, &treeModel::slot_designStop);
+	QAction* act_optimize_stop = new QAction("结束", _pro_tree);
+	connect(act_optimize_stop, &QAction::triggered, this, &treeModel::slot_optimizeStop);
+	QAction* act_open_file = new QAction("打开", _pro_tree);
+	connect(act_open_file, &QAction::triggered, this, &treeModel::slot_openFile);
+	QAction* act_modify_design_var = new QAction("修改参数", _pro_tree);
+	connect(act_modify_design_var, &QAction::triggered, this, &treeModel::slot_modifyDesignVar);
+	QAction* act_modify_optimize_var = new QAction("修改参数", _pro_tree);
+	connect(act_modify_optimize_var, &QAction::triggered, this, &treeModel::slot_modifyOptimizeVar);
+	//QAction* act_show_result = new QAction("结果查看", _pro_tree);
+	//actShowResult->setEnabled(false);
+	//connect(act_show_result, &QAction::triggered, this, &treeModel::slot_showResult);
 
 	_project_menu->addAction(act_close);
-	_project_menu->addAction(act_del);
+	//_project_menu->addAction(act_del);
+	_project_menu->addSeparator();
+	_project_menu->addAction(act_hide_all);
+	_project_menu->addAction(act_show_all);
 
-	_atn_design_menu->addAction(act_design_copy);
-	_atn_design_menu->addAction(act_design_run);
-	_atn_design_menu->addAction(act_design_stop);
-	_atn_design_menu->addSeparator();
-	_atn_design_menu->addAction(act_design_del);
+	_atn_design_menu->addAction(act_add_design);
 
-	_performance_menu->addAction(act_performance_add);
-	_item_performance_menu->addAction(act_performance_item_del);
+	_atn_optimize_menu->addAction(act_add_optimize);
+
+	_item_view_menu->addAction(act_open_file);
+
+	_item_design_menu->addAction(act_modify_design_var);
+	_item_design_menu->addSeparator();
+	_item_design_menu->addAction(act_design_run);
+	//_item_design_menu->addAction(act_interrupt);
+	//_item_design_menu->addAction(act_design_stop);
+	_item_design_menu->addSeparator();
+	//_item_design_menu->addAction(act_del);
+	//_item_design_menu->addAction(act_show_result);
+
+	_item_optimize_menu->addAction(act_modify_optimize_var);
+	_item_optimize_menu->addSeparator();
+	_item_optimize_menu->addAction(act_optimize_run);
+	//_item_optimize_menu->addAction(act_interrupt);
+	_item_optimize_menu->addAction(act_optimize_stop);
+	_item_optimize_menu->addSeparator();
+	//_item_optimize_menu->addAction(act_del);
+	//_item_optimize_menu->addAction(act_show_result);
 }
 
 QList<QStandardItem*> treeModel::getRoots() {
@@ -316,10 +346,10 @@ QList<QStandardItem*> treeModel::getFolderNode() {
 
 // slot function
 //create project tree by xml file
-void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem, QJsonObject* obj) {
+void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem) {
 	//该槽函数是treeView与AntennaLibrary的唯一接口
-	writeXMLFile(path, atn_problem, obj);
-	parseXML(path, atn_problem, obj);
+	writeXMLFile(path, atn_problem);
+	parseXML(path, atn_problem);
 	qInfo("create project tree.");
 }
 
@@ -338,12 +368,30 @@ void treeModel::slot_customContextMenuRequested(const QPoint &pos) {
 		else if (var_folder.isValid() && var_int == MARK_NODE) {
 			if (var_folder.toInt() == MARK_NODE_DESIGN)
 				_atn_design_menu->exec(QCursor::pos());
-			else if (var_folder.toInt() == MARK_NODE_PERFORMANCE)
-				_performance_menu->exec(QCursor::pos());
+			else if (var_folder.toInt() == MARK_NODE_OPTIMIZE)
+				_atn_optimize_menu->exec(QCursor::pos());
+			else
+				_result_menu->exec(QCursor::pos());
 		}
 		else if (var_item.isValid() && var_int == MARK_ITEM) {
-			if (var_item_int == MARK_ITEM_PERFORMANCEDESIGN)
-				_item_performance_menu->exec(QCursor::pos());
+			if (var_item_int == MARK_ITEM_OPENFILE)
+				_item_view_menu->exec(QCursor::pos());
+			else if (var_item_int == MARK_ITEM_ATNDESIGN) {
+				int design_index = _curr_item_index->row() + 1;
+				//update current design path
+				QString current_design_path = QString("%1/design%2").arg(dataPool::global::getGWorkingProjectPath()).arg(design_index);
+				dataPool::global::setGCurrentDesignPath(current_design_path);
+				_item_design_menu->exec(QCursor::pos());
+				qInfo("current design path change to '%s'", qUtf8Printable(current_design_path));
+			}
+			else if (var_item_int == MARK_ITEM_ATNOPTIMIZE) {
+				int optimize_index = _curr_item_index->row() + 1;
+				//update current optimize path
+				QString current_optimize_path = QString("%1/optimize%2").arg(dataPool::global::getGWorkingProjectPath()).arg(optimize_index);
+				dataPool::global::setGCurrentOptimizePath(current_optimize_path);
+				_item_optimize_menu->exec(QCursor::pos());
+				qInfo("current optimize path change to '%1'", qUtf8Printable(current_optimize_path));
+			}
 		}
 	}
 }
@@ -361,18 +409,22 @@ void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
 	int d_o_index = item_index.row() + 1;
 	if (var_item.isValid()) {
 		int item_int = var_item.toInt();
-		if (item_int == MARK_ITEM_GEOMETRYDESIGN) {
-			slot_modifyGeometryVariables();
+		if (item_int == MARK_ITEM_ATNDESIGN) {
+			//update current design path
+			QString current_design_path = QString("%1/design%2").arg(dataPool::global::getGWorkingProjectPath()).arg(d_o_index);
+			dataPool::global::setGCurrentDesignPath(current_design_path);
+			slot_modifyDesignVar();
+			qInfo("current design path change to '%s'", qUtf8Printable(current_design_path));
 		}
-		else if (item_int == MARK_ITEM_ALGORITHMDESIGN) {
-			//编辑算法参数
+		else if (item_int == MARK_ITEM_ATNOPTIMIZE) {
+			//update current optimize path
+			QString current_optimize_path = QString("%1/optimize%2").arg(dataPool::global::getGWorkingProjectPath()).arg(d_o_index);
+			dataPool::global::setGCurrentOptimizePath(current_optimize_path);
+			slot_modifyOptimizeVar();
+			qInfo("current optimize path change to '%s'", qUtf8Printable(current_optimize_path));
 		}
-		else if (item_int == MARK_ITEM_PERFORMANCEDESIGN) {
-			//编辑性能参数（频段）
-		}
-		else if (item_int == MARK_ITEM_OPENFILE) {
+		else if (item_int == MARK_ITEM_OPENFILE)
 			slot_openFile();
-		}
 	}
 }
 
@@ -380,14 +432,143 @@ void treeModel::slot_clicked(const QModelIndex& item_index) {
 	_curr_item_index = const_cast<QModelIndex*>(&item_index);
 }
 
+void treeModel::slot_addDesign() {	
+	if (_curr_item_index == nullptr) {
+		qCritical("do not select item model.");
+		return;
+	}
+	QStandardItemModel *item_model = const_cast<QStandardItemModel *>(
+		static_cast<const QStandardItemModel *>(_curr_item_index->model()));
+	QStandardItem *item = item_model->itemFromIndex(*_curr_item_index);
+	QVariant var_node = _curr_item_index->data(ROLE_MARK_NODE);
+	if (var_node.isValid()) {
+		if (MARK_NODE_DESIGN == var_node.toInt()) {
+			QString working_path = dataPool::global::getGWorkingProjectPath();
+			QString json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);
+			QJsonObject obj = parseJson::getJsonObj(json_path);
+			if (obj.isEmpty()) {
+				qCritical("get json object field.");
+				return;
+			}
+			designWizard wizard(_atn_problem, &obj, this);
+			if (wizard.exec() == 1) 
+			{
+				QString design_name = QString("设计%1").arg(item->rowCount() + 1);
+				QDir* dir = new QDir();
+				QString design_path = QString("%1/design%2").arg(working_path).arg(item->rowCount() + 1);
+
+				QStandardItem *child = new QStandardItem(_icon_map[QStringLiteral("treeItem")], design_name);
+				child->setData(MARK_ITEM, ROLE_MARK);
+				child->setData(MARK_ITEM_ATNDESIGN, ROLE_MARK_ITEM);
+				item->appendRow(child);
+				dir->mkdir(design_path);
+
+				//copy files(.json, module file) in designDir from projectDir
+				bool is_success = true;
+				is_success &= dataPool::copyFile(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name),
+					QString("%1/%2_conf.json").arg(design_path).arg(_atn_problem->name));
+				if(is_success && _atn_problem->type == HFSS)
+					is_success &= dataPool::copyFile(QString("%1/%2_design.vbs").arg(working_path).arg(_atn_problem->name),
+						QString("%1/%2_design.vbs").arg(design_path).arg(_atn_problem->name));
+				if (!is_success) {
+					qCritical("create sub-project '%s' failed", qUtf8Printable(design_path));
+					dir->rmdir(design_path);
+					delete dir;
+					dir = nullptr;
+					return;
+				}
+				//update current design path
+				dataPool::global::setGCurrentDesignPath(design_path);
+				qInfo("current design path change to '%s'", qUtf8Printable(design_path));
+				//update json file
+				parseJson::write(QString("%1/%2_conf.json").arg(design_path).arg(_atn_problem->name), &obj);
+				//update xml file
+				updateXMLFile(QString("%1/%2.xml").arg(working_path).arg(dataPool::global::getGProjectName()), item, child);
+				delete dir;
+				dir = nullptr;
+			}
+		}
+	}
+}
+
+void treeModel::slot_addOptimize() {
+	QStandardItemModel *item_model = const_cast<QStandardItemModel *>(
+		static_cast<const QStandardItemModel *>(_curr_item_index->model()));
+	QStandardItem *item = item_model->itemFromIndex(*_curr_item_index);
+	QVariant var_node = _curr_item_index->data(ROLE_MARK_NODE);
+	if (var_node.isValid()) {
+		if (MARK_NODE_OPTIMIZE == var_node.toInt()) {
+			QString working_path = dataPool::global::getGWorkingProjectPath();
+			QString problem_json_path = QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name);			
+			QJsonObject problem_obj;
+			problem_obj = parseJson::getJsonObj(problem_json_path);
+			if (problem_obj.isEmpty()) {
+				qCritical("get json object field.");
+				return;
+			}
+			//pass by pointer
+			QJsonObject* algorithm_obj = nullptr;	//do not know which algorithm right now.
+			parsAlgorithm* pars_algorithm = nullptr;
+			//在引导页面根据选择的算法为pars_algorithm实例化，所以传递指针的地址；
+			optimizeWizard wizard(_atn_problem, &problem_obj, &algorithm_obj, &pars_algorithm, this);
+			if (wizard.exec() == 1) {
+				//json obj already updated.
+				QString optimize_name = QString("优化%1").arg(item->rowCount() + 1);
+				QDir *dir = new QDir();
+				QString optimize_path = QString("%1/optimize%2").arg(working_path).arg(item->rowCount() + 1);
+				QStandardItem *child = new QStandardItem(_icon_map[QStringLiteral("treeItem")], optimize_name);
+				child->setData(MARK_ITEM, ROLE_MARK);
+				child->setData(MARK_ITEM_ATNOPTIMIZE, ROLE_MARK_ITEM);
+				item->appendRow(child);
+				dir->mkdir(optimize_path);
+
+				QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
+				bool is_success = true;
+				//copy files(.json..,) in optimizeDir
+				is_success &= (dataPool::copyFile(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name),	QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name)) &&
+					dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), QString("%1/global_conf.json").arg(optimize_path)) &&
+					dataPool::copyFile(QString("%1/%2_conf.json").arg(pars_algorithm->path).arg(pars_algorithm->name), QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name)));
+				if (is_success) {
+					dir->mkdir(QString("%1/outfilepath").arg(optimize_path));
+					global_obj.insert("outfilepath", QString("%1/outfilepath").arg(optimize_path));
+					if (_atn_problem->type == HFSS) {
+						dir->mkdir(QString("%1/outhfsspath").arg(optimize_path));
+						global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(optimize_path));
+					}
+					else if (_atn_problem->type == FEKO)
+						is_success &= dataPool::copyFile(QString("%1/%2.cfx").arg(working_path).arg(_atn_problem->name),
+							QString("%1/outfilepath/%2.cfx").arg(optimize_path).arg(_atn_problem->name));
+					global_obj.insert("ALGORITHM_NAME", pars_algorithm->name);
+					global_obj.insert("PROBLEM_NAME", _atn_problem->name);
+
+				}
+				if (!is_success) {
+					qCritical("create sub-project '%s' failed", qUtf8Printable(optimize_path));
+					dir->rmdir(optimize_path);
+					delete dir;
+					dir = nullptr;
+					return;
+				}
+				//update current optimize path
+				dataPool::global::setGCurrentOptimizePath(optimize_path);
+				qInfo("current optimize path change to '%s'", qUtf8Printable(optimize_path));
+				//update json file
+				parseJson::write(QString("%1/global_conf.json").arg(optimize_path), &global_obj);
+				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(_atn_problem->name), &problem_obj);
+				parseJson::write(QString("%1/%2_conf.json").arg(optimize_path).arg(pars_algorithm->name), algorithm_obj);
+				//update xml file
+				updateXMLFile(QString("%1/%2.xml").arg(working_path).arg(dataPool::global::getGProjectName()), item, child);					
+				delete dir;
+				dir = nullptr;
+			}
+		}
+	}
+}
+
 void treeModel::slot_openFile() {
 	_model_info = new modelInfo(_atn_problem, this);
 	//mf->setModal(true);
 	_model_info->exec();
-}
-
-void treeModel::slot_modifyGeometryVariables() {
-	//geometryModel* geometry_model = new geometryModel();
 }
 
 void treeModel::slot_modifyDesignVar() {

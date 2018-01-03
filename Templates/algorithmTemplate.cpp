@@ -3,7 +3,7 @@
 #include "algorithmTemplate.h"
 
 algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject** algorithm_obj, parsAlgorithm** palgorithm, iTemplate *parent)
-	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj){
+	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj), _is_valid(true) {
 	_alg_label = new QLabel("选择算法:", this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
@@ -50,6 +50,10 @@ void algorithmTemplate::initDefaultData() {
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
 		qCritical("cannot parse algorithm json file: '%s'", qUtf8Printable(alg_json_path));
+		checkInfo->code = eOther;
+		checkInfo->message = "算法json文件格式不正确。";
+		_is_valid = false;
+		emit signal_checkValid();
 		QMessageBox::critical(0, QString("错误"), QString("读取算法配置文件失败！"));
 		return;
 	}
@@ -89,6 +93,12 @@ void algorithmTemplate::initAlgComboItem() {
 QLayout* algorithmTemplate::getLayout() {
 	return _layout;
 }
+
+bool algorithmTemplate::checkInputValid() {
+	if (!_is_valid) return false;
+	return true;
+}
+
 //update _obj
 void algorithmTemplate::updateJObj() {
 	//初始化*_algorithm_obj

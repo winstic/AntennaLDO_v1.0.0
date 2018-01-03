@@ -2,6 +2,7 @@
 #include "atnlibrary.h"
 #include "../Utility/global.h"
 #include "../Utility/macrodefined.h"
+#include "../Utility/parseJson.h"
 #include "../Wizard/projectWizard.h"
 
 atnLibrary::atnLibrary(QWidget *parent) : QWidget(parent), _atn_problem(nullptr), _model_info(nullptr){
@@ -115,6 +116,13 @@ void atnLibrary::newProject() {
 			}
 			qInfo("successfully copy related files.");
 
+			QJsonObject obj = parseJson::getJsonObj(project_problem_path);
+			if (obj.isEmpty()) {
+				qCritical("get problem json object field.");
+				QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
+				return;
+			}
+
 			//writen project file(.rel)
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);
@@ -127,7 +135,7 @@ void atnLibrary::newProject() {
 			delete dir;
 			dir = nullptr;
 
-			emit signal_createAndParseXML(QString("%1/%2.xml").arg(working_path).arg(project_name), _atn_problem);
+			emit signal_createAndParseXML(QString("%1/%2.xml").arg(working_path).arg(project_name), _atn_problem, &obj);
 		}
 	}
 }
