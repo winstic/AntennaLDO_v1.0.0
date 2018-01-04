@@ -18,6 +18,9 @@ public:
 signals:
 	void signal_checkValid();
 
+public slots:
+	void slot_textChanged(QString);
+
 private:
 	void initSweepNDPMComBox();
 	void initRegex();

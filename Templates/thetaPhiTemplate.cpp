@@ -178,9 +178,24 @@ void thetaPhiTemplate::updateJObj() {
 
 //slots
 void thetaPhiTemplate::slot_confirmButton(bool){
-	QString info = QString("%1#%2#%3#%4#%5#%6").arg(_theta_low_edit->text().trimmed()).arg(_theta_up_edit->text().trimmed())
-		.arg(_theta_step_edit->text().trimmed()).arg(_phi_low_edit->text().trimmed())
-		.arg(_phi_up_edit->text().trimmed()).arg(_phi_step_edit->text().trimmed());
+	QString info;
+	if (!checkInputValid()) {
+		QMessageBox::critical(0, QString("警告"), checkInfo->message);
+		info = "";
+	}
+	else {
+		info = QString("%1#%2#%3#%4#%5#%6").arg(_theta_low_edit->text().trimmed()).arg(_theta_up_edit->text().trimmed())
+			.arg(_theta_step_edit->text().trimmed()).arg(_phi_low_edit->text().trimmed())
+			.arg(_phi_up_edit->text().trimmed()).arg(_phi_step_edit->text().trimmed());
+
+		QMessageBox *tip = new QMessageBox;
+		QTimer::singleShot(1200, tip, SLOT(close()));
+		tip->setWindowTitle("提示");
+		tip->setIcon(QMessageBox::Information);
+		tip->setText("正在更新远场范围......");
+		tip->show();
+	}
+
 	emit signal_confirmFarField(info);
 }
 

@@ -26,7 +26,6 @@ private:
 	void initDefaultData();
 	void initLayout();
 	void initLossTypeComBox(QComboBox *combox);
-	void checkNull(QLineEdit* edit);
 
 
 public:

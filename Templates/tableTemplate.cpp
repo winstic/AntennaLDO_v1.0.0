@@ -7,7 +7,7 @@ tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent) {
 	this->verticalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
 	this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); 
 	this->setStyleSheet("QTableCornerButton::section{background:skyblue;}");
-	this->setFocusPolicy(Qt::NoFocus);
+	//this->setFocusPolicy(Qt::NoFocus);
 	this->verticalHeader()->setFixedWidth(30);
 	//this->setFrameShape(QFrame::NoFrame);                   //setting no frame
 															  //_table->setShowGrid(false);                               //setting no grid line
@@ -23,6 +23,15 @@ void tableTemplate::insert2table(const int &row, const int &clomun, const QStrin
 	QTableWidgetItem *tableItem = new QTableWidgetItem(item_value);
 	tableItem->setTextAlignment(Qt::AlignCenter);
 	this->setItem(row, clomun, tableItem);
+}
+
+void tableTemplate::setCanEdit(QTableWidgetItem* item) {
+	item->setFlags(item->flags() | Qt::ItemIsEditable);
+	item->setBackgroundColor(QColor(255, 255, 255));
+}
+void tableTemplate::setCannotEdit(QTableWidgetItem* item) {
+	item->setFlags(item->flags() & ~Qt::ItemIsEditable);
+	item->setBackgroundColor(QColor(125, 125, 125));
 }
 
 void tableTemplate::slot_selectChanged() {

@@ -1,6 +1,7 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "../Utility/commonStyle.h"
+#include "gainAXialDelegateTemplate.h"
 #include "axialTemplate.h"
 
 axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
@@ -68,19 +69,10 @@ void axialTemplate::initDefaultData() {
 
 	_axial_table->setRowCount(str_list_theta_lower.length());
 	for (int i = 0; i < str_list_theta_lower.length(); i++) {
-		QComboBox* theta_low_comb = new QComboBox;
-		QComboBox* theta_up_comb = new QComboBox;
-		QComboBox* phi_low_comb = new QComboBox;
-		QComboBox* phi_up_comb = new QComboBox;
-		theta_low_comb->addItem(str_list_theta_lower[i]);
-		theta_up_comb->addItem(str_list_theta_upper[i]);
-		phi_low_comb->addItem(str_list_phi_lower[i]);
-		phi_up_comb->addItem(str_list_phi_upper[i]);
-
-		_axial_table->setCellWidget(i, cthetalower, theta_low_comb);
-		_axial_table->setCellWidget(i, cthetaupper, theta_up_comb);
-		_axial_table->setCellWidget(i, cphilower, phi_low_comb);
-		_axial_table->setCellWidget(i, cphiupper, phi_up_comb);
+		_axial_table->insert2table(i, cthetalower, str_list_theta_lower[i]);
+		_axial_table->insert2table(i, cthetaupper, str_list_theta_upper[i]);
+		_axial_table->insert2table(i, cphilower, str_list_phi_lower[i]);
+		_axial_table->insert2table(i, cphiupper, str_list_phi_upper[i]);
 
 		QComboBox* optimal_type = new QComboBox;
 		initOptimalTypeComBox(optimal_type);
@@ -91,26 +83,15 @@ void axialTemplate::initDefaultData() {
 		connect(optimal_type, SIGNAL(currentIndexChanged(int)), axial_signals_map, SLOT(map()));
 		axial_signals_map->setMapping(optimal_type, QString("%1-%2").arg(i).arg(coptimaltype));
 
-		QRegExpValidator* floatValidReg = getFloatReg();    //float
-		QLineEdit* delta_value_edit = new QLineEdit;
-		delta_value_edit->setValidator(floatValidReg);
+		_axial_table->insert2table(i, cdelta, str_list_delta[i]);
+
 		//setting cannot edit when optimize type is not delta		
 		if (optimal_type->currentIndex() != odelta) {
-			delta_value_edit->setText("----");
-			delta_value_edit->setEnabled(false);
+			_axial_table->setCannotEdit(_axial_table->item(i, cdelta));
 		}
-		else
-			delta_value_edit->setText(str_list_delta[i]);
-		_axial_table->setCellWidget(i, cdelta, delta_value_edit);
 
-		QLineEdit* obj_value_edit = new QLineEdit;
-		QLineEdit* weight_value_edit = new QLineEdit;
-		obj_value_edit->setValidator(floatValidReg);
-		weight_value_edit->setValidator(floatValidReg);
-		obj_value_edit->setText(str_list_axial[i]);
-		weight_value_edit->setText(str_list_weight[i]);
-		_axial_table->setCellWidget(i, cobjvalue, obj_value_edit);
-		_axial_table->setCellWidget(i, cweight, weight_value_edit);
+		_axial_table->insert2table(i, cobjvalue, str_list_axial[i]);
+		_axial_table->insert2table(i, cweight, str_list_weight[i]);
 	}
 	connect(axial_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_changeOptimaltype(QString)));
 }
@@ -134,37 +115,34 @@ bool axialTemplate::checkInputValid() {
 	if (!_is_valid) return false;
 	for (int i = 0; i < _axial_table->rowCount(); i++) {
 		QComboBox *goType = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, coptimaltype));
-		QLineEdit* delta_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(i, cdelta));
-		QLineEdit* obj_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(i, cobjvalue));
-		QLineEdit* weight_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(i, cweight));
-		QString delta_value = delta_edit->text().trimmed();
-		QString obj_value = obj_edit->text().trimmed();
-		QString weight_value = weight_edit->text().trimmed();
+		QString delta_value = _axial_table->item(i, cdelta)->text().trimmed();
+		QString obj_value = _axial_table->item(i, cobjvalue)->text().trimmed();
+		QString weight_value = _axial_table->item(i, cweight)->text().trimmed();
 
-		if (goType->currentIndex() == odelta && (delta_value.isEmpty() || delta_value.isNull() || delta_value == "----")) {
+		if (goType->currentIndex() == odelta && (delta_value.isEmpty() || delta_value.isNull() || delta_value == "None")) {
 			qCritical("invalid delat value.");
 			checkInfo->code = eInvalid;
-			checkInfo->message = "请设置有效的delta误差值。";
+			checkInfo->message = "请设置delta误差值。";
 			_is_valid = false;
-			commonStyle::setLineEditWarningStyle(delta_edit);
+			_axial_table->item(i, cdelta)->setSelected(true);
 			emit signal_checkValid();
 			return false;
 		}
 		if (obj_value.isEmpty() || obj_value.isNull()) {
 			qCritical("invalid gain object value.");
 			checkInfo->code = eInvalid;
-			checkInfo->message = "请设置有效的增益目标值。";
+			checkInfo->message = "请设置轴比的目标值。";
 			_is_valid = false;
-			commonStyle::setLineEditWarningStyle(obj_edit);
+			_axial_table->item(i, cobjvalue)->setSelected(true);
 			emit signal_checkValid();
 			return false;
 		}
 		if (weight_value.isEmpty() || weight_value.isNull()) {
 			qCritical("invalid weight value.");
 			checkInfo->code = eInvalid;
-			checkInfo->message = "请设置有效的权值。";
+			checkInfo->message = "请设置轴比的权值。";
 			_is_valid = false;
-			commonStyle::setLineEditWarningStyle(weight_edit);
+			_axial_table->item(i, cweight)->setSelected(true);
 			emit signal_checkValid();
 			return false;
 		}
@@ -178,14 +156,10 @@ void axialTemplate::updateJObj() {
 	//update axial obj
 	QStringList axialStr[8];
 	for (int i = 0; i < _axial_table->rowCount(); i++) {
-		QComboBox* theta_low_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cthetalower));
-		QComboBox* theta_up_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cthetaupper));
-		QComboBox* phi_low_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cphilower));
-		QComboBox* phi_up_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cphiupper));
-		axialStr[0] << theta_low_comb->currentText().trimmed();
-		axialStr[1] << theta_up_comb->currentText().trimmed();
-		axialStr[2] << phi_low_comb->currentText().trimmed();
-		axialStr[3] << phi_up_comb->currentText().trimmed();
+		axialStr[0] << _axial_table->item(i, cthetalower)->text().trimmed();
+		axialStr[1] << _axial_table->item(i, cthetaupper)->text().trimmed();
+		axialStr[2] << _axial_table->item(i, cphilower)->text().trimmed();
+		axialStr[3] << _axial_table->item(i, cphiupper)->text().trimmed();
 
 		QComboBox *aoType = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, coptimaltype));
 		if (3 == aoType->currentIndex())
@@ -193,15 +167,12 @@ void axialTemplate::updateJObj() {
 		else
 			axialStr[4] << QString("'%1'").arg(aoType->currentText().trimmed());
 
-		QLineEdit* delta_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(i, cdelta));
-		QLineEdit* obj_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(i, cobjvalue));
-		QLineEdit* weight_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(i, cweight));
-		QString delta_value = delta_edit->text().trimmed();
-		if (delta_value.isEmpty() || delta_value.isNull() || delta_value == "----")
+		QString delta_value = _axial_table->item(i, cdelta)->text().trimmed();
+		if (delta_value.isEmpty() || delta_value.isNull())
 			delta_value = "None";
 		axialStr[5] << delta_value;
-		axialStr[6] << obj_edit->text().trimmed();
-		axialStr[7] << weight_edit->text().trimmed();
+		axialStr[6] << _axial_table->item(i, cobjvalue)->text().trimmed();
+		axialStr[7] << _axial_table->item(i, cweight)->text().trimmed();
 	}
 	maxial_obj.insert("Theta_Lower_axial", QString("[[%1]]").arg(axialStr[0].join(",")));
 	maxial_obj.insert("Theta_Upper_axial", QString("[[%1]]").arg(axialStr[1].join(",")));
@@ -219,86 +190,40 @@ void axialTemplate::slot_changeOptimaltype(QString pos) {
 	int row = coordinates[0].toInt();
 	int col = coordinates[1].toInt();
 	QComboBox* selectCombox = qobject_cast<QComboBox *>(_axial_table->cellWidget(row, col));
-	QLineEdit* delta_edit = qobject_cast<QLineEdit *>(_axial_table->cellWidget(row, cdelta));
 	//setting edit when optimize type is delta
 	if (selectCombox->currentIndex() == odelta) {
-		delta_edit->setEnabled(true);
+		//可编辑
+		_axial_table->setCanEdit(_axial_table->item(row, cdelta));
 	}
 	else
-		delta_edit->setEnabled(false);
+		//不可编辑
+		_axial_table->setCannotEdit(_axial_table->item(row, cdelta));
 }
 
 void axialTemplate::slot_confirmFarField(QString info) {
-	QStringList parameters = info.split("#");
-	_theta_start = parameters[0].toDouble();
-	_theta_end = parameters[1].toDouble();
-	_theta_step = parameters[2].toDouble();
-	_phi_start = parameters[3].toDouble();
-	_phi_end = parameters[4].toDouble();
-	_phi_step = parameters[5].toDouble();
-
-	for (int i = 0; i < _axial_table->rowCount(); i++) {
-		QComboBox* theta_low_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cthetalower));
-		QComboBox* theta_up_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cthetaupper));
-		QComboBox* phi_low_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cphilower));
-		QComboBox* phi_up_comb = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, cphiupper));
-		QString theta_low = theta_low_comb->currentText().trimmed();
-		QString theta_up = theta_up_comb->currentText().trimmed();
-		QString phi_low = phi_low_comb->currentText().trimmed();
-		QString phi_up = phi_up_comb->currentText().trimmed();
-
-		theta_low_comb->clear();
-		theta_up_comb->clear();
-		phi_low_comb->clear();
-		phi_up_comb->clear();
-		initAngleComboBox(theta_low_comb, _theta_start, _theta_end, _theta_step);
-		initAngleComboBox(theta_up_comb, _theta_start, _theta_end, _theta_step);
-		initAngleComboBox(phi_low_comb, _phi_start, _phi_end, _phi_step);
-		initAngleComboBox(phi_up_comb, _phi_start, _phi_end, _phi_step);
-
-		if (theta_low_comb->findText(theta_low) == -1) {
-			qCritical("theta low setting error.");
-			checkInfo->code = eInvalid;
-			checkInfo->message = "问题json文件中起始theta未按步长设置。";
-			_is_valid = false;
-			commonStyle::setComboBoxWarningStyle(theta_low_comb);
-			emit signal_checkValid();
-			return;
-		}
-		if (theta_up_comb->findText(theta_up) == -1) {
-			qCritical("theta up setting error.");
-			checkInfo->code = eInvalid;
-			checkInfo->message = "问题json文件中终止theta未按步长设置。";
-			_is_valid = false;
-			commonStyle::setComboBoxWarningStyle(theta_up_comb);
-			emit signal_checkValid();
-			return;
-		}
-		if (phi_low_comb->findText(phi_low) == -1) {
-			qCritical("phi low setting error.");
-			checkInfo->code = eInvalid;
-			checkInfo->message = "问题json文件中起始phi未按步长设置。";
-			_is_valid = false;
-			commonStyle::setComboBoxWarningStyle(phi_low_comb);
-			emit signal_checkValid();
-			return;
-		}
-		if (phi_up_comb->findText(phi_up) == -1) {
-			qCritical("phi up setting error.");
-			checkInfo->code = eInvalid;
-			checkInfo->message = "问题json文件中终止phi未按步长设置。";
-			_is_valid = false;
-			commonStyle::setComboBoxWarningStyle(phi_up_comb);
-			emit signal_checkValid();
-			return;
-		}
-		theta_low_comb->setCurrentText(theta_low);
-		theta_up_comb->setCurrentText(theta_up);
-		phi_low_comb->setCurrentText(phi_low);
-		phi_up_comb->setCurrentText(phi_up);
+	if (info.isEmpty() || info.isNull()) {
+		_axial_table->setEnabled(false);
+		_add_button->setEnabled(false);
 	}
-	_axial_table->setEnabled(true);
-	_add_button->setEnabled(true);
+	else {
+		QStringList parameters = info.split("#");
+		_theta_start = parameters[0].toDouble();
+		_theta_end = parameters[1].toDouble();
+		_theta_step = parameters[2].toDouble();
+		_phi_start = parameters[3].toDouble();
+		_phi_end = parameters[4].toDouble();
+		_phi_step = parameters[5].toDouble();
+
+		QList<int> combobox_columns{ cthetalower, cthetaupper, cphilower, cphiupper };
+		QList<int> edit_columns{ cdelta, cobjvalue, cweight };
+		QList<double> lows{ _theta_start , _theta_start , _phi_start ,_phi_start };
+		QList<double> ups{ _theta_end , _theta_end , _phi_end ,_phi_end };
+		QList<double> steps{ _theta_step , _theta_step , _phi_step ,_phi_step };
+		_axial_table->setItemDelegate(new gainAxialDelegate(combobox_columns, edit_columns, lows, ups, steps));
+
+		_axial_table->setEnabled(true);
+		_add_button->setEnabled(true);
+	}
 }
 
 void axialTemplate::slot_selectChanged() {
@@ -315,18 +240,10 @@ void axialTemplate::slot_selectChanged() {
 void axialTemplate::slot_addSetting(bool) {
 	int new_row_index = _axial_table->rowCount();
 	_axial_table->insertRow(new_row_index);
-	QComboBox* theta_low_comb = new QComboBox;
-	QComboBox* theta_up_comb = new QComboBox;
-	QComboBox* phi_low_comb = new QComboBox;
-	QComboBox* phi_up_comb = new QComboBox;
-	initAngleComboBox(theta_low_comb, _theta_start, _theta_end, _theta_step);
-	initAngleComboBox(theta_up_comb, _theta_start, _theta_end, _theta_step);
-	initAngleComboBox(phi_low_comb, _phi_start, _phi_end, _phi_step);
-	initAngleComboBox(phi_up_comb, _phi_start, _phi_end, _phi_step);
-	_axial_table->setCellWidget(new_row_index, cthetalower, theta_low_comb);
-	_axial_table->setCellWidget(new_row_index, cthetaupper, theta_up_comb);
-	_axial_table->setCellWidget(new_row_index, cphilower, phi_low_comb);
-	_axial_table->setCellWidget(new_row_index, cphiupper, phi_up_comb);
+	_axial_table->insert2table(new_row_index, cthetalower, QString::number(_theta_start));
+	_axial_table->insert2table(new_row_index, cthetaupper, QString::number(_theta_start));
+	_axial_table->insert2table(new_row_index, cphilower, QString::number(_phi_start));
+	_axial_table->insert2table(new_row_index, cphiupper, QString::number(_phi_start));
 
 	QComboBox* optimal_type = new QComboBox;
 	initOptimalTypeComBox(optimal_type);
@@ -336,21 +253,11 @@ void axialTemplate::slot_addSetting(bool) {
 	connect(optimal_type, SIGNAL(currentIndexChanged(int)), gain_signals_map, SLOT(map()));
 	gain_signals_map->setMapping(optimal_type, QString("%1-%2").arg(new_row_index).arg(coptimaltype));
 
+	_axial_table->insert2table(new_row_index, cdelta, "None");
+	_axial_table->setCannotEdit(_axial_table->item(new_row_index, cdelta));
+	_axial_table->insert2table(new_row_index, cobjvalue, "0.0");
+	_axial_table->insert2table(new_row_index, cweight, "1.0");
 
-	QRegExpValidator* floatValidReg = getFloatReg();    //float
-	QLineEdit* delta_value_edit = new QLineEdit;
-	delta_value_edit->setValidator(floatValidReg);
-	delta_value_edit->setText("----");
-	_axial_table->setCellWidget(new_row_index, cdelta, delta_value_edit);
-
-	QLineEdit* obj_value_edit = new QLineEdit;
-	QLineEdit* weight_value_edit = new QLineEdit;
-	obj_value_edit->setValidator(floatValidReg);
-	weight_value_edit->setValidator(floatValidReg);
-	obj_value_edit->setText("0.0");
-	weight_value_edit->setText("1.0");
-	_axial_table->setCellWidget(new_row_index, cobjvalue, obj_value_edit);
-	_axial_table->setCellWidget(new_row_index, cweight, weight_value_edit);
 	connect(gain_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_ChangeOptimaltype(QString)));
 }
 

@@ -21,9 +21,10 @@ _atn_problem(atn_problem), _obj(obj), _is_valid(true), _index(index) {
 	initDefaultData(); 
 	initLayout();
 
-	connect(_frequency_low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
-	connect(_frequency_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
-	connect(_frequency_num_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+	//传递signal_checkValid用于在引导页面刷新isComplete校验
+	connect(_frequency_low_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
+	connect(_frequency_up_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
+	connect(_frequency_num_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
 }
 
 void frequencyTemplate::initSweepNDPMComBox() {
@@ -57,23 +58,30 @@ void frequencyTemplate::initDefaultData() {
 		emit signal_checkValid();
 		return;
 	}
-	QStringList fre_start_list, fre_end_list, fre_number_list;
+	QStringList fre_start_list, fre_end_list, fre_number_list, pm_list, sweep_type_list;
 	QString fre_start = "", fre_end = "", fre_number = "";
+	int pm_int = 0, sweep_type_int = 0;
 	fre_start_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
 	fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
 	fre_number_list = dataPool::str2list(frequency_obj.value("FreNumber").toString().trimmed());
+	pm_list = dataPool::str2list(frequency_obj.value("PM").toString().trimmed());
+	sweep_type_list = dataPool::str2list(frequency_obj.value("SweepType").toString().trimmed());
 	if (_index < fre_start_list.size())
 		fre_start = fre_start_list[_index];
 	if (_index < fre_end_list.size())
 		fre_end = fre_end_list[_index];
 	if (_index < fre_number_list.size())
 		fre_number = fre_number_list[_index];
+	if (_index < pm_list.size())
+		pm_int = pm_list[_index].toInt();
+	if (_index < sweep_type_list.size())
+		sweep_type_int = sweep_type_list[_index].toInt();
 
 	_frequency_low_edit->setText(fre_start);
 	_frequency_up_edit->setText(fre_end);
 	_frequency_num_edit->setText(fre_number);
-	_sweep_type_combox->setCurrentIndex(0);
-	_polarization_combox->setCurrentIndex(0);
+	_polarization_combox->setCurrentIndex(pm_int);
+	_sweep_type_combox->setCurrentIndex(sweep_type_int);
 }
 
 void frequencyTemplate::initLayout() {
@@ -125,7 +133,7 @@ bool frequencyTemplate::checkInputValid() {
 	double frequency_up_d = frequency_up.toDouble();
 	if (frequency_low_d > frequency_up_d) {
 		checkInfo->code = eInvalid;
-		checkInfo->message = "频率范围设置有误。";
+		checkInfo->message = "请设置正确的频率范围。";
 		commonStyle::setLineEditWarningStyle(_frequency_low_edit);
 		commonStyle::setLineEditWarningStyle(_frequency_up_edit);
 		return false;
@@ -147,6 +155,14 @@ void frequencyTemplate::updateJObj() {
 	mfrequency_obj.insert("SweepType", QString("[%1]").arg(_sweep_type_combox->currentIndex()));
 	mfrequency_obj.insert("PM", QString("[%1]").arg(_polarization_combox->currentIndex()));
 	_obj->insert("FreSetting", mfrequency_obj);
+}
+
+//slots
+void frequencyTemplate::slot_textChanged(QString) {
+	commonStyle::clearLineEditWarningStyle(_frequency_low_edit);
+	commonStyle::clearLineEditWarningStyle(_frequency_up_edit);
+	commonStyle::clearLineEditWarningStyle(_frequency_num_edit);
+	emit signal_checkValid();
 }
 
 frequencyTemplate::~frequencyTemplate(){}

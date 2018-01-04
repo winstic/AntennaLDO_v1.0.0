@@ -265,14 +265,23 @@
     <ClCompile Include="GeneratedFiles\Release\moc_performanceModel.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Templates\comboboxDelegateTemplate.cpp">
+    <ClCompile Include="Templates\lineEditDelegateTemplate.cpp">
       <Filter>Templates</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_comboboxDelegateTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Debug\moc_lineEditDelegateTemplate.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_comboboxDelegateTemplate.cpp">
+    <ClCompile Include="GeneratedFiles\Release\moc_lineEditDelegateTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_gainAxialDelegateTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_gainAxialDelegateTemplate.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\gainAxialDelegateTemplate.cpp">
+      <Filter>Templates</Filter>
     </ClCompile>
   </ItemGroup>
   <ItemGroup>
@@ -354,7 +363,10 @@
     <CustomBuild Include="Antenna\performanceModel.h">
       <Filter>Antenna</Filter>
     </CustomBuild>
-    <CustomBuild Include="Templates\comboboxDelegateTemplate.h">
+    <CustomBuild Include="Templates\lineEditDelegateTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\gainAxialDelegateTemplate.h">
       <Filter>Templates</Filter>
     </CustomBuild>
   </ItemGroup>

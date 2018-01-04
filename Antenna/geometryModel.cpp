@@ -8,7 +8,7 @@ _atn_problem(atn_problem) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
-
+	//setStyleSheet("background-color: white");
 	_problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
 	if (_problem_obj.isEmpty()) {
 		qCritical("get problem json object field.");

@@ -25,7 +25,11 @@ void iTemplate::initUnitComBo(QComboBox *comb) {
 	comb->setCurrentIndex(3);
 }
 
-void iTemplate::initAngleComboBox(QComboBox* comb, const double low, const double up, const double step) {
+void iTemplate::initAngleComboBox(QComboBox* comb, const double low, const double up, const double step) const{
+	if (step >= -0.000001 && step <= 0.000001) {
+		comb->addItem(QString::number(low));
+		return;
+	}
 	double dangle = 0.0;
 	for (dangle = low; dangle < up; dangle += step) {
 		comb->addItem(QString::number(dangle));

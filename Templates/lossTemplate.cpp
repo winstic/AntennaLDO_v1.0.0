@@ -1,6 +1,7 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "../Utility/commonStyle.h"
+#include "lineEditDelegateTemplate.h"
 #include "lossTemplate.h"
 
 lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
@@ -8,7 +9,7 @@ _atn_problem(atn_problem), _obj(obj), _is_valid(true), _index(index) {
 	_loss_table = new tableTemplate();
 	_loss_table->setColumnCount(9);
 	QStringList header;
-	header << "Z0实部" << "Z0虚部" << "损失方式" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";
+	header << "Z0实部" << "Z0虚部" << "回波损失类型" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";
 	_loss_table->setHorizontalHeaderLabels(header);
 	_loss_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	_loss_table->setShowGrid(false);                               //setting no grid line
@@ -72,20 +73,17 @@ void lossTemplate::initDefaultData() {
 		strListWeight = dataPool::str2list(weight_lists[_index]);
 
 	_loss_table->setRowCount(strListR0Real.length());
+	QList<int> line_edit_columns{ cz0real, cz0imag, cdeltareal, cdeltaimag, cobjreal, cobjimag, clossweight };
+	_loss_table->setItemDelegate(new lineEditDelegate(line_edit_columns));
+
 	for (int i = 0; i < strListR0Real.length(); i++) {
-		QRegExpValidator* floatValidReg = getFloatReg();    //float
-		QLineEdit* Z0_real_edit = new QLineEdit;
-		Z0_real_edit->setValidator(floatValidReg);
-		Z0_real_edit->setText(strListR0Real[i]);
-		QLineEdit* Z0_image_edit = new QLineEdit;
-		Z0_image_edit->setValidator(floatValidReg);
-		Z0_image_edit->setText(strListR0imag[i]);
-		_loss_table->setCellWidget(i, cz0real, Z0_real_edit);
-		_loss_table->setCellWidget(i, cz0imag, Z0_image_edit);
+		_loss_table->insert2table(i, cz0real, strListR0Real[i]);
+		_loss_table->insert2table(i, cz0imag, strListR0imag[i]);
 
 		QComboBox* loss_type = new QComboBox;
 		initLossTypeComBox(loss_type);
-		loss_type->setCurrentIndex(QString(strListReturnLossType[i]).toInt());
+		if (loss_type->findText(strListReturnLossType[i]) != -1);
+			loss_type->setCurrentIndex(QString(strListReturnLossType[i]).toInt());
 		_loss_table->setCellWidget(i, closstype, loss_type);
 		//map combobox signal
 		connect(loss_type, SIGNAL(currentIndexChanged(int)), loss_signals_map, SLOT(map()));
@@ -100,59 +98,40 @@ void lossTemplate::initDefaultData() {
 		connect(optimal_type, SIGNAL(currentIndexChanged(int)), loss_signals_map, SLOT(map()));
 		loss_signals_map->setMapping(optimal_type, QString("%1-%2").arg(i).arg(clossoptimaltype));
 
-		QLineEdit* delta_real_edit = new QLineEdit;
-		delta_real_edit->setValidator(floatValidReg);		
-		QLineEdit* delta_image_edit = new QLineEdit;
-		delta_image_edit->setValidator(floatValidReg);		
-		if (2 != optimal_type->currentIndex()) {
-			delta_real_edit->setText("----");
-			delta_real_edit->setEnabled(false);
-			delta_image_edit->setText("----");
-			delta_image_edit->setEnabled(false);
-		}
-		else {
-			delta_real_edit->setText(strListDeltaReal[i]);
-			delta_image_edit->setText(strListDeltaImag[i]);
-		}
-		_loss_table->setCellWidget(i, cdeltareal, delta_real_edit);
-		_loss_table->setCellWidget(i, cdeltaimag, delta_image_edit);
+		_loss_table->insert2table(i, cdeltareal, strListDeltaReal[i]);
+		_loss_table->insert2table(i, cdeltaimag, strListDeltaImag[i]);
 		//setting cannot edit when optimize type is delta
+		if (odelta != optimal_type->currentIndex()) {
+			//不可编辑
+			_loss_table->setCannotEdit(_loss_table->item(i, cdeltareal));
+			_loss_table->setCannotEdit(_loss_table->item(i, cdeltaimag));
+		}
 
-		QLineEdit* obj_real_edit = new QLineEdit;
-		obj_real_edit->setValidator(floatValidReg);
-		QLineEdit* obj_image_edit = new QLineEdit;
-		obj_image_edit->setValidator(floatValidReg);
+		_loss_table->insert2table(i, cobjimag, strListR1Imag[i]);
+		QTableWidgetItem* item_objimage = _loss_table->item(i, cobjimag);
+		//image 默认不可编辑
+		_loss_table->setCannotEdit(item_objimage);
 		if (0 == loss_type->currentIndex()) {
 			//loss type is vswr
-			obj_real_edit->setText(strListVswrobj[i]);
-			obj_image_edit->setText("----");
-			obj_image_edit->setEnabled(false);
+			_loss_table->insert2table(i, cobjreal, strListVswrobj[i]);			
 		}
 		else if (1 == loss_type->currentIndex()) {
 			//loss type is S11
-			obj_real_edit->setText(strListS11[i]);
-			obj_image_edit->setText("----");
-			obj_image_edit->setEnabled(false);
+			_loss_table->insert2table(i, cobjreal, strListS11[i]);
 		}
 		else if (2 == loss_type->currentIndex()) {
 			//loss type is R
-			obj_real_edit->setText(strListR1Real[i]);
-			obj_image_edit->setText(strListR1Imag[i]);
+			_loss_table->insert2table(i, cobjreal, strListR1Real[i]);
+			//image可编辑
+			_loss_table->setCanEdit(item_objimage);
 		}
 		else {
 			//loss type is None
-			obj_real_edit->setText("----");
-			obj_real_edit->setEnabled(false);
-			obj_image_edit->setText("----");
-			obj_image_edit->setEnabled(false);
+			_loss_table->insert2table(i, cobjreal, "None");
+			_loss_table->setCannotEdit(_loss_table->item(i, cobjreal));
 		}
-		_loss_table->setCellWidget(i, cobjreal, obj_real_edit);
-		_loss_table->setCellWidget(i, cobjimag, obj_real_edit);
 
-		QLineEdit* weight_edit = new QLineEdit;
-		weight_edit->setValidator(floatValidReg);
-		weight_edit->setText(strListWeight[i]);
-		_loss_table->setCellWidget(i, clossweight, weight_edit);
+		_loss_table->insert2table(i, clossweight, strListWeight[i]);
 	}
 	connect(loss_signals_map, SIGNAL(mapped(QString)), this, SLOT(slot_ChangeOptimaltype(QString)));
 }
@@ -176,71 +155,86 @@ QLayout* lossTemplate::getLayout() {
 	return _layout;
 }
 
-void lossTemplate::checkNull(QLineEdit* edit) {	
-	checkInfo->code = eInvalid;
-	checkInfo->message = "设置参数不能为空";
-	_is_valid = false;
-	commonStyle::setLineEditWarningStyle(edit);
-	emit signal_checkValid();
-}
 bool lossTemplate::checkInputValid() {
 	if (!_is_valid) return false;
 	for (int i = 0; i < _loss_table->rowCount(); i++) {
-		QLineEdit* z0_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cz0real));
-		QLineEdit* z0_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cz0imag));
 		QComboBox *lossType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, closstype));
 		QComboBox *loType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, clossoptimaltype));
-		QLineEdit* delta_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cdeltareal));
-		QLineEdit* delta_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cdeltaimag));
-		QLineEdit* obj_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cobjreal));
-		QLineEdit* obj_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cobjimag));
-		QLineEdit* weight_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, clossweight));
+		QString z0_real_value = _loss_table->item(i, cz0real)->text().trimmed();
+		QString z0_image_value = _loss_table->item(i, cz0imag)->text().trimmed();
+		QString delta_real_value = _loss_table->item(i, cdeltareal)->text().trimmed();
+		QString delta_image_value = _loss_table->item(i, cdeltaimag)->text().trimmed();
+		QString obj_real_value = _loss_table->item(i, cobjreal)->text().trimmed();
+		QString obj_image_value = _loss_table->item(i, cobjimag)->text().trimmed();
+		QString weight_value = _loss_table->item(i, clossweight)->text().trimmed();
 
-		if (z0_real_edit->text().isEmpty()) {
+
+		if (z0_real_value.isEmpty() || z0_real_value.isNull()) {
 			qCritical("z0 real value is null.");
-			checkNull(z0_real_edit);
+			checkInfo->code = eNull;
+			checkInfo->message = "请设置阻抗实部";
+			_is_valid = false;
+			_loss_table->item(i, cz0real)->setSelected(true);
+			emit signal_checkValid();
 			return false;
 		}
-		if (z0_image_edit->text().isEmpty()) {
+		if (z0_image_value.isEmpty() || z0_image_value.isNull()) {
 			qCritical("z0 image value is null.");
-			checkNull(z0_image_edit);
+			checkInfo->code = eNull;
+			checkInfo->message = "请设置阻抗虚部";
+			_is_valid = false;
+			_loss_table->item(i, cz0imag)->setSelected(true);
+			emit signal_checkValid();
 			return false;
 		}
-
-		QString delta_real_value = delta_real_edit->text().trimmed();
-		QString delta_image_value = delta_image_edit->text().trimmed();
-		QString obj_real_value = obj_real_edit->text().trimmed();
-		QString obj_image_value = obj_image_edit->text().trimmed();
-		QString weight_value = weight_edit->text().trimmed();
-
 		if (loType->currentIndex() == odelta) {
-			if (delta_real_value.isEmpty() || delta_real_value == "----") {
+			if (delta_real_value.isEmpty() || delta_real_value.isNull() || delta_real_value == "None") {
 				qCritical("delta real value is invalid.");
-				checkNull(delta_real_edit);
+				checkInfo->code = eNull;
+				checkInfo->message = "请设置delta实部";
+				_is_valid = false;
+				_loss_table->item(i, cdeltareal)->setSelected(true);
+				emit signal_checkValid();
 				return false;
 			}
-			if (delta_image_value.isEmpty() || delta_image_value == "----") {
+			if (delta_image_value.isEmpty() || delta_image_value.isNull() || delta_image_value == "None") {
 				qCritical("delta image value is invalid.");
-				checkNull(delta_image_edit);
+				checkInfo->code = eNull;
+				checkInfo->message = "请设置delta虚部";
+				_is_valid = false;
+				_loss_table->item(i, cdeltaimag)->setSelected(true);
+				emit signal_checkValid();
 				return false;
 			}
 		}
 		if (obj_real_value.isEmpty() || obj_real_value.isNull()) {
 			qCritical("loss object value is invalid.");
-			checkNull(obj_real_edit);
+			checkInfo->code = eNull;
+			checkInfo->message = "请设置回波损失的目标值";
+			_is_valid = false;
+			_loss_table->item(i, cobjreal)->setSelected(true);
+			emit signal_checkValid();
 			return false;
 		}
 		if (lossType->currentIndex() == 2) {
 			//R
-			if (obj_image_value.isEmpty() || obj_image_value.isNull()) {
+			if (obj_image_value.isEmpty() || obj_image_value.isNull() || obj_image_value == "None") {
 				qCritical("R image value is invalid.");
-				checkNull(obj_image_edit);
+				checkInfo->code = eNull;
+				checkInfo->message = "请设置回波损失的目标值虚部";
+				_is_valid = false;
+				_loss_table->item(i, cobjimag)->setSelected(true);
+				emit signal_checkValid();
 				return false;
 			}
 		}
 		if (weight_value.isEmpty() || weight_value.isNull()) {
 			qCritical("weight value is invalid.");
-			checkNull(weight_edit);
+			checkInfo->code = eNull;
+			checkInfo->message = "请设置回波损失的权值";
+			_is_valid = false;
+			_loss_table->item(i, clossweight)->setSelected(true);
+			emit signal_checkValid();
 			return false;
 		}
 	}
@@ -254,10 +248,8 @@ void lossTemplate::updateJObj() {
 	//update loss obj
 	QStringList lossStr[11];
 	for (int i = 0; i < _loss_table->rowCount(); i++) {
-		QLineEdit* z0_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cz0real));
-		QLineEdit* z0_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cz0imag));
-		lossStr[0] << z0_real_edit->text().trimmed();
-		lossStr[1] << z0_image_edit->text().trimmed();
+		lossStr[0] << _loss_table->item(i, cz0real)->text().trimmed();
+		lossStr[1] << _loss_table->item(i, cz0imag)->text().trimmed();
 
 		QComboBox *lossType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, closstype));
 		lossStr[2] << QString::number(lossType->currentIndex());
@@ -267,10 +259,8 @@ void lossTemplate::updateJObj() {
 		else
 			lossStr[3] << QString("'%1'").arg(loType->currentText().trimmed());
 
-		QLineEdit* delta_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cdeltareal));
-		QLineEdit* delta_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cdeltaimag));
-		QString delta_real = delta_real_edit->text().trimmed();
-		QString delta_image = delta_image_edit->text().trimmed();
+		QString delta_real = _loss_table->item(i, cdeltareal)->text().trimmed();
+		QString delta_image = _loss_table->item(i, cdeltaimag)->text().trimmed();
 		if (odelta != loType->currentIndex()) {
 			delta_real = "None";
 			delta_image = "None";
@@ -278,10 +268,8 @@ void lossTemplate::updateJObj() {
 		lossStr[4] << delta_real;
 		lossStr[5] << delta_image;
 
-		QLineEdit* obj_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cobjreal));
-		QLineEdit* obj_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, cobjimag));
-		QString obj_real = obj_real_edit->text().trimmed();
-		QString obj_image = obj_image_edit->text().trimmed();
+		QString obj_real = _loss_table->item(i, cobjreal)->text().trimmed();
+		QString obj_image = _loss_table->item(i, cobjimag)->text().trimmed();
 		if (0 == lossType->currentIndex()) {
 			//vswr
 			lossStr[6] << obj_real;
@@ -310,8 +298,7 @@ void lossTemplate::updateJObj() {
 			lossStr[8] << "None";
 			lossStr[9] << "None";
 		}
-		QLineEdit* weight_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(i, clossweight));
-		lossStr[10] << weight_edit->text().trimmed();
+		lossStr[10] << _loss_table->item(i, clossweight)->text().trimmed();
 	}
 	mloss_obj.insert("R0_real", QString("[[%1]]").arg(lossStr[0].join(",")));
 	mloss_obj.insert("R0_imag", QString("[[%1]]").arg(lossStr[1].join(",")));
@@ -332,25 +319,33 @@ void lossTemplate::slot_ChangeOptimaltype(QString pos) {
 	int row = coordinates[0].toInt();
 	int col = coordinates[1].toInt();
 	QComboBox *selectCombox = qobject_cast<QComboBox *>(_loss_table->cellWidget(row, col));
+
 	QLineEdit* delta_real_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(row, cdeltareal));
 	QLineEdit* delta_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(row, cdeltaimag));
 	QLineEdit* obj_image_edit = qobject_cast<QLineEdit *>(_loss_table->cellWidget(row, cobjimag));
 	//setting edit when optimize type is delta
 	if (col == clossoptimaltype) {
+		QTableWidgetItem* delta_real_item = _loss_table->item(row, cdeltareal);
+		QTableWidgetItem* delta_image_item = _loss_table->item(row, cdeltaimag);
 		if (odelta == selectCombox->currentIndex()) {
-			delta_real_edit->setEnabled(true);
-			delta_image_edit->setEnabled(true);
+			//可编辑
+			_loss_table->setCanEdit(delta_real_item);
+			_loss_table->setCanEdit(delta_image_item);
 		}
 		else {
-			delta_real_edit->setEnabled(false);
-			delta_image_edit->setEnabled(false);
+			//不可编辑
+			_loss_table->setCannotEdit(delta_real_item);
+			_loss_table->setCannotEdit(delta_image_item);
 		}
 	}
 	if (col == closstype) {
-		if (2 == selectCombox->currentIndex())
-			obj_image_edit->setEnabled(true);
-		else
-			obj_image_edit->setEnabled(false);
+		if (2 == selectCombox->currentIndex()) {
+			//可编辑
+			_loss_table->setCanEdit(_loss_table->item(row, cobjimag));
+		}
+		else {
+			_loss_table->setCannotEdit(_loss_table->item(row, cobjimag));
+		}
 	}
 }
 

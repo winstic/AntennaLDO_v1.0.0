@@ -1,7 +1,6 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "../Utility/commonStyle.h"
-#include "comboboxDelegateTemplate.h"
 #include "variablesTemplate.h"
 
 variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent)

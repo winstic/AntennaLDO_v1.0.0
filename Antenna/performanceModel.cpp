@@ -9,6 +9,7 @@ _atn_problem(atn_problem) {
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 	//remove help menu
 	setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
+	//setStyleSheet("background-color: white");
 
 	_tab_widget = new QTabWidget(this);
 	_first_tab = new QWidget(this);
@@ -48,7 +49,7 @@ void performanceTab::initLayout() {
 	//first tab
 	QLayout* frequency_layout = _frequency_widget->getLayout();
 	//设置tab页面内容与边界的距离
-	frequency_layout->setContentsMargins(10, 20, 10, 2);
+	frequency_layout->setContentsMargins(50, 20, 50, 20);
 	_first_tab->setLayout(frequency_layout);
 	//second tab
 	QGroupBox* group_box_far_field = new QGroupBox("先设置远场范围");
