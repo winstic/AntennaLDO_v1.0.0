@@ -27,7 +27,7 @@ QJsonObject parseJson::getJsonObj(const QString &path) {
 	return obj;
 }
 
-QJsonObject parseJson::getSubJsonObj(const QJsonObject &obj, const QString &key) {
+QJsonObject parseJson::getSubJsonObj(const QJsonObject& obj, const QString &key) {
 	QJsonObject subObj;
 	if (obj.contains(key)) {
 		QJsonValue value = obj.value(key);

@@ -1,11 +1,12 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "../Utility/commonStyle.h"
+#include "comboboxDelegateTemplate.h"
 #include "gainTemplate.h"
 
-gainTemplate::gainTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
+gainTemplate::gainTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _theta_start(-180), _theta_end(180), _theta_step(5), 
-_phi_start(-180), _phi_end(180), _phi_step(5), _is_valid(true) {
+_phi_start(-180), _phi_end(180), _phi_step(5), _is_valid(true), _index(index) {
 	_gain_table = new tableTemplate();
 	_gain_table->setColumnCount(8);
 	QStringList header;
@@ -37,15 +38,38 @@ void gainTemplate::initDefaultData() {
 		return;
 	}
 	QSignalMapper* gain_signals_map = new QSignalMapper;
-	QStringList str_list_theta_lower = dataPool::str2list(gain_obj.value("Theta_Lower_gain").toString());
-	QStringList str_list_theta_upper = dataPool::str2list(gain_obj.value("Theta_Upper_gain").toString());
-	QStringList str_list_phi_lower = dataPool::str2list(gain_obj.value("Phi_Lower_gain").toString());
-	QStringList str_list_phi_upper = dataPool::str2list(gain_obj.value("Phi_Upper_gain").toString());
-	QStringList str_list_optimal_type = dataPool::str2list(gain_obj.value("optimaltype_gain").toString());
-	QStringList str_list_delta = dataPool::str2list(gain_obj.value("delta_gain").toString());
-	QStringList str_list_gain = dataPool::str2list(gain_obj.value("gainobj").toString());
-	QStringList str_list_weight = dataPool::str2list(gain_obj.value("weight_gain").toString());
+	QStringList theta_lower_lists, theta_upper_lists, phi_lower_lists, phi_upper_lists, optimal_type_lists, delta_lists, gain_lists, weight_lists;
+	theta_lower_lists = dataPool::strlist2list(gain_obj.value("Theta_Lower_gain").toString());
+	theta_upper_lists = dataPool::strlist2list(gain_obj.value("Theta_Upper_gain").toString());
+	phi_lower_lists = dataPool::strlist2list(gain_obj.value("Phi_Lower_gain").toString());
+	phi_upper_lists = dataPool::strlist2list(gain_obj.value("Phi_Upper_gain").toString());
+	optimal_type_lists = dataPool::strlist2list(gain_obj.value("optimaltype_gain").toString());
+	delta_lists = dataPool::strlist2list(gain_obj.value("delta_gain").toString());
+	gain_lists = dataPool::strlist2list(gain_obj.value("gainobj").toString());
+	weight_lists = dataPool::strlist2list(gain_obj.value("weight_gain").toString());
+
+	QStringList str_list_theta_lower, str_list_theta_upper, str_list_phi_lower, str_list_phi_upper, str_list_optimal_type,
+		str_list_delta, str_list_gain, str_list_weight;
+
+	if(_index < theta_lower_lists.size())
+		str_list_theta_lower = dataPool::str2list(theta_lower_lists[_index]);
+	if(_index < theta_upper_lists.size())
+		str_list_theta_upper = dataPool::str2list(theta_upper_lists[_index]);
+	if(_index < phi_lower_lists.size())
+		str_list_phi_lower = dataPool::str2list(phi_lower_lists[_index]);
+	if(_index < phi_upper_lists.size())
+		str_list_phi_upper = dataPool::str2list(phi_upper_lists[_index]);
+	if (_index < optimal_type_lists.size())
+		str_list_optimal_type = dataPool::str2list(optimal_type_lists[_index]);
+	if (_index < delta_lists.size())
+		str_list_delta = dataPool::str2list(delta_lists[_index]);
+	if (_index < gain_lists.size())
+		str_list_gain = dataPool::str2list(gain_lists[_index]);
+	if (_index < weight_lists.size())
+		str_list_weight = dataPool::str2list(weight_lists[_index]);
+
 	_gain_table->setRowCount(str_list_theta_lower.length());
+	_gain_table->setItemDelegate(new comboboxDelegate(0));
 	for (int i = 0; i < str_list_theta_lower.length(); i++) {
 		QComboBox* theta_low_comb = new QComboBox;
 		QComboBox* theta_up_comb = new QComboBox;

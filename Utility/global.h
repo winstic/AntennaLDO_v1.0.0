@@ -31,13 +31,7 @@ namespace dataPool{
 
 	class global {
 	public:
-		global() {
-			//g_DEA4AD_path = "./DEA4AD/trunk";
-			/*g_default_project_path = "";
-			g_working_project_path = "";
-			g_current_design_path = 
-			g_current_optimize_path = "";*/
-		}
+		global() {}
 		~global(){}
 
 		static parsProblem* getProblemByID(const int id);
@@ -59,10 +53,6 @@ namespace dataPool{
 		static void setGDefaultProjectPath(QString value);
 		static QString getGWorkingProjectPath();
 		static void setGWorkingProjectPath(QString value);
-		static QString getGCurrentDesignPath();
-		static void setGCurrentDesignPath(QString value);
-		static QString getGCurrentOptimizePath();
-		static void setGCurrentOptimizePath(QString value);
 	public:
 		static QVector<parsProblem> g_problems;
 		static QVector<parsAlgorithm> g_algorithms;
@@ -75,10 +65,9 @@ namespace dataPool{
 		static QString g_project_name;
 		static QString g_default_project_path;
 		static QString g_working_project_path;
-		static QString g_current_design_path;
-		static QString g_current_optimize_path;
 	};
 	bool copyFile(QString source_file, QString target_file, bool cover_file_if_exist = true);
 	QStringList str2list(QString str);
+	QStringList strlist2list(QString str);
 	QString getInfoFromRelFile(const QString &path, const QString &key);
 }

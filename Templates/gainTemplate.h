@@ -7,7 +7,7 @@
 class gainTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	gainTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
+	gainTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index = 0, iTemplate *parent = 0);
 	~gainTemplate();
 
 public:
@@ -44,4 +44,5 @@ public:
 	double _phi_end;
 	double _phi_step;
 	bool _is_valid;
+	unsigned int _index;
 };

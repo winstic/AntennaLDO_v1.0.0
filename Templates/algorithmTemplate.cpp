@@ -2,8 +2,8 @@
 #include "../Utility/parseJson.h"
 #include "algorithmTemplate.h"
 
-algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject** algorithm_obj, parsAlgorithm** palgorithm, iTemplate *parent)
-	: iTemplate(parent), _atn_problem(atn_problem), _algorithm(palgorithm), _algorithm_obj(algorithm_obj), _is_valid(true) {
+algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* global_obj, parsAlgorithm** palgorithm, QJsonObject** algorithm_obj, iTemplate *parent)
+	: iTemplate(parent), _atn_problem(atn_problem), _global_obj(global_obj), _algorithm(palgorithm), _algorithm_obj(algorithm_obj), _is_valid(true) {
 	_alg_label = new QLabel("选择算法:", this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
@@ -41,12 +41,7 @@ void algorithmTemplate::initLayout() {
 }
 
 void algorithmTemplate::initDefaultData() {
-	//当前优化目录下如果没有对应的算法配置文件，就去DEA4AD中找。
-	QString alg_json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentOptimizePath()).arg((*_algorithm)->name);
-	QDir* dir = new QDir;
-	if(!dir->exists(alg_json_path))
-		alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
-
+	QString alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
 		qCritical("cannot parse algorithm json file: '%s'", qUtf8Printable(alg_json_path));
@@ -57,11 +52,12 @@ void algorithmTemplate::initDefaultData() {
 		QMessageBox::critical(0, QString("错误"), QString("读取算法配置文件失败！"));
 		return;
 	}
-	_alg_vars_table->setRowCount(alg_obj.count());
+	//+2 启动进程数，评估容忍时间
+	_alg_vars_table->setRowCount(alg_obj.count() + 2);
+	
 	QString var_key, var_value, value_note;
 	QJsonObject var_obj; //format:{"generation": "1000", "note": "最大代数", "instruction": "最大迭代次数"}
 	int row_number = 0;
-
 	for (QJsonObject::iterator iter = alg_obj.begin(); iter != alg_obj.end(); ++iter) {
 		var_key = iter.key();
 		var_obj = iter.value().toObject();
@@ -74,9 +70,20 @@ void algorithmTemplate::initDefaultData() {
 		flagItem->setWhatsThis(var_key);
 		//set this column cannot edit
 		flagItem->setFlags(flagItem->flags() & (~Qt::ItemIsEditable));
-		_alg_vars_table->insert2table(row_number, valueFlag, var_value);
+		QLineEdit* var_value_edit = new QLineEdit;
+		var_value_edit->setText(var_value);
+		_alg_vars_table->setCellWidget(row_number, valueFlag, var_value_edit);
 		row_number++;
 	}
+	_alg_vars_table->insert2table(row_number, keyFlag, "启动进程数");
+	QLineEdit* thread_number = new QLineEdit;
+	thread_number->setText(QString::number(_global_obj->value("ThreadNum").toString().trimmed().toInt() - 1));
+	_alg_vars_table->setCellWidget(row_number, valueFlag, thread_number);
+	row_number++;
+	_alg_vars_table->insert2table(row_number, keyFlag, "评估容忍时间");
+	QLineEdit* max_time = new QLineEdit;
+	max_time->setText(QString::number(_global_obj->value("EVALUATE_TIMEOUT").toString().trimmed().toInt()));
+	_alg_vars_table->setCellWidget(row_number, valueFlag, max_time);
 }
 
 void algorithmTemplate::initAlgComboItem() {

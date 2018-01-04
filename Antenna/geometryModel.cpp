@@ -1,21 +1,31 @@
+#pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
 #include "geometryModel.h"
 
-geometryModel::geometryModel(parsProblem* atn_problem, QJsonObject* problem_obj, QWidget *parent) : QDialog(parent), 
-_atn_problem(atn_problem), _problem_obj(problem_obj) {
+geometryModel::geometryModel(parsProblem* atn_problem, QWidget *parent) : QDialog(parent), 
+_atn_problem(atn_problem) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
-	_variables_widget = new variablesTemplate(_atn_problem, _problem_obj);
 
-	_save_all_button = new QPushButton(QString("保存所有"), this);
-	_hint = new QLabel(this);
-	QFont font;
-	font.setPixelSize(20);
-	_hint->setFont(font);
+	_problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
+	if (_problem_obj.isEmpty()) {
+		qCritical("get problem json object field.");
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
+	}
+	else {
+		_variables_widget = new variablesTemplate(_atn_problem, &_problem_obj);
 
-	connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
+		_save_all_button = new QPushButton(QString("保存所有"), this);
+		_hint = new QLabel(this);
+		QFont font;
+		font.setPixelSize(20);
+		_hint->setFont(font);
+
+		connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
+		initLayout();
+	}
 }
 
 void geometryModel::initLayout() {
@@ -29,6 +39,7 @@ void geometryModel::initLayout() {
 	vlayout->addLayout(varlayout);
 	vlayout->addLayout(hlayout);
 	vlayout->setContentsMargins(10, 20, 10, 2);
+	setLayout(vlayout);
 }
 
 void geometryModel::slot_saveAllButton(bool) {
@@ -44,10 +55,10 @@ void geometryModel::slot_saveAllButton(bool) {
 	for (iTemplate* iter : templates)
 		iter->updateJObj();
 
-	if (parseJson::write(QString("%1/%2_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(_atn_problem->name), _problem_obj))
+	if (parseJson::write(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name), &_problem_obj))
 		this->close();
 	else {
-		qCritical("save failed in design tabWidget.");
+		qCritical("save failed in geometry variables tabWidget.");
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
 	}
 }

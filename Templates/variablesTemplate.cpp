@@ -1,6 +1,7 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
 #include "../Utility/commonStyle.h"
+#include "comboboxDelegateTemplate.h"
 #include "variablesTemplate.h"
 
 variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent)
@@ -41,7 +42,7 @@ void variablesTemplate::initDefaultData() {
 	QSignalMapper* signals_map_unit = new QSignalMapper;	//use signalmaper manage signals in table
 
 	_vars_table->setRowCount(variables_obj.count());
-
+	//_vars_table->setItemDelegate(new comboboxDelegate(0));
 	for (QJsonObject::iterator iter = variables_obj.begin(); iter != variables_obj.end(); ++iter) {
 		// iter format: "W1":{"note" : "介质板宽度W1(m)", "W1" : "0.025"}
 		var_key = iter.key();
@@ -210,9 +211,9 @@ void variablesTemplate::slot_unitChange(QString pos) {
 	int row = coordinates.at(0).toInt();
 	int col = coordinates.at(1).toInt();
 	int currentUnitData = _vars_unit[row];
-	QComboBox *selectCombox = static_cast<QComboBox *>(_vars_table->cellWidget(row, col));
-	QLineEdit *low_edit = static_cast<QLineEdit *>(_vars_table->cellWidget(row, varmin));
-	QLineEdit *up_edit = static_cast<QLineEdit *>(_vars_table->cellWidget(row, varmax));
+	QComboBox *selectCombox = qobject_cast<QComboBox *>(_vars_table->cellWidget(row, col));
+	QLineEdit *low_edit = qobject_cast<QLineEdit *>(_vars_table->cellWidget(row, varmin));
+	QLineEdit *up_edit = qobject_cast<QLineEdit *>(_vars_table->cellWidget(row, varmax));
 
 	int newUnitData = selectCombox->currentData(ROLE_MARK_UNIT).toInt();
 	//when "newUnitData == currentUnitData", do nothing

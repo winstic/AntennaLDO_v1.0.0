@@ -2,12 +2,6 @@
 #include "treeView.h"
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
-#include "../Wizard/designWizard.h"
-#include "../Wizard/optimizeWizard.h"
-#include "designtab.h"
-#include "optimizetab.h"
-#include "designRun.h"
-#include "optimizeRun.h"
 
 treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
 	_pro_tree = new QTreeView(this);
@@ -16,7 +10,6 @@ treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
 	_performance_menu = new QMenu(this);
 	_item_performance_menu = new QMenu(this);
 	_curr_item_index = new QModelIndex();
-	_atn_problem = new parsProblem;
 	
 	initMenu();
 	initIcon();
@@ -35,9 +28,8 @@ QTreeView* treeModel::getTreeWidget() {
 	return _pro_tree;
 }
 
-bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem, QJsonObject* obj) {
+bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
-	_obj = obj;
 	QFile file(file_name);
 	if (!file.open(QIODevice::WriteOnly | QIODevice::Truncate))
 		return false;
@@ -81,7 +73,8 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem,
 	element.appendChild(text);
 	design_element.appendChild(element);
 
-	QJsonObject frequency_obj = parseJson::getSubJsonObj(*obj, "FreSetting");
+	QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
+	QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
 	QStringList str_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
 	for (int i = 0; i < str_list.size(); ++i) {
 		element = doc.createElement("item");
@@ -147,7 +140,7 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 }
 
 //外部接口
-bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem, QJsonObject* obj) {
+bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 	_atn_problem = atn_problem;
 	QFile file(file_name);
 	if (!file.open(QFile::ReadOnly | QFile::Text)) {
@@ -276,50 +269,33 @@ void treeModel::initMenu() {
 	_item_performance_menu->addAction(act_performance_item_del);
 }
 
-QList<QStandardItem*> treeModel::getRoots() {
-	QList<QStandardItem*> roots;
-	QStandardItemModel* tree_model = new QStandardItemModel(_pro_tree);
-	for (int i = 0; i < tree_model->rowCount(); ++i) {
-		roots.append(tree_model->item(i));
-	}
-	delete tree_model;
-	tree_model = nullptr;
-	return roots;
+void treeModel::openFile() {
+	_model_info = new modelInfo(_atn_problem, this);
+	//mf->setModal(true);
+	_model_info->exec();
 }
 
-QStandardItem* treeModel::getProNode() {
-	QList<QStandardItem*> roots = getRoots();
-	for (auto i = roots.begin(); i != roots.end(); ++i) {
-		if ((*i)->data(ROLE_MARK) == MARK_PROJECT) {
-			return (*i);
-		}
-	}
-	return nullptr;
+void treeModel::modifyGeometryVariables() {
+	geometryModel* geometry_model = new geometryModel(_atn_problem);
+	geometry_model->exec();
 }
 
-QList<QStandardItem*> treeModel::getFolderNode() {
-	QList<QStandardItem*> folder_nodes;
-	QStandardItem* project = getProNode();
-	if (project == nullptr) {
-		folder_nodes.append(nullptr);
-	}
-	for (int i = 0; i < project->rowCount(); ++i) {
-		QStandardItem* child = project->child(i);
-		QVariant var = child->data(ROLE_MARK_NODE);
-		if (!var.isValid()) {
-			continue;
-		}
-		folder_nodes.append(child);
-	}
-	return folder_nodes;
+void treeModel::modefyAlgorithmParameters() {
+	algorithmModel* algorithm_model = new algorithmModel(_atn_problem, nullptr);
+	algorithm_model->exec();
+}
+
+void treeModel::modifyPerformanceParameters(unsigned int index) {
+	performanceTab* performance_tab = new performanceTab(_atn_problem, index);
+	performance_tab->exec();
 }
 
 // slot function
 //create project tree by xml file
-void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem, QJsonObject* obj) {
+void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem) {
 	//该槽函数是treeView与AntennaLibrary的唯一接口
-	writeXMLFile(path, atn_problem, obj);
-	parseXML(path, atn_problem, obj);
+	writeXMLFile(path, atn_problem);
+	parseXML(path, atn_problem);
 	qInfo("create project tree.");
 }
 
@@ -358,20 +334,24 @@ void treeModel::slot_hideAll() {
 
 void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
 	QVariant var_item = item_index.data(ROLE_MARK_ITEM);
-	int d_o_index = item_index.row() + 1;
+	int index = item_index.row();
 	if (var_item.isValid()) {
 		int item_int = var_item.toInt();
 		if (item_int == MARK_ITEM_GEOMETRYDESIGN) {
-			slot_modifyGeometryVariables();
+			//编辑几何结构参数
+			modifyGeometryVariables();
 		}
 		else if (item_int == MARK_ITEM_ALGORITHMDESIGN) {
 			//编辑算法参数
+			modefyAlgorithmParameters();
 		}
 		else if (item_int == MARK_ITEM_PERFORMANCEDESIGN) {
 			//编辑性能参数（频段）
+			if(index >= 0)
+				modifyPerformanceParameters(index);
 		}
 		else if (item_int == MARK_ITEM_OPENFILE) {
-			slot_openFile();
+			openFile();
 		}
 	}
 }
@@ -380,75 +360,7 @@ void treeModel::slot_clicked(const QModelIndex& item_index) {
 	_curr_item_index = const_cast<QModelIndex*>(&item_index);
 }
 
-void treeModel::slot_openFile() {
-	_model_info = new modelInfo(_atn_problem, this);
-	//mf->setModal(true);
-	_model_info->exec();
-}
-
-void treeModel::slot_modifyGeometryVariables() {
-	//geometryModel* geometry_model = new geometryModel();
-}
-
-void treeModel::slot_modifyDesignVar() {
-	QString json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentDesignPath()).arg(_atn_problem->name);
-	QJsonObject obj = parseJson::getJsonObj(json_path);
-	if (obj.isEmpty()) {
-		qCritical("something wrong in file: '%s'", qUtf8Printable(json_path));
-		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(json_path));
-		return;
-	}
-	designTab dTab(_atn_problem, &obj, this);
-	//dTab->setAttribute(Qt::WA_DeleteOnClose);
-	//dTab->setModal(true);
-	dTab.exec();
-}
-
-void treeModel::slot_modifyOptimizeVar() {
-	QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGCurrentOptimizePath());
-	QString problem_json_path = QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentOptimizePath()).arg(_atn_problem->name);
-	QJsonObject global_obj, problem_obj;
-	global_obj = parseJson::getJsonObj(global_json_path);
-	problem_obj  = parseJson::getJsonObj(problem_json_path);
-	if (global_obj.isEmpty() || problem_obj.isEmpty()) {
-		qCritical("something wrong in file: '%s' or '%s'", qUtf8Printable(global_json_path), qUtf8Printable(problem_json_path));
-		QMessageBox::critical(0, QString("错误"), QString("读取数据失败！"));
-		return;
-	}
-	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
-	optimizeTab *otab = new optimizeTab(_atn_problem, &problem_obj, palgorithm, this);
-	//otab->setAttribute(Qt::WA_DeleteOnClose);
-	//otab->setModal(true);
-	otab->exec();
-}
-
-void treeModel::slot_designRun() {
-	QJsonObject obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(dataPool::global::getGCurrentDesignPath()).
-		arg(_atn_problem->name));
-	designRun *d_run = new designRun(_atn_problem, obj);
-	d_run->start();
-}
-
-void treeModel::slot_optimizeRun() {
-	QString global_json_path = QString("%1/global_conf.json").arg(dataPool::global::getGCurrentOptimizePath());
-	QJsonObject global_obj = parseJson::getJsonObj(global_json_path);
-	if (global_obj.isEmpty()) {
-		qCritical("something wrong in file: '%s'", qUtf8Printable(global_json_path));
-		QMessageBox::critical(0, QString("Error"), QString("error:something wrong in file [%1]").arg(global_json_path));
-		return;
-	}
-	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
-	optRunProcess = new QProcess(0);
-	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
-	optimizeRun *oRun = new optimizeRun(_atn_problem, palgorithm, optRunProcess);
-	oRun->start();
-}
-
-void treeModel::slot_interrupt() {}
-
-void treeModel::slot_designStop() {}
-
-void treeModel::slot_optimizeStop() {
+/*void treeModel::slot_optimizeStop() {
 	QDir dir(QDir::currentPath());
 	QString o_stop_path = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());
 	//QString ostopPath = QString("./DEA4AD/trunk/end.bat");
@@ -458,45 +370,7 @@ void treeModel::slot_optimizeStop() {
 	p.execute("cmd.exe", QStringList() << "/c" << o_stop_path);
 	p.waitForFinished();
 	qDebug() << p.readAllStandardOutput();
-}
-
-void treeModel::slot_showResult() {
-	QString hfss_path = QString("%1/%2.hfss").arg(dataPool::global::getGCurrentDesignPath()).arg(_atn_problem->name);
-	QProcess p(0);;
-	int is_ok = p.execute("hfss", QStringList() << hfss_path);
-	if (is_ok != 0)
-		qCritical("cannot open hfss-path: '%s'", qUtf8Printable(hfss_path));
-	p.waitForFinished();
-	qDebug() << QString::fromLocal8Bit(p.readAllStandardError());
-}
-
-void treeModel::slot_del() {
-	//QStandardItemModel *itemM
-	QProcess p;
-	p.start("tasklist");
-	//p.waitForStarted();
-	p.waitForFinished();
-	QString str = QString::fromLocal8Bit(p.readAllStandardOutput());
-	qDebug() << str;
-}
-
-void treeModel::slot_designDel() {
-	QDir* dir = new QDir;
-	QString curr_design_path = dataPool::global::getGCurrentDesignPath();	
-	dir->rmdir(curr_design_path);	
-	delete dir;
-	dir = nullptr;
-	qCritical("delete sub-project '%s' failed", qUtf8Printable(curr_design_path));
-}
-
-void treeModel::slot_optimizeDel() {
-	QDir* dir = new QDir;
-	QString curr_optimize_path = dataPool::global::getGCurrentOptimizePath();
-	qCritical("delete sub-project '%s' failed", qUtf8Printable(curr_optimize_path));
-	dir->rmdir(curr_optimize_path);
-	delete dir;
-	dir = nullptr;
-}
+}*/
 
 //optimize run process to read pipe
 void treeModel::slot_readyRead() {

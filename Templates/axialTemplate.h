@@ -7,7 +7,7 @@
 class axialTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	axialTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
+	axialTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index = 0, iTemplate *parent = 0);
 	~axialTemplate();
 
 	QLayout* getLayout();
@@ -44,4 +44,5 @@ public:
 	double _phi_end;
 	double _phi_step;
 	bool _is_valid;
+	unsigned int _index;
 };

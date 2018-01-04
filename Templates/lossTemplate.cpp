@@ -3,8 +3,8 @@
 #include "../Utility/commonStyle.h"
 #include "lossTemplate.h"
 
-lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj), _is_valid(true) {
+lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
+_atn_problem(atn_problem), _obj(obj), _is_valid(true), _index(index) {
 	_loss_table = new tableTemplate();
 	_loss_table->setColumnCount(9);
 	QStringList header;
@@ -31,17 +31,46 @@ void lossTemplate::initDefaultData() {
 		return;
 	}
 	QSignalMapper* loss_signals_map = new QSignalMapper;
-	QStringList strListR0Real = dataPool::str2list(loss_obj.value("R0_real").toString());
-	QStringList strListR0imag = dataPool::str2list(loss_obj.value("R0_imag").toString());
-	QStringList strListReturnLossType = dataPool::str2list(loss_obj.value("ReturnLossType").toString());
-	QStringList strListOptimaltype = dataPool::str2list(loss_obj.value("optimaltype_vswr").toString());
-	QStringList strListDeltaReal = dataPool::str2list(loss_obj.value("delta_real").toString());
-	QStringList strListDeltaImag = dataPool::str2list(loss_obj.value("delta_imag").toString());
-	QStringList strListVswrobj = dataPool::str2list(loss_obj.value("vswrobj").toString());
-	QStringList strListS11 = dataPool::str2list(loss_obj.value("S11").toString());
-	QStringList strListR1Real = dataPool::str2list(loss_obj.value("R1_real").toString());
-	QStringList strListR1Imag = dataPool::str2list(loss_obj.value("R1_imag").toString());
-	QStringList strListWeight = dataPool::str2list(loss_obj.value("weight_vswr").toString());
+	QStringList R0_real_lists, R0_image_lists, return_loss_type_lists, optimal_type_lists, delta_real_lists, delta_image_lists,
+		vswr_obj_lists, s11_obj_lists, R1_real_lists, R1_image_lists,weight_lists;
+
+	R0_real_lists = dataPool::strlist2list(loss_obj.value("R0_real").toString());
+	R0_image_lists = dataPool::strlist2list(loss_obj.value("R0_imag").toString());
+	return_loss_type_lists = dataPool::strlist2list(loss_obj.value("ReturnLossType").toString());
+	optimal_type_lists = dataPool::strlist2list(loss_obj.value("optimaltype_vswr").toString());
+	delta_real_lists = dataPool::strlist2list(loss_obj.value("delta_real").toString());
+	delta_image_lists = dataPool::strlist2list(loss_obj.value("delta_imag").toString());
+	vswr_obj_lists = dataPool::strlist2list(loss_obj.value("vswrobj").toString());
+	s11_obj_lists = dataPool::strlist2list(loss_obj.value("S11").toString());
+	R1_real_lists = dataPool::strlist2list(loss_obj.value("R1_real").toString());
+	R1_image_lists = dataPool::strlist2list(loss_obj.value("R1_imag").toString());
+	weight_lists = dataPool::strlist2list(loss_obj.value("weight_vswr").toString());
+
+	QStringList strListR0Real, strListR0imag, strListReturnLossType, strListOptimaltype, strListDeltaReal, strListDeltaImag,
+		strListVswrobj, strListS11, strListR1Real, strListR1Imag, strListWeight; 
+	if (_index < R0_real_lists.size())
+		strListR0Real = dataPool::str2list(R0_real_lists[_index]);
+	if (_index < R0_image_lists.size())
+		strListR0imag = dataPool::str2list(R0_image_lists[_index]);
+	if (_index < return_loss_type_lists.size())
+		strListReturnLossType = dataPool::str2list(return_loss_type_lists[_index]);
+	if (_index < optimal_type_lists.size())
+		strListOptimaltype = dataPool::str2list(optimal_type_lists[_index]);
+	if (_index < delta_real_lists.size())
+		strListDeltaReal = dataPool::str2list(delta_real_lists[_index]);
+	if (_index < delta_image_lists.size())
+		strListDeltaImag = dataPool::str2list(delta_image_lists[_index]);
+	if (_index < vswr_obj_lists.size())
+		strListVswrobj = dataPool::str2list(vswr_obj_lists[_index]);
+	if (_index < s11_obj_lists.size())
+		strListS11 = dataPool::str2list(s11_obj_lists[_index]);
+	if (_index < R1_real_lists.size())
+		strListR1Real = dataPool::str2list(R1_real_lists[_index]);
+	if (_index < R1_image_lists.size())
+		strListR1Imag = dataPool::str2list(R1_image_lists[_index]);
+	if (_index < weight_lists.size())
+		strListWeight = dataPool::str2list(weight_lists[_index]);
+
 	_loss_table->setRowCount(strListR0Real.length());
 	for (int i = 0; i < strListR0Real.length(); i++) {
 		QRegExpValidator* floatValidReg = getFloatReg();    //float

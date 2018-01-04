@@ -90,39 +90,6 @@ void atnLibrary::newProject() {
 			QDir *dir = new QDir();
 			dir->mkdir(working_path);
 
-			//copy antenna problem
-			QString path_suffix = QString("%1/%2").arg(working_path).arg(_atn_problem->name);
-			QString project_problem_path = QString("%1_conf.json").arg(path_suffix);
-			QString project_hfss_path = QString("%1.hfss").arg(path_suffix);
-			QString project_feko_path = QString("%1.cfx").arg(path_suffix);
-			QString project_script_path = QString("%1_design.vbs").arg(path_suffix);
-
-			path_suffix = QString("%1/%2").arg(_atn_problem->path).arg(_atn_problem->name);
-			is_success &= dataPool::copyFile(QString("%1_conf.json").arg(path_suffix), project_problem_path);
-			if (is_success && (_atn_problem->type == HFSS)) {
-				is_success &= dataPool::copyFile(QString("%1.hfss").arg(path_suffix), project_hfss_path);
-				is_success &= dataPool::copyFile(QString("%1_design.vbs").arg(path_suffix), project_script_path);
-			}
-			else if (is_success && (_atn_problem->type == FEKO)) {
-				is_success &= dataPool::copyFile(QString("%1.cfx").arg(path_suffix), project_feko_path);
-			}
-
-			if (!is_success) {
-				qCritical("created project failed.");
-				dir->rmdir(working_path);
-				delete dir;
-				dir = nullptr;
-				return;
-			}
-			qInfo("successfully copy related files.");
-
-			QJsonObject obj = parseJson::getJsonObj(project_problem_path);
-			if (obj.isEmpty()) {
-				qCritical("get problem json object field.");
-				QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
-				return;
-			}
-
 			//writen project file(.rel)
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);
@@ -135,7 +102,7 @@ void atnLibrary::newProject() {
 			delete dir;
 			dir = nullptr;
 
-			emit signal_createAndParseXML(QString("%1/%2.xml").arg(working_path).arg(project_name), _atn_problem, &obj);
+			emit signal_createAndParseXML(QString("%1/%2.xml").arg(working_path).arg(project_name), _atn_problem);
 		}
 	}
 }

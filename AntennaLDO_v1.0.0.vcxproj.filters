@@ -118,78 +118,6 @@
     <ClCompile Include="GeneratedFiles\Release\moc_modeInfo.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
-    <ClCompile Include="Wizard\designWizard.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_designWizard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_designWizard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Wizard\wizardDesignVariables.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wizardDesignVariables.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wizardDesignVariables.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Wizard\optimizeWizard.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_optimizeWizard.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_optimizeWizard.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Wizard\wizardOptimizeAlg.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeAlg.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeAlg.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Wizard\wizardOptimizeVariables.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeVariables.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeVariables.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wizardFreFarField.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wizardFreFarField.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Wizard\wizardFreFarField.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
-    <ClCompile Include="TreeView\designtab.cpp">
-      <Filter>TreeView</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_designtab.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_designtab.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="TreeView\optimizetab.cpp">
-      <Filter>TreeView</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_optimizetab.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_optimizetab.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
     <ClCompile Include="GeneratedFiles\Debug\moc_frequencyTemplate.cpp">
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
@@ -283,12 +211,6 @@
     <ClCompile Include="Templates\parallelTemplate.cpp">
       <Filter>Templates</Filter>
     </ClCompile>
-    <ClCompile Include="TreeView\designRun.cpp">
-      <Filter>TreeView</Filter>
-    </ClCompile>
-    <ClCompile Include="TreeView\optimizeRun.cpp">
-      <Filter>TreeView</Filter>
-    </ClCompile>
     <ClCompile Include="Antenna\searchWidget.cpp">
       <Filter>Antenna</Filter>
     </ClCompile>
@@ -316,15 +238,6 @@
     <ClCompile Include="Utility\commonStyle.cpp">
       <Filter>Utility</Filter>
     </ClCompile>
-    <ClCompile Include="GeneratedFiles\Debug\moc_wizardOptimizeGainAxial.cpp">
-      <Filter>Generated Files\Debug</Filter>
-    </ClCompile>
-    <ClCompile Include="GeneratedFiles\Release\moc_wizardOptimizeGainAxial.cpp">
-      <Filter>Generated Files\Release</Filter>
-    </ClCompile>
-    <ClCompile Include="Wizard\wizardOptimizeGainAxial.cpp">
-      <Filter>Wizard</Filter>
-    </ClCompile>
     <ClCompile Include="Antenna\algorithmModel.cpp">
       <Filter>Antenna</Filter>
     </ClCompile>
@@ -341,6 +254,24 @@
       <Filter>Generated Files\Debug</Filter>
     </ClCompile>
     <ClCompile Include="GeneratedFiles\Release\moc_geometryModel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\performanceModel.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_performanceModel.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_performanceModel.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\comboboxDelegateTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_comboboxDelegateTemplate.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_comboboxDelegateTemplate.cpp">
       <Filter>Generated Files\Release</Filter>
     </ClCompile>
   </ItemGroup>
@@ -374,30 +305,6 @@
     </CustomBuild>
     <CustomBuild Include="Antenna\modeInfo.h">
       <Filter>Antenna</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\designWizard.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\wizardDesignVariables.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\optimizeWizard.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\wizardOptimizeAlg.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\wizardOptimizeVariables.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="Wizard\wizardFreFarField.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
-    <CustomBuild Include="TreeView\designtab.h">
-      <Filter>TreeView</Filter>
-    </CustomBuild>
-    <CustomBuild Include="TreeView\optimizetab.h">
-      <Filter>TreeView</Filter>
     </CustomBuild>
     <CustomBuild Include="Templates\frequencyTemplate.h">
       <Filter>Templates</Filter>
@@ -438,14 +345,17 @@
     <CustomBuild Include="Utility\commonStyle.h">
       <Filter>Utility</Filter>
     </CustomBuild>
-    <CustomBuild Include="Wizard\wizardOptimizeGainAxial.h">
-      <Filter>Wizard</Filter>
-    </CustomBuild>
     <CustomBuild Include="Antenna\algorithmModel.h">
       <Filter>Antenna</Filter>
     </CustomBuild>
     <CustomBuild Include="Antenna\geometryModel.h">
       <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\performanceModel.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\comboboxDelegateTemplate.h">
+      <Filter>Templates</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>
@@ -466,12 +376,6 @@
     </ClInclude>
     <ClInclude Include="Antenna\initialization.h">
       <Filter>Antenna</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeView\designRun.h">
-      <Filter>TreeView</Filter>
-    </ClInclude>
-    <ClInclude Include="TreeView\optimizeRun.h">
-      <Filter>TreeView</Filter>
     </ClInclude>
     <ClInclude Include="Utility\aRun.h">
       <Filter>Utility</Filter>

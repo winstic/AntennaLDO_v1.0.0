@@ -7,7 +7,7 @@
 class thetaPhiTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
+	thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index = 0, iTemplate *parent = 0);
 	~thetaPhiTemplate();
 
 public:

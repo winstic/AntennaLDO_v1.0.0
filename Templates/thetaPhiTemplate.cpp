@@ -3,7 +3,7 @@
 #include "../Utility/commonStyle.h"
 #include "thetaPhiTemplate.h"
 
-thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
+thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _is_valid(true) {
 
 	_far_field_table = new tableTemplate();

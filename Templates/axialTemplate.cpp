@@ -3,9 +3,9 @@
 #include "../Utility/commonStyle.h"
 #include "axialTemplate.h"
 
-axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
+axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _theta_start(-180), _theta_end(180), _theta_step(5),
-_phi_start(-180), _phi_end(180), _phi_step(5), _is_valid(true) {
+_phi_start(-180), _phi_end(180), _phi_step(5), _is_valid(true), _index(index) {
 	_axial_table = new tableTemplate();
 	_axial_table->setColumnCount(8);
 	QStringList header;
@@ -37,14 +37,35 @@ void axialTemplate::initDefaultData() {
 		return;
 	}
 	QSignalMapper* axial_signals_map = new QSignalMapper;
-	QStringList str_list_theta_lower = dataPool::str2list(axial_obj.value("Theta_Lower_axial").toString());
-	QStringList str_list_theta_upper = dataPool::str2list(axial_obj.value("Theta_Upper_axial").toString());
-	QStringList str_list_phi_lower = dataPool::str2list(axial_obj.value("Phi_Lower_axial").toString());
-	QStringList str_list_phi_upper = dataPool::str2list(axial_obj.value("Phi_Upper_axial").toString());
-	QStringList str_list_optimal_type = dataPool::str2list(axial_obj.value("optimaltype_axial").toString());
-	QStringList str_list_delta = dataPool::str2list(axial_obj.value("delta_axial").toString());
-	QStringList str_list_gain = dataPool::str2list(axial_obj.value("axialobj").toString());
-	QStringList str_list_weight = dataPool::str2list(axial_obj.value("weight_axial").toString());
+	QStringList theta_lower_lists, theta_upper_lists, phi_lower_lists, phi_upper_lists, optimal_type_lists, delta_lists, axial_lists, weight_lists;
+	theta_lower_lists = dataPool::strlist2list(axial_obj.value("Theta_Lower_axial").toString());
+	theta_upper_lists = dataPool::strlist2list(axial_obj.value("Theta_Upper_axial").toString());
+	phi_lower_lists = dataPool::strlist2list(axial_obj.value("Phi_Lower_axial").toString());
+	phi_upper_lists = dataPool::strlist2list(axial_obj.value("Phi_Upper_axial").toString());
+	optimal_type_lists = dataPool::strlist2list(axial_obj.value("optimaltype_axial").toString());
+	delta_lists = dataPool::strlist2list(axial_obj.value("delta_axial").toString());
+	axial_lists = dataPool::strlist2list(axial_obj.value("axialobj").toString());
+	weight_lists = dataPool::strlist2list(axial_obj.value("weight_axial").toString());
+
+	QStringList str_list_theta_lower, str_list_theta_upper, str_list_phi_lower, str_list_phi_upper, str_list_optimal_type,
+		str_list_delta, str_list_axial, str_list_weight;
+	if (_index < theta_lower_lists.size())
+		str_list_theta_lower = dataPool::str2list(theta_lower_lists[_index]);
+	if (_index < theta_upper_lists.size())
+		str_list_theta_upper = dataPool::str2list(theta_upper_lists[_index]);
+	if (_index < phi_lower_lists.size())
+		str_list_phi_lower = dataPool::str2list(phi_lower_lists[_index]);
+	if (_index < phi_upper_lists.size())
+		str_list_phi_upper = dataPool::str2list(phi_upper_lists[_index]);
+	if (_index < optimal_type_lists.size())
+		str_list_optimal_type = dataPool::str2list(optimal_type_lists[_index]);
+	if (_index < delta_lists.size())
+		str_list_delta = dataPool::str2list(delta_lists[_index]);
+	if (_index < axial_lists.size())
+		str_list_axial = dataPool::str2list(axial_lists[_index]);
+	if (_index < weight_lists.size())
+		str_list_weight = dataPool::str2list(weight_lists[_index]);
+
 	_axial_table->setRowCount(str_list_theta_lower.length());
 	for (int i = 0; i < str_list_theta_lower.length(); i++) {
 		QComboBox* theta_low_comb = new QComboBox;
@@ -86,7 +107,7 @@ void axialTemplate::initDefaultData() {
 		QLineEdit* weight_value_edit = new QLineEdit;
 		obj_value_edit->setValidator(floatValidReg);
 		weight_value_edit->setValidator(floatValidReg);
-		obj_value_edit->setText(str_list_gain[i]);
+		obj_value_edit->setText(str_list_axial[i]);
 		weight_value_edit->setText(str_list_weight[i]);
 		_axial_table->setCellWidget(i, cobjvalue, obj_value_edit);
 		_axial_table->setCellWidget(i, cweight, weight_value_edit);

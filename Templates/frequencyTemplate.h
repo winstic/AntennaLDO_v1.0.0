@@ -6,7 +6,7 @@
 class frequencyTemplate : public iTemplate {
 	Q_OBJECT
 public:
-	frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent = 0);
+	frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index = 0, iTemplate *parent = 0);
 	~frequencyTemplate();
 	
 public:
@@ -40,4 +40,5 @@ public:
 	QComboBox* _sweep_type_combox;
 	QComboBox* _polarization_combox;
 	bool _is_valid;
+	unsigned int _index;
 };

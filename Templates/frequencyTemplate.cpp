@@ -3,8 +3,8 @@
 #include "../Utility/commonStyle.h"
 #include "frequencyTemplate.h"
 
-frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj), _is_valid(true) {
+frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
+_atn_problem(atn_problem), _obj(obj), _is_valid(true), _index(index) {
 	_frequency_low_label = new QLabel("频段上限:", this);
 	_frequency_up_label = new QLabel("频段下限:", this);
 	_frequency_num_label = new QLabel("频点个数:", this);
@@ -57,17 +57,23 @@ void frequencyTemplate::initDefaultData() {
 		emit signal_checkValid();
 		return;
 	}
-	QStringList str_list;
-	str_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
-	_frequency_low_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
-	_frequency_up_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(frequency_obj.value("FreNumber").toString().trimmed());
-	_frequency_num_edit->setText(str_list[0]);
+	QStringList fre_start_list, fre_end_list, fre_number_list;
+	QString fre_start = "", fre_end = "", fre_number = "";
+	fre_start_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
+	fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
+	fre_number_list = dataPool::str2list(frequency_obj.value("FreNumber").toString().trimmed());
+	if (_index < fre_start_list.size())
+		fre_start = fre_start_list[_index];
+	if (_index < fre_end_list.size())
+		fre_end = fre_end_list[_index];
+	if (_index < fre_number_list.size())
+		fre_number = fre_number_list[_index];
+
+	_frequency_low_edit->setText(fre_start);
+	_frequency_up_edit->setText(fre_end);
+	_frequency_num_edit->setText(fre_number);
 	_sweep_type_combox->setCurrentIndex(0);
-	_sweep_type_combox->setEnabled(false);
 	_polarization_combox->setCurrentIndex(0);
-	_polarization_combox->setEnabled(false);
 }
 
 void frequencyTemplate::initLayout() {
@@ -124,7 +130,7 @@ bool frequencyTemplate::checkInputValid() {
 		commonStyle::setLineEditWarningStyle(_frequency_up_edit);
 		return false;
 	}
-	//实时保存设置的最大频率
+	//更新设置的最大频率
 	_atn_problem->max_frequency = frequency_up_d;
 	commonStyle::clearLineEditWarningStyle(_frequency_low_edit);
 	commonStyle::clearLineEditWarningStyle(_frequency_up_edit);

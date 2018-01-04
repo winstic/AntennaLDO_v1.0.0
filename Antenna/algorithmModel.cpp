@@ -1,21 +1,32 @@
+#pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
 #include "algorithmModel.h"
 
-algorithmModel::algorithmModel(parsProblem* atn_problem, QJsonObject* algorithm_obj, parsAlgorithm* algorithm, QWidget *parent) 
-	: QDialog(parent), _atn_problem(atn_problem), _algorithm_obj(nullptr), _algorithm(algorithm) {
+algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QWidget *parent)
+	: QDialog(parent), _atn_problem(atn_problem), _algorithm(algorithm) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
-	_algorithm_widget = new algorithmTemplate(_atn_problem, &_algorithm_obj, &_algorithm);
 
-	_save_all_button = new QPushButton(QString("保存所有"), this);
-	_hint = new QLabel(this);
-	QFont font;
-	font.setPixelSize(20);
-	_hint->setFont(font);
+	_algorithm_obj = nullptr;
+	_global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
+	if (_global_obj.isEmpty()) {
+		qCritical("get global json object field.");
+		QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
+	}
+	else {
+		_algorithm_widget = new algorithmTemplate(_atn_problem, &_global_obj, &_algorithm, &_algorithm_obj);
 
-	connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
+		_save_all_button = new QPushButton(QString("保存所有"), this);
+		_hint = new QLabel(this);
+		QFont font;
+		font.setPixelSize(20);
+		_hint->setFont(font);
+
+		connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
+		initLayout();
+	}	
 }
 
 void algorithmModel::initLayout() {
@@ -29,10 +40,11 @@ void algorithmModel::initLayout() {
 	vlayout->addLayout(varlayout);
 	vlayout->addLayout(hlayout);
 	vlayout->setContentsMargins(10, 20, 10, 2);
+	setLayout(vlayout);
 }
 
 void algorithmModel::slot_saveAllButton(bool) {
-	/*QList<iTemplate*> templates{ _algorithm_widget };
+	QList<iTemplate*> templates{ _algorithm_widget };
 
 	_hint->clear();
 	for (iTemplate* iter : templates) {
@@ -44,12 +56,13 @@ void algorithmModel::slot_saveAllButton(bool) {
 	for (iTemplate* iter : templates)
 		iter->updateJObj();
 
-	if (parseJson::write(QString("%1/%2_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(_atn_problem->name), _problem_obj))
+	if (parseJson::write(QString("%1/%2_conf.json").arg(_algorithm->path).arg(_algorithm->name), _algorithm_obj) 
+		&& parseJson::write(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), &_global_obj))
 		this->close();
 	else {
-		qCritical("save failed in design tabWidget.");
+		qCritical("save failed in algorithm tabWidget.");
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
-	}*/
+	}
 }
 
 algorithmModel::~algorithmModel() {}
