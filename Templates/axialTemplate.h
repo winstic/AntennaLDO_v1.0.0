@@ -43,6 +43,5 @@ public:
 	double _phi_start;
 	double _phi_end;
 	double _phi_step;
-	bool _is_valid;
 	unsigned int _index;
 };

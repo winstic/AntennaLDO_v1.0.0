@@ -49,7 +49,7 @@ void performanceTab::initLayout() {
 	//first tab
 	QLayout* frequency_layout = _frequency_widget->getLayout();
 	//设置tab页面内容与边界的距离
-	frequency_layout->setContentsMargins(50, 20, 50, 20);
+	frequency_layout->setContentsMargins(100, 20, 50, 100);
 	_first_tab->setLayout(frequency_layout);
 	//second tab
 	QGroupBox* group_box_far_field = new QGroupBox("先设置远场范围");

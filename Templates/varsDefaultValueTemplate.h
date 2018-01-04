@@ -36,5 +36,4 @@ public:
 	QLabel* _atn_image_label;
 	QMap<QString, QString> _default_vars;
 	QMap<int, int> _vars_unit;				//save unit combobox 
-	bool _is_valid;
 };

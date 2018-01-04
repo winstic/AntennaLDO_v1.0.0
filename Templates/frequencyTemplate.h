@@ -42,6 +42,5 @@ public:
 	QLineEdit* _frequency_num_edit;
 	QComboBox* _sweep_type_combox;
 	QComboBox* _polarization_combox;
-	bool _is_valid;
 	unsigned int _index;
 };

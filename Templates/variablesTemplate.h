@@ -34,5 +34,4 @@ public:
 	tableTemplate* _vars_table;
 	QLabel* _atn_image_label;
 	QMap<int, int> _vars_unit;				//save combobox unit
-	bool _is_valid;
 };

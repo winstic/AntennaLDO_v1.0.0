@@ -4,7 +4,7 @@
 #include "frequencyTemplate.h"
 
 frequencyTemplate::frequencyTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj), _is_valid(true), _index(index) {
+_atn_problem(atn_problem), _obj(obj), _index(index) {
 	_frequency_low_label = new QLabel("频段上限:", this);
 	_frequency_up_label = new QLabel("频段下限:", this);
 	_frequency_num_label = new QLabel("频点个数:", this);
@@ -52,10 +52,7 @@ void frequencyTemplate::initDefaultData() {
 	QJsonObject frequency_obj = parseJson::getSubJsonObj(*_obj, "FreSetting");
 	if (frequency_obj.isEmpty()) {
 		qCritical("get 'FreSetting' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QStringList fre_start_list, fre_end_list, fre_number_list, pm_list, sweep_type_list;
@@ -115,7 +112,6 @@ QLayout* frequencyTemplate::getLayout() {
 
 //check input
 bool frequencyTemplate::checkInputValid() {
-	if (!_is_valid) return false;
 	QString frequency_low = _frequency_low_edit->text().trimmed();
 	QString frequency_up = _frequency_up_edit->text().trimmed();
 	QString frequency_num = _frequency_num_edit->text().trimmed();

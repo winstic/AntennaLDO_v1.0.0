@@ -4,7 +4,7 @@
 #include "thetaPhiTemplate.h"
 
 thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj), _is_valid(true) {
+_atn_problem(atn_problem), _obj(obj){
 
 	_far_field_table = new tableTemplate();
 	_far_field_table->setColumnCount(6);
@@ -56,10 +56,7 @@ void thetaPhiTemplate::initDefaultData() {
 	QJsonObject far_field_obj = parseJson::getSubJsonObj(*_obj, "ThetaPhiStep");
 	if (far_field_obj.isEmpty()) {
 		qCritical("get 'ThetaPhiStep' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	_far_field_table->setRowCount(1);
@@ -97,7 +94,6 @@ QLayout* thetaPhiTemplate::getLayout() {
 }
 
 bool thetaPhiTemplate::checkInputValid() {
-	if (!_is_valid) return false;
 	QString theta_low = _theta_low_edit->text().trimmed();
 	QString theta_up = _theta_up_edit->text().trimmed();
 	QString theta_step = _theta_step_edit->text().trimmed();
@@ -189,7 +185,7 @@ void thetaPhiTemplate::slot_confirmButton(bool){
 			.arg(_phi_up_edit->text().trimmed()).arg(_phi_step_edit->text().trimmed());
 
 		QMessageBox *tip = new QMessageBox;
-		QTimer::singleShot(1200, tip, SLOT(close()));
+		QTimer::singleShot(1000, tip, SLOT(close()));
 		tip->setWindowTitle("提示");
 		tip->setIcon(QMessageBox::Information);
 		tip->setText("正在更新远场范围......");

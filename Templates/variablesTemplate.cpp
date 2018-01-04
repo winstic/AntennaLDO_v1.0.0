@@ -4,7 +4,7 @@
 #include "variablesTemplate.h"
 
 variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent)
-	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj), _is_valid(true) {
+	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj){
 	_atn_image_label = new QLabel(this);
 	_vars_table = new tableTemplate();
 	_vars_table->setColumnCount(4);
@@ -16,7 +16,7 @@ variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj,
 	_vars_table->horizontalHeader()->setSectionResizeMode(varunit, QHeaderView::ResizeToContents);
 	_vars_table->horizontalHeader()->resizeSection(varnote, 120);        //setting first column width is 120
 	_vars_table->verticalHeader()->setDefaultSectionSize(40); //设置行高
-	_vars_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
+	//_vars_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
 	_vars_table->setShowGrid(false);                               //setting no grid line
 	_vars_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 
@@ -28,10 +28,7 @@ void variablesTemplate::initDefaultData() {
 	QJsonObject variables_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (variables_obj.isEmpty()) {
 		qCritical("get 'variables' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QJsonObject var_obj;
@@ -68,10 +65,7 @@ void variablesTemplate::initDefaultData() {
 		}
 		else {
 			qCritical("get 'variables' json object field.");
-			checkInfo->code = eOther;
-			checkInfo->message = "问题json文件格式不正确。";
-			_is_valid = false;
-			emit signal_checkValid();
+			QMessageBox::critical(0, QString("警告"), QString("问题json文件格式不正确（'variables'变量未设上下限）。"));
 			return;
 		}
 		_vars_table->setCellWidget(row_number, varmin, low_edit);
@@ -123,7 +117,6 @@ void variablesTemplate::setCheckUncompleteInfo() {
 }
 
 bool variablesTemplate::checkInputValid() {
-	if (!_is_valid) return false;
 	QLineEdit* curr_low_edit, *curr_up_edit;
 	QString var_low_value, var_up_value;
 	for (int i = 0; i < _vars_table->rowCount(); i++) {

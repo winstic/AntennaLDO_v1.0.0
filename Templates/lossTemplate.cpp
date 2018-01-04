@@ -5,14 +5,14 @@
 #include "lossTemplate.h"
 
 lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj), _is_valid(true), _index(index) {
+_atn_problem(atn_problem), _obj(obj), _index(index) {
 	_loss_table = new tableTemplate();
 	_loss_table->setColumnCount(9);
 	QStringList header;
 	header << "Z0实部" << "Z0虚部" << "回波损失类型" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";
 	_loss_table->setHorizontalHeaderLabels(header);
 	_loss_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	_loss_table->setShowGrid(false);                               //setting no grid line
+	//_loss_table->setShowGrid(false);                               //setting no grid line
 
 	_loss_table->resizeColumnToContents(6);
 	_loss_table->resizeColumnToContents(7);
@@ -25,10 +25,7 @@ void lossTemplate::initDefaultData() {
 	QJsonObject loss_obj = parseJson::getSubJsonObj(*_obj, "VSWRSetting");
 	if (loss_obj.isEmpty()) {
 		qCritical("get 'VSWRSetting' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QSignalMapper* loss_signals_map = new QSignalMapper;
@@ -156,7 +153,6 @@ QLayout* lossTemplate::getLayout() {
 }
 
 bool lossTemplate::checkInputValid() {
-	if (!_is_valid) return false;
 	for (int i = 0; i < _loss_table->rowCount(); i++) {
 		QComboBox *lossType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, closstype));
 		QComboBox *loType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, clossoptimaltype));
@@ -173,7 +169,6 @@ bool lossTemplate::checkInputValid() {
 			qCritical("z0 real value is null.");
 			checkInfo->code = eNull;
 			checkInfo->message = "请设置阻抗实部";
-			_is_valid = false;
 			_loss_table->item(i, cz0real)->setSelected(true);
 			emit signal_checkValid();
 			return false;
@@ -182,7 +177,6 @@ bool lossTemplate::checkInputValid() {
 			qCritical("z0 image value is null.");
 			checkInfo->code = eNull;
 			checkInfo->message = "请设置阻抗虚部";
-			_is_valid = false;
 			_loss_table->item(i, cz0imag)->setSelected(true);
 			emit signal_checkValid();
 			return false;
@@ -192,7 +186,6 @@ bool lossTemplate::checkInputValid() {
 				qCritical("delta real value is invalid.");
 				checkInfo->code = eNull;
 				checkInfo->message = "请设置delta实部";
-				_is_valid = false;
 				_loss_table->item(i, cdeltareal)->setSelected(true);
 				emit signal_checkValid();
 				return false;
@@ -201,7 +194,6 @@ bool lossTemplate::checkInputValid() {
 				qCritical("delta image value is invalid.");
 				checkInfo->code = eNull;
 				checkInfo->message = "请设置delta虚部";
-				_is_valid = false;
 				_loss_table->item(i, cdeltaimag)->setSelected(true);
 				emit signal_checkValid();
 				return false;
@@ -211,7 +203,6 @@ bool lossTemplate::checkInputValid() {
 			qCritical("loss object value is invalid.");
 			checkInfo->code = eNull;
 			checkInfo->message = "请设置回波损失的目标值";
-			_is_valid = false;
 			_loss_table->item(i, cobjreal)->setSelected(true);
 			emit signal_checkValid();
 			return false;
@@ -222,7 +213,6 @@ bool lossTemplate::checkInputValid() {
 				qCritical("R image value is invalid.");
 				checkInfo->code = eNull;
 				checkInfo->message = "请设置回波损失的目标值虚部";
-				_is_valid = false;
 				_loss_table->item(i, cobjimag)->setSelected(true);
 				emit signal_checkValid();
 				return false;
@@ -232,7 +222,6 @@ bool lossTemplate::checkInputValid() {
 			qCritical("weight value is invalid.");
 			checkInfo->code = eNull;
 			checkInfo->message = "请设置回波损失的权值";
-			_is_valid = false;
 			_loss_table->item(i, clossweight)->setSelected(true);
 			emit signal_checkValid();
 			return false;

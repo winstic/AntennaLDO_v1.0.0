@@ -2,18 +2,24 @@
 
 tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent) {
 	//_table = new QTableWidget;
-	this->horizontalHeader()->setSectionsClickable(false);
+	QFont ft;
+	ft.setBold(true);
+	this->horizontalHeader()->setFont(ft);
+	
+	this->horizontalHeader()->setHighlightSections(false);		//点击表时不对表头行光亮（获取焦点） 
+	this->verticalHeader()->setHighlightSections(false);
+	//this->horizontalHeader()->setSectionsClickable(false);
 	//this->verticalHeader()->setVisible(false);              //setting no vertical header	
-	this->verticalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
-	this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); 
-	this->setStyleSheet("QTableCornerButton::section{background:skyblue;}");
+	//this->verticalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
+	//this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); 
+	//this->setStyleSheet("QTableCornerButton::section{background:skyblue;}");
 	//this->setFocusPolicy(Qt::NoFocus);
 	this->verticalHeader()->setFixedWidth(30);
 	//this->setFrameShape(QFrame::NoFrame);                   //setting no frame
 															  //_table->setShowGrid(false);                               //setting no grid line
 	this->setSelectionBehavior(QAbstractItemView::SelectRows);
 	this->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
-	this->setStyleSheet("selection-background-color:lightblue;");   //setting selected background
+	this->setStyleSheet("selection-background-color:skyblue;");   //setting selected background
 	//this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); //setting header background
 	//this->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 	connect(this, SIGNAL(itemSelectionChanged()), this, SLOT(slot_selectChanged()));

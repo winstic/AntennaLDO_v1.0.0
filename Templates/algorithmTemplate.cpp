@@ -1,9 +1,10 @@
 ﻿#pragma execution_character_set("utf-8")
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 #include "algorithmTemplate.h"
 
 algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* global_obj, parsAlgorithm** palgorithm, QJsonObject** algorithm_obj, iTemplate *parent)
-	: iTemplate(parent), _atn_problem(atn_problem), _global_obj(global_obj), _algorithm(palgorithm), _algorithm_obj(algorithm_obj), _is_valid(true) {
+	: iTemplate(parent), _atn_problem(atn_problem), _global_obj(global_obj), _algorithm(palgorithm), _algorithm_obj(algorithm_obj){
 	_alg_label = new QLabel("选择算法:", this);
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
@@ -12,6 +13,11 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 	_alg_vars_table->horizontalHeader()->setVisible(false);
 	_alg_vars_table->setColumnCount(2);
 	_alg_vars_table->horizontalHeader()->setSectionResizeMode(valueFlag, QHeaderView::Stretch);
+	_thread_number_edit = new QLineEdit;
+	_max_time_edit = new QLineEdit;
+	_thread_number_edit->setValidator(getPositiveIntReg());
+	_max_time_edit->setValidator(getPositiveIntReg());
+
 	initAlgComboItem();	
 	if (_algorithm == nullptr) {
 		qCritical("nullptr pointer");
@@ -27,6 +33,8 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 	initDefaultData();
 	initLayout();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
+	connect(_thread_number_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
+	connect(_max_time_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
 }
 
 void algorithmTemplate::initLayout() {
@@ -44,12 +52,8 @@ void algorithmTemplate::initDefaultData() {
 	QString alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
-		qCritical("cannot parse algorithm json file: '%s'", qUtf8Printable(alg_json_path));
-		checkInfo->code = eOther;
-		checkInfo->message = "算法json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
-		QMessageBox::critical(0, QString("错误"), QString("读取算法配置文件失败！"));
+		qCritical("get algorithm json object field.");
+		QMessageBox::critical(0, QString("警告"), QString("读取算法配置文件失败！"));
 		return;
 	}
 	//+2 启动进程数，评估容忍时间
@@ -66,24 +70,24 @@ void algorithmTemplate::initDefaultData() {
 		//valueInstruction = varObj.value("instruction").toString().trimmed();
 
 		_alg_vars_table->insert2table(row_number, keyFlag, value_note);
+		_alg_vars_table->item(row_number, keyFlag)->setWhatsThis(var_key);
 		QTableWidgetItem *flagItem = _alg_vars_table->item(row_number, keyFlag);
 		flagItem->setWhatsThis(var_key);
 		//set this column cannot edit
 		flagItem->setFlags(flagItem->flags() & (~Qt::ItemIsEditable));
 		QLineEdit* var_value_edit = new QLineEdit;
+		var_value_edit->setValidator(getPositiveIntReg());
 		var_value_edit->setText(var_value);
 		_alg_vars_table->setCellWidget(row_number, valueFlag, var_value_edit);
 		row_number++;
 	}
 	_alg_vars_table->insert2table(row_number, keyFlag, "启动进程数");
-	QLineEdit* thread_number = new QLineEdit;
-	thread_number->setText(QString::number(_global_obj->value("ThreadNum").toString().trimmed().toInt() - 1));
-	_alg_vars_table->setCellWidget(row_number, valueFlag, thread_number);
+	_thread_number_edit->setText(QString::number(_global_obj->value("ThreadNum").toString().trimmed().toInt()));
+	_alg_vars_table->setCellWidget(row_number, valueFlag, _thread_number_edit);
 	row_number++;
 	_alg_vars_table->insert2table(row_number, keyFlag, "评估容忍时间");
-	QLineEdit* max_time = new QLineEdit;
-	max_time->setText(QString::number(_global_obj->value("EVALUATE_TIMEOUT").toString().trimmed().toInt()));
-	_alg_vars_table->setCellWidget(row_number, valueFlag, max_time);
+	_max_time_edit->setText(QString::number(_global_obj->value("EVALUATE_TIMEOUT").toString().trimmed().toInt()));
+	_alg_vars_table->setCellWidget(row_number, valueFlag, _max_time_edit);
 }
 
 void algorithmTemplate::initAlgComboItem() {
@@ -102,7 +106,40 @@ QLayout* algorithmTemplate::getLayout() {
 }
 
 bool algorithmTemplate::checkInputValid() {
-	if (!_is_valid) return false;
+	for (int i = 0; i < _alg_vars_table->rowCount() - 2; i++) {
+		QLineEdit *value_edit = qobject_cast<QLineEdit *>(_alg_vars_table->cellWidget(i, valueFlag));
+		QString alg_value = value_edit->text().trimmed();
+
+		if (alg_value.isEmpty() || alg_value.isNull()) {
+			qCritical("algorithm variables value is null.");
+			checkInfo->code = eNull;
+			checkInfo->message = "算法设置参数不能为空";
+			commonStyle::setLineEditWarningStyle(value_edit);
+			emit signal_checkValid();
+			return false;
+		}
+		commonStyle::clearLineEditWarningStyle(value_edit);
+	}
+	QString thread_num = _thread_number_edit->text().trimmed();
+	QString max_time = _max_time_edit->text().trimmed();
+	if (thread_num.isEmpty() || thread_num.isNull()) {
+		qCritical("global variables value is null.");
+		checkInfo->code = eNull;
+		checkInfo->message = "算法设置参数不能为空";
+		commonStyle::setLineEditWarningStyle(_thread_number_edit);
+		emit signal_checkValid();
+		return false;
+	}
+	if (max_time.isEmpty() || max_time.isNull()) {
+		qCritical("global variables value is null.");
+		checkInfo->code = eNull;
+		checkInfo->message = "算法设置参数不能为空";
+		commonStyle::setLineEditWarningStyle(_max_time_edit);
+		emit signal_checkValid();
+		return false;
+	}
+	commonStyle::clearLineEditWarningStyle(_thread_number_edit);
+	commonStyle::clearLineEditWarningStyle(_max_time_edit);
 	return true;
 }
 
@@ -111,19 +148,30 @@ void algorithmTemplate::updateJObj() {
 	//初始化*_algorithm_obj
 	*_algorithm_obj = new QJsonObject;
 	QString varKey, varValue, varNote;
-	for (int i = 0; i < _alg_vars_table->rowCount(); ++i) {
+	int i = 0;
+	for (int i = 0; i < _alg_vars_table->rowCount() - 2; ++i) {
 		varKey = _alg_vars_table->item(i, keyFlag)->whatsThis().trimmed();
 		varNote = _alg_vars_table->item(i, keyFlag)->text().trimmed();
-		varValue = QString("%1").arg(_alg_vars_table->item(i, valueFlag)->text().trimmed());
+		QLineEdit* value_edit = qobject_cast<QLineEdit *>(_alg_vars_table->cellWidget(i, valueFlag));
+		varValue = QString("%1").arg(value_edit->text().trimmed());
 		QJsonObject itemobj;
 		itemobj.insert(varKey, varValue);
 		itemobj.insert("note", varNote);
 		(*_algorithm_obj)->insert(varKey, itemobj);
+		connect(value_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
 	}
+	_global_obj->insert("ThreadNum", _thread_number_edit->text().trimmed());
+	_global_obj->insert("EVALUATE_TIMEOUT", _max_time_edit->text().trimmed());
 }
 
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
 	*_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
 	initDefaultData();
+}
+
+void algorithmTemplate::slot_textChanged(QString) {
+	QLineEdit *edit = qobject_cast<QLineEdit *>(sender());
+	commonStyle::clearLineEditWarningStyle(edit);
+	emit signal_checkValid();
 }

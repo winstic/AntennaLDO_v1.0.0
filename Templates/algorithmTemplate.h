@@ -20,6 +20,7 @@ signals:
 
 public slots:
 	void slot_algName(const int index);
+	void slot_textChanged(QString);
 
 private:
 	void initAlgComboItem();
@@ -36,5 +37,7 @@ public:
 	QComboBox* _alg_combox;
 	tableTemplate* _alg_vars_table;
 	QLayout* _layout;
-	bool _is_valid;
+
+	QLineEdit* _thread_number_edit;
+	QLineEdit* _max_time_edit;
 };

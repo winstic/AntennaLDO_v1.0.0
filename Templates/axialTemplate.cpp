@@ -6,14 +6,14 @@
 
 axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _theta_start(-180), _theta_end(180), _theta_step(5),
-_phi_start(-180), _phi_end(180), _phi_step(5), _is_valid(true), _index(index) {
+_phi_start(-180), _phi_end(180), _phi_step(5), _index(index) {
 	_axial_table = new tableTemplate();
 	_axial_table->setColumnCount(8);
 	QStringList header;
 	header << "起始θ" << "终止θ" << "起始φ" << "终止φ" << "优化方式" << "误差值" << "轴比(dB)" << "权值";
 	_axial_table->setHorizontalHeaderLabels(header);
 	_axial_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	_axial_table->setShowGrid(false);                               //setting no grid line
+	//_axial_table->setShowGrid(false);                               //setting no grid line
 	_add_button = new QPushButton("增加");
 	_del_button = new QPushButton("删除");
 	_axial_table->setEnabled(false);
@@ -31,10 +31,7 @@ void axialTemplate::initDefaultData() {
 	QJsonObject axial_obj = parseJson::getSubJsonObj(*_obj, "AxialratioSetting");
 	if (axial_obj.isEmpty()) {
 		qCritical("get 'AxialratioSetting' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QSignalMapper* axial_signals_map = new QSignalMapper;
@@ -112,18 +109,53 @@ QLayout* axialTemplate::getLayout() {
 }
 
 bool axialTemplate::checkInputValid() {
-	if (!_is_valid) return false;
 	for (int i = 0; i < _axial_table->rowCount(); i++) {
+		QString theta_low_value = _axial_table->item(i, cthetalower)->text().trimmed();
+		QString theta_up_value = _axial_table->item(i, cthetaupper)->text().trimmed();
+		QString phi_low_value = _axial_table->item(i, cphilower)->text().trimmed();
+		QString phi_up_value = _axial_table->item(i, cphiupper)->text().trimmed();
 		QComboBox *goType = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, coptimaltype));
 		QString delta_value = _axial_table->item(i, cdelta)->text().trimmed();
 		QString obj_value = _axial_table->item(i, cobjvalue)->text().trimmed();
 		QString weight_value = _axial_table->item(i, cweight)->text().trimmed();
 
+		if (theta_low_value.toDouble() + 0.000001 < _theta_start) {
+			qCritical("too small theta low value.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "起始theta值过小。";
+			_axial_table->item(i, cthetalower)->setSelected(true);
+			emit signal_checkValid();
+			return false;
+		}
+		if (theta_up_value.toDouble() - 0.000001 > _theta_end) {
+			qCritical("too large theta up value.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "终止theta值过大。";
+			_axial_table->item(i, cthetaupper)->setSelected(true);
+			emit signal_checkValid();
+			return false;
+		}
+		if (phi_low_value.toDouble() + 0.000001 < _phi_start) {
+			qCritical("too small phi low value.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "起始phi值过小。";
+			_axial_table->item(i, cphilower)->setSelected(true);
+			emit signal_checkValid();
+			return false;
+		}
+		if (phi_up_value.toDouble() - 0.000001 > _phi_end) {
+			qCritical("too large phi up value.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "终止phi值过大。";
+			_axial_table->item(i, cphiupper)->setSelected(true);
+			emit signal_checkValid();
+			return false;
+		}
+
 		if (goType->currentIndex() == odelta && (delta_value.isEmpty() || delta_value.isNull() || delta_value == "None")) {
 			qCritical("invalid delat value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置delta误差值。";
-			_is_valid = false;
 			_axial_table->item(i, cdelta)->setSelected(true);
 			emit signal_checkValid();
 			return false;
@@ -132,7 +164,6 @@ bool axialTemplate::checkInputValid() {
 			qCritical("invalid gain object value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置轴比的目标值。";
-			_is_valid = false;
 			_axial_table->item(i, cobjvalue)->setSelected(true);
 			emit signal_checkValid();
 			return false;
@@ -141,7 +172,6 @@ bool axialTemplate::checkInputValid() {
 			qCritical("invalid weight value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置轴比的权值。";
-			_is_valid = false;
 			_axial_table->item(i, cweight)->setSelected(true);
 			emit signal_checkValid();
 			return false;

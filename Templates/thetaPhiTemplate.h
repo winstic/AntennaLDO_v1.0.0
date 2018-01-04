@@ -36,7 +36,6 @@ public:
 	QLayout* _layout;
 	tableTemplate* _far_field_table;
 	QPushButton* _confirm_button;
-	bool _is_valid;
 
 	QLineEdit* _theta_low_edit;
 	QLineEdit* _theta_up_edit;

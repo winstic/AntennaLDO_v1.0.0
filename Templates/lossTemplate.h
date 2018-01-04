@@ -33,6 +33,5 @@ public:
 	QJsonObject* _obj;
 	QLayout* _layout;
 	tableTemplate* _loss_table;
-	bool _is_valid;
 	unsigned int _index;
 };

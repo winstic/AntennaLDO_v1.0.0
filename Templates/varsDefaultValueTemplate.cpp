@@ -6,7 +6,7 @@
 #include "varsDefaultValueTemplate.h"
 
 varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent) 
-	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj), _is_valid(true) {
+	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj){
 	_atn_image_label = new QLabel(this);
 	_vars_table = new tableTemplate();
 	_vars_table->setColumnCount(3);
@@ -29,10 +29,7 @@ void varsDefaultValueTemplate::initDefaultData() {
 	QJsonObject vars_value_obj = parseJson::getSubJsonObj(*_obj, "varsValue");
 	if (vars_value_obj.isEmpty()) {
 		qCritical("get 'varsValue' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	for (QJsonObject::iterator iter = vars_value_obj.begin(); iter != vars_value_obj.end(); ++iter) {
@@ -41,10 +38,7 @@ void varsDefaultValueTemplate::initDefaultData() {
 	QJsonObject vars_range_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (vars_range_obj.isEmpty()) {
 		qCritical("get 'variables' json object field.");
-		checkInfo->code = eOther;
-		checkInfo->message = "问题json文件格式不正确。";
-		_is_valid = false;
-		emit signal_checkValid();
+		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QJsonObject var_obj;
@@ -69,10 +63,7 @@ void varsDefaultValueTemplate::initDefaultData() {
 		var_value = dataPool::str2list(var_obj.value(var_key).toString().trimmed());
 		if (var_value.length() != 2) {
 			qCritical("get 'variables' json unregular.");
-			checkInfo->code = eOther;
-			checkInfo->message = "问题json文件格式不规则（'variables'变量未设上下限）。";
-			_is_valid = false;
-			emit signal_checkValid();
+			QMessageBox::critical(0, QString("警告"), QString("问题json文件格式不正确。（'variables'变量未设上下限）。"));
 			return;
 		}
 		QLineEdit *value_edit = new QLineEdit(this);		
@@ -159,7 +150,6 @@ QLayout* varsDefaultValueTemplate::getLayout() {
 
 //check input
 bool varsDefaultValueTemplate::checkInputValid() {
-	if (!_is_valid) return false;
 	QLineEdit* curr_edit;
 	QString var_value;
 	for (int i = 0; i < _vars_table->rowCount(); i++) {
