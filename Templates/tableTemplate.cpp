@@ -8,7 +8,7 @@ tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent) {
 	
 	this->horizontalHeader()->setHighlightSections(false);		//点击表时不对表头行光亮（获取焦点） 
 	this->verticalHeader()->setHighlightSections(false);
-	//this->horizontalHeader()->setSectionsClickable(false);
+	this->horizontalHeader()->setSectionsClickable(false);
 	//this->verticalHeader()->setVisible(false);              //setting no vertical header	
 	//this->verticalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
 	//this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); 
@@ -17,8 +17,9 @@ tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent) {
 	this->verticalHeader()->setFixedWidth(30);
 	//this->setFrameShape(QFrame::NoFrame);                   //setting no frame
 															  //_table->setShowGrid(false);                               //setting no grid line
-	this->setSelectionBehavior(QAbstractItemView::SelectRows);
-	this->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
+	this->setSelectionBehavior(QAbstractItemView::SelectRows);	
+	this->setSelectionMode(QAbstractItemView::ExtendedSelection);     //多行选择
+	//this->setSelectionMode(QAbstractItemView::SingleSelection);     //select signal row every time
 	this->setStyleSheet("selection-background-color:skyblue;");   //setting selected background
 	//this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); //setting header background
 	//this->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit

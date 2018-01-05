@@ -8,7 +8,8 @@ void commonStyle::setHintStyle(QLabel* hint) {
 }
 
 void commonStyle::setLineEditWarningStyle(QLineEdit* edit) {
-	edit->setStyleSheet("border: 1px solid red;");
+	//edit->setStyleSheet("border: 1px solid red;");
+	edit->setStyleSheet("background-color: skyblue;");	
 }
 void commonStyle::clearLineEditWarningStyle(QLineEdit* edit) {
 	edit->setStyleSheet("background-color: white;");

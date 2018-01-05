@@ -292,11 +292,19 @@ void axialTemplate::slot_addSetting(bool) {
 }
 
 void axialTemplate::slot_delSetting(bool) {
+	QItemSelectionModel *selectionModel = _axial_table->selectionModel();
+	QModelIndexList index_list = selectionModel->selectedRows();
+	QVector<int> del_indexs;
+	foreach(QModelIndex index, selectionModel->selectedRows())
+		del_indexs.append(index.row());
+
+	//删除选中的所有行，注意从后往前删，否则选中行号会更新导致删除非选中行
 	QMessageBox::StandardButton rb = QMessageBox::question(NULL, "删除", "删除选中行?", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 	if (rb == QMessageBox::Yes) {
-		int select_row_index = _axial_table->currentRow();
-		if (select_row_index != -1)
-			_axial_table->removeRow(select_row_index);
+		for (QVector<int>::reverse_iterator iter = del_indexs.rbegin(); iter != del_indexs.rend(); ++iter) {
+			if (*iter != -1)
+				_axial_table->removeRow(*iter);
+		}
 		_axial_table->clearSelection();
 	}
 }
