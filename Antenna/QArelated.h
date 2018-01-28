@@ -14,15 +14,16 @@ public slots:
 	void slot_problemChanged(int);
 	void slot_relatedSelectChanged();
 	void slot_unrelatedSelectChanged();
-	void slot_add();
-	void slot_remove();
-	void slot_save();
+	void slot_add(bool);
+	void slot_remove(bool);
+	void slot_save(bool);
 
 private:
 	void initProblemCombobox();
 	void initLayout();
 	void fillRelatedAlgorithm();
 	void fillUnRelatedAlgorithm();
+	void updateAssociates();
 
 private:
 	parsProblem* _atn_problem;

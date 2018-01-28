@@ -9,7 +9,7 @@ void setProblemParameters(QJsonObject& obj) {
 		parsProblem tmp;
 		mpro_obj = iter.value().toObject();
 		tmp.name = iter.key();
-		tmp.id = mpro_obj.value("id").toString().trimmed().toInt();
+		tmp.id = mpro_obj.value("id").toString().trimmed();
 		tmp.path = mpro_obj.value("path").toString().trimmed();
 		tmp.pImage = mpro_obj.value("image").toString().trimmed();
 		if (tmp.pImage == "" || tmp.pImage == NULL)
@@ -37,7 +37,7 @@ void setAlgorithmParameters(QJsonObject& obj) {
 		parsAlgorithm tmp;
 		malg_obj = iter.value().toObject();
 		tmp.name = iter.key();
-		tmp.id = malg_obj.value("id").toString().trimmed().toInt();
+		tmp.id = malg_obj.value("id").toString().trimmed();
 		tmp.path = malg_obj.value("path").toString().trimmed();
 		tmp.info = malg_obj.value("info").toString().trimmed();
 		tmp.oper = malg_obj.value("oper").toString().trimmed();
@@ -50,8 +50,13 @@ void setProNdAlgAssociateParameters(QJsonObject& obj) {
 	QJsonObject mbind_obj;
 	for (QJsonObject::iterator iter = obj.begin(); iter != obj.end(); ++iter) {
 		mbind_obj = iter.value().toObject();
-		massociate = qMakePair(mbind_obj.value("algorithmID").toString().trimmed().toInt(), mbind_obj.value("problemID").toString().trimmed().toInt());
-		dataPool::global::g_associates[massociate] = iter.key().toInt();
+		QString alg_id = mbind_obj.value("algorithmID").toString().trimmed();
+		QString pro_id = mbind_obj.value("problemID").toString().trimmed();
+		parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(alg_id);
+		parsProblem* problem = dataPool::global::getProblemByID(alg_id);
+		if(algorithm->oper == "i" && problem->oper == "i")
+			massociate = qMakePair(alg_id, pro_id);
+		dataPool::global::g_associates[massociate] = iter.key();
 	}
 }
 

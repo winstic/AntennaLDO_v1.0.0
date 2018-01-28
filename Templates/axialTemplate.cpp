@@ -329,7 +329,6 @@ void axialTemplate::slot_addSetting(bool) {
 
 void axialTemplate::slot_delSetting(bool) {
 	QItemSelectionModel *selectionModel = _axial_table->selectionModel();
-	QModelIndexList index_list = selectionModel->selectedRows();
 	QVector<int> del_indexs;
 	foreach(QModelIndex index, selectionModel->selectedRows())
 		del_indexs.append(index.row());

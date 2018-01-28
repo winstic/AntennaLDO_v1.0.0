@@ -29,7 +29,7 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 	}
 	else {
 		_alg_combox->setCurrentIndex(0);
-		(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toInt());
+		(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toString());
 	}
 	initDefaultData();
 	initLayout();
@@ -92,8 +92,8 @@ void algorithmTemplate::initDefaultData() {
 }
 
 void algorithmTemplate::initAlgComboItem() {
-	int problem_id = _atn_problem->id;
-	QMap<alg4pro, unsigned int>::iterator iter;		//like((algid, proid), associateId) 
+	QString problem_id = _atn_problem->id;
+	QMap<alg4pro, QString>::iterator iter;		//like((algid, proid), associateId) 
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
 		if (iter.key().second == problem_id) {
 			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(iter.key().first);
@@ -168,7 +168,7 @@ void algorithmTemplate::updateJObj() {
 
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
-	(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
+	(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toString());
 	initDefaultData();
 }
 

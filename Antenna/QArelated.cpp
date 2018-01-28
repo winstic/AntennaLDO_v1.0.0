@@ -1,5 +1,7 @@
 #pragma execution_character_set("utf-8")
+#include <quuid.h>
 #include "../Utility/macrodefined.h"
+#include "../Utility/parseJson.h"
 #include "QArelated.h"
 
 QArelated::QArelated(parsProblem* atn_problem, QWidget *parent) : QDialog(parent), _atn_problem(atn_problem) {
@@ -9,14 +11,19 @@ QArelated::QArelated(parsProblem* atn_problem, QWidget *parent) : QDialog(parent
 
 	_problem_label = new QLabel("ÎÊÌâÑ¡Ôñ", this);
 	_problem_combobox = new QComboBox(this);
+	_problem_combobox->setMinimumSize(200, 25);
 	if (_atn_problem == nullptr)
 		_problem_combobox->setCurrentText("");
 	else
 		_problem_combobox->setCurrentText(_atn_problem->name);
 	_related_algorithm_table = new tableTemplate();
 	_unrelated_algorithm_table = new tableTemplate();
+	_related_algorithm_table->setFocusPolicy(Qt::NoFocus);
+	_unrelated_algorithm_table->setFocusPolicy(Qt::NoFocus);
 	_related_algorithm_table->verticalHeader()->setVisible(false);
 	_unrelated_algorithm_table->verticalHeader()->setVisible(false);
+	_related_algorithm_table->setSelectionMode(QAbstractItemView::SingleSelection);
+	_unrelated_algorithm_table->setSelectionMode(QAbstractItemView::SingleSelection);
 	_related_algorithm_table->setColumnCount(1);
 	_unrelated_algorithm_table->setColumnCount(1);
 	QStringList header1, header2;
@@ -59,7 +66,7 @@ void QArelated::fillRelatedAlgorithm() {
 	_related_algorithm_table->setHorizontalHeaderLabels(header1);
 	QStringList algorithm_list;
 	parsProblem* atn_problem = dataPool::global::getProblemByName(_problem_combobox->currentText().trimmed());
-	QMap<alg4pro, unsigned int>::iterator iter;
+	QMap<alg4pro, QString>::iterator iter;
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
 		if (atn_problem->id == iter.key().second) {
 			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(iter.key().first);
@@ -121,6 +128,32 @@ void QArelated::initLayout() {
 	setLayout(vlayout);
 }
 
+void QArelated::updateAssociates() {
+	//update g_associates		
+	parsProblem* problem = dataPool::global::getProblemByName(_problem_combobox->currentText());
+
+	//delete g_associates first
+	QList<alg4pro> delete_keys;
+	QMap<alg4pro, QString>::iterator iter;
+	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
+		if (problem->id == iter.key().second) {
+			delete_keys.append(iter.key());
+		}
+	}
+	for (int j = 0; j < delete_keys.length(); ++j) {
+		dataPool::global::g_associates.remove(delete_keys[j]);
+	}
+
+	//then insert newest item
+	for (int i = 0; i < _related_algorithm_table->rowCount(); ++i) {
+		QUuid id = QUuid::createUuid();
+		parsAlgorithm* algorithm = dataPool::global::getAlgorithmByName(_related_algorithm_table->item(i, 0)->text().trimmed());
+		alg4pro massociate;
+		massociate = qMakePair(algorithm->id, problem->id);
+		dataPool::global::g_associates[massociate] = id.toString();
+	}
+}
+
 void QArelated::slot_problemChanged(int) {
 	fillRelatedAlgorithm();
 	fillUnRelatedAlgorithm();
@@ -148,16 +181,48 @@ void QArelated::slot_unrelatedSelectChanged() {
 	}
 }
 
-void QArelated::slot_add() {
-
+void QArelated::slot_add(bool) {
+	int curr_row = _unrelated_algorithm_table->currentRow();
+	if (curr_row != -1) {
+		QString select_item = _unrelated_algorithm_table->item(curr_row, 0)->text().trimmed();
+		int new_row_index = _related_algorithm_table->rowCount();
+		_related_algorithm_table->insertRow(new_row_index);
+		_related_algorithm_table->insert2table(new_row_index, 0, select_item);
+		_unrelated_algorithm_table->removeRow(curr_row);
+		_unrelated_algorithm_table->clearSelection();
+		updateAssociates();
+	}
 }
 
-void QArelated::slot_remove() {
-
+void QArelated::slot_remove(bool) {
+	int curr_row = _related_algorithm_table->currentRow();
+	if (curr_row != -1) {
+		QString select_item = _related_algorithm_table->item(curr_row, 0)->text().trimmed();
+		int new_row_index = _unrelated_algorithm_table->rowCount();
+		_unrelated_algorithm_table->insertRow(new_row_index);
+		_unrelated_algorithm_table->insert2table(new_row_index, 0, select_item);
+		_related_algorithm_table->removeRow(curr_row);
+		_related_algorithm_table->clearSelection();
+		updateAssociates();
+	}
 }
 
-void QArelated::slot_save() {
-
+void QArelated::slot_save(bool) {
+	const QString associate_json_file = "Utility/associates.json";
+	QJsonObject* obj = new QJsonObject;
+	QMap<alg4pro, QString>::iterator iter;
+	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
+		QJsonObject* tmpobj = new QJsonObject;
+		tmpobj->insert("algorithmID", iter.key().first);
+		tmpobj->insert("problemID", iter.key().second);
+		obj->insert(iter.value(), *tmpobj);
+	}
+	if (parseJson::write(associate_json_file, obj))
+		this->close();
+	else {
+		qCritical("save failed in associate json file.");
+		QMessageBox::critical(0, QString("Error"), QString("save failed."));
+	}
 }
 
 QArelated::~QArelated() {}
