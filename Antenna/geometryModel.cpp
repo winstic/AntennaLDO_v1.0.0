@@ -1,6 +1,7 @@
 #pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 #include "geometryModel.h"
 
 geometryModel::geometryModel(parsProblem* atn_problem, QWidget *parent) : QDialog(parent), 
@@ -19,9 +20,7 @@ _atn_problem(atn_problem) {
 
 		_save_all_button = new QPushButton(QString("±£´æËùÓÐ"), this);
 		_hint = new QLabel(this);
-		QFont font;
-		font.setPixelSize(20);
-		_hint->setFont(font);
+		commonStyle::setHintStyle(_hint);
 
 		connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
 		initLayout();

@@ -17,14 +17,16 @@ void setProblemParameters(QJsonObject& obj) {
 		tmp.info = mpro_obj.value("info").toString().trimmed();
 		tmp.type = mpro_obj.value("type").toString().trimmed().toInt();
 		tmp.oper = mpro_obj.value("oper").toString().trimmed();
-		//设置默认频率为第一个频段的最大频点（如果有）
+		//设置默认频率为最大频点（如果有）
 		QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(tmp.path).arg(tmp.name));
 		QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
 		QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
-		if (0 < fre_end_list.size()) {
-			QString fre_end = fre_end_list[0];
-			tmp.max_frequency = fre_end.toDouble();
+		double fre_end = 0.01;
+		for (int i = 0; i < fre_end_list.size(); ++i) {
+			if (fre_end < fre_end_list[i].toDouble())
+				fre_end = fre_end_list[i].toDouble();
 		}
+		tmp.max_frequency = fre_end;
 		dataPool::global::g_problems.push_back(tmp);
 	}
 }

@@ -1,32 +1,24 @@
 #pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 #include "algorithmModel.h"
 
-algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QWidget *parent)
-	: QDialog(parent), _atn_problem(atn_problem), _algorithm(algorithm) {
+algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QJsonObject global_obj, QWidget *parent)
+	: QDialog(parent), _atn_problem(atn_problem), _algorithm(algorithm), _global_obj(global_obj) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 
 	_algorithm_obj = nullptr;
-	_global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
-	if (_global_obj.isEmpty()) {
-		qCritical("get global json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
-	}
-	else {
-		_algorithm_widget = new algorithmTemplate(_atn_problem, &_global_obj, &_algorithm, &_algorithm_obj);
+	_algorithm_widget = new algorithmTemplate(_atn_problem, &_global_obj, &_algorithm, &_algorithm_obj);
 
-		_save_all_button = new QPushButton(QString("保存所有"), this);
-		_hint = new QLabel(this);
-		QFont font;
-		font.setPixelSize(20);
-		_hint->setFont(font);
+	_save_all_button = new QPushButton(QString("保存所有"), this);
+	_hint = new QLabel(this);
+	commonStyle::setHintStyle(_hint);
 
-		connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
-		initLayout();
-	}	
+	initLayout();
+	connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));	
 }
 
 void algorithmModel::initLayout() {

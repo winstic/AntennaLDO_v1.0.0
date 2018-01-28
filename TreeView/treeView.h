@@ -41,6 +41,8 @@ signals:
 public slots:
 	void slot_showAll();
 	void slot_hideAll();
+	void slot_stopRun();
+	void slot_run();
 	
 
 	//实时读取标准输出

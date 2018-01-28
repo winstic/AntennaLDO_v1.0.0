@@ -109,6 +109,17 @@ QLayout* axialTemplate::getLayout() {
 }
 
 bool axialTemplate::checkInputValid() {
+	_axial_table->clearSelection();
+	for (int i = 0; i < _axial_table->rowCount(); ++i) {
+		_axial_table->item(i, cthetalower)->setBackgroundColor(QColor(255, 255, 255));
+		_axial_table->item(i, cthetaupper)->setBackgroundColor(QColor(255, 255, 255));
+		_axial_table->item(i, cphilower)->setBackgroundColor(QColor(255, 255, 255));
+		_axial_table->item(i, cphiupper)->setBackgroundColor(QColor(255, 255, 255));
+		_axial_table->item(i, cdelta)->setBackgroundColor(QColor(255, 255, 255));
+		_axial_table->item(i, cobjvalue)->setBackgroundColor(QColor(255, 255, 255));
+		_axial_table->item(i, cweight)->setBackgroundColor(QColor(255, 255, 255));
+	}
+	//_axial_table->setStyleSheet("background-color: white;");
 	for (int i = 0; i < _axial_table->rowCount(); i++) {
 		QString theta_low_value = _axial_table->item(i, cthetalower)->text().trimmed();
 		QString theta_up_value = _axial_table->item(i, cthetaupper)->text().trimmed();
@@ -123,7 +134,7 @@ bool axialTemplate::checkInputValid() {
 			qCritical("too small theta low value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "起始theta值过小。";
-			_axial_table->item(i, cthetalower)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cthetalower));
 			emit signal_checkValid();
 			return false;
 		}
@@ -131,7 +142,16 @@ bool axialTemplate::checkInputValid() {
 			qCritical("too large theta up value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "终止theta值过大。";
-			_axial_table->item(i, cthetaupper)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cthetaupper));
+			emit signal_checkValid();
+			return false;
+		}
+		if (theta_up_value.toDouble() < theta_low_value.toDouble()) {
+			qCritical("invalid range of theta.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "theta范围设置有误。";
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cthetalower));
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cthetaupper));
 			emit signal_checkValid();
 			return false;
 		}
@@ -139,7 +159,7 @@ bool axialTemplate::checkInputValid() {
 			qCritical("too small phi low value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "起始phi值过小。";
-			_axial_table->item(i, cphilower)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cphilower));
 			emit signal_checkValid();
 			return false;
 		}
@@ -147,7 +167,16 @@ bool axialTemplate::checkInputValid() {
 			qCritical("too large phi up value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "终止phi值过大。";
-			_axial_table->item(i, cphiupper)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cphiupper));
+			emit signal_checkValid();
+			return false;
+		}
+		if (phi_up_value.toDouble() < phi_low_value.toDouble()) {
+			qCritical("invalid range of phi.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "phi范围设置有误。";
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cphilower));
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cphiupper));
 			emit signal_checkValid();
 			return false;
 		}
@@ -156,7 +185,7 @@ bool axialTemplate::checkInputValid() {
 			qCritical("invalid delat value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置delta误差值。";
-			_axial_table->item(i, cdelta)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cdelta));
 			emit signal_checkValid();
 			return false;
 		}
@@ -164,7 +193,7 @@ bool axialTemplate::checkInputValid() {
 			qCritical("invalid gain object value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置轴比的目标值。";
-			_axial_table->item(i, cobjvalue)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cobjvalue));
 			emit signal_checkValid();
 			return false;
 		}
@@ -172,10 +201,17 @@ bool axialTemplate::checkInputValid() {
 			qCritical("invalid weight value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置轴比的权值。";
-			_axial_table->item(i, cweight)->setSelected(true);
+			_axial_table->setWarningBackGroundColor(_axial_table->item(i, cweight));
 			emit signal_checkValid();
 			return false;
 		}
+	}
+	if (!_axial_table->checkRectangleCross(_theta_step, _phi_step)) {
+		qCritical("invalid setting the range of theta and phi.");
+		checkInfo->code = eInvalid;
+		checkInfo->message = "theta、phi范围设置有交叉，请修正。";
+		emit signal_checkValid();
+		return false;
 	}
 	return true;
 }
@@ -192,13 +228,13 @@ void axialTemplate::updateJObj() {
 		axialStr[3] << _axial_table->item(i, cphiupper)->text().trimmed();
 
 		QComboBox *aoType = qobject_cast<QComboBox *>(_axial_table->cellWidget(i, coptimaltype));
-		if (3 == aoType->currentIndex())
+		if (onone == aoType->currentIndex())
 			axialStr[4] << aoType->currentText().trimmed();
 		else
 			axialStr[4] << QString("'%1'").arg(aoType->currentText().trimmed());
 
 		QString delta_value = _axial_table->item(i, cdelta)->text().trimmed();
-		if (delta_value.isEmpty() || delta_value.isNull())
+		if (aoType->currentIndex() != odelta)
 			delta_value = "None";
 		axialStr[5] << delta_value;
 		axialStr[6] << _axial_table->item(i, cobjvalue)->text().trimmed();

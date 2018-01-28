@@ -243,7 +243,7 @@ void lossTemplate::updateJObj() {
 		QComboBox *lossType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, closstype));
 		lossStr[2] << QString::number(lossType->currentIndex());
 		QComboBox *loType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, clossoptimaltype));
-		if (3 == loType->currentIndex())
+		if (onone == loType->currentIndex())
 			lossStr[3] << loType->currentText().trimmed();
 		else
 			lossStr[3] << QString("'%1'").arg(loType->currentText().trimmed());

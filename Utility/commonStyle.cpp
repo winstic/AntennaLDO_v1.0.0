@@ -9,14 +9,15 @@ void commonStyle::setHintStyle(QLabel* hint) {
 
 void commonStyle::setLineEditWarningStyle(QLineEdit* edit) {
 	//edit->setStyleSheet("border: 1px solid red;");
-	edit->setStyleSheet("background-color: skyblue;");	
+	edit->setStyleSheet("background-color: red;");	
 }
 void commonStyle::clearLineEditWarningStyle(QLineEdit* edit) {
 	edit->setStyleSheet("background-color: white;");
 }
 
 void commonStyle::setComboBoxWarningStyle(QComboBox* comb) {
-	comb->setStyleSheet("border: 1px solid red;");
+	//comb->setStyleSheet("border: 1px solid red;");
+	comb->setStyleSheet("background-color: red;");
 }
 void commonStyle::clearComboBoxWarningStyle(QComboBox* comb) {
 	comb->setStyleSheet("background-color: white;");

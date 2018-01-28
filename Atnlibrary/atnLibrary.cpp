@@ -80,6 +80,12 @@ void atnLibrary::newProject() {
 		projectWizard* wizard = new projectWizard(_atn_problem, this);
 		//wizard->setAttribute(Qt::WA_DeleteOnClose);
 		if (wizard->exec() == 1) {
+			QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
+			if (global_obj.isEmpty()) {
+				qCritical("get global json object field.");
+				QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
+				return;
+			}
 			QString working_path = dataPool::global::getGWorkingProjectPath();
 			QString project_name = dataPool::global::getGProjectName();
 
@@ -90,6 +96,10 @@ void atnLibrary::newProject() {
 			QDir *dir = new QDir();
 			dir->mkdir(working_path);
 
+			dir->mkdir(QString("%1/outfilepath").arg(working_path));
+			if (_atn_problem->type == HFSS) {
+				dir->mkdir(QString("%1/outhfsspath").arg(working_path));
+			}
 			//writen project file(.rel)
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);
@@ -97,6 +107,18 @@ void atnLibrary::newProject() {
 			out << PROBLEM_ID << ":" << _atn_problem->id << endl;
 			out << PROBLEM_NAME << ":" << _atn_problem->name << endl;			
 			inFile.close();
+		
+			global_obj.insert("PROBLEM_NAME", _atn_problem->name);
+			global_obj.insert("outfilepath", QString("%1/outfilepath").arg(dataPool::global::getGWorkingProjectPath()));
+			global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(dataPool::global::getGWorkingProjectPath()));
+			if (parseJson::write(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), &global_obj))
+				this->close();
+			else {
+				qCritical("save failed in global json.");
+				QMessageBox::critical(0, QString("Error"), QString("global_json 格式错误。"));
+				return;
+			}
+
 			qInfo("successfully create project.");
 			//memory leak
 			delete dir;

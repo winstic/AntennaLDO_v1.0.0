@@ -286,6 +286,15 @@
     <ClCompile Include="Antenna\goRun.cpp">
       <Filter>Antenna</Filter>
     </ClCompile>
+    <ClCompile Include="Antenna\QArelated.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_QArelated.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_QArelated.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -371,6 +380,9 @@
     </CustomBuild>
     <CustomBuild Include="Templates\gainAxialDelegateTemplate.h">
       <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\QArelated.h">
+      <Filter>Antenna</Filter>
     </CustomBuild>
   </ItemGroup>
   <ItemGroup>

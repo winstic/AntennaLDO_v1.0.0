@@ -6,7 +6,7 @@
 class algorithmModel : public QDialog {
 	Q_OBJECT
 public:
-	algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QWidget *parent = 0);
+	algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QJsonObject global_obj, QWidget *parent = 0);
 	~algorithmModel();
 
 public slots:

@@ -19,17 +19,18 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 	_max_time_edit->setValidator(getPositiveIntReg());
 
 	initAlgComboItem();	
+	//set default algorithm
 	if (_algorithm == nullptr) {
-		qCritical("nullptr pointer");
+		qCritical("null pointer _algorithm.");
 		exit(1);
 	}
-	if (*_algorithm == nullptr || *_algorithm == 0) {
-		//set default algorithm
-		_alg_combox->setCurrentIndex(0);
-		*_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toInt());
-	}
-	else
+	if ((*_algorithm) != nullptr && _alg_combox->findText((*_algorithm)->name)) {
 		_alg_combox->setCurrentText((*_algorithm)->name);
+	}
+	else {
+		_alg_combox->setCurrentIndex(0);
+		(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toInt());
+	}
 	initDefaultData();
 	initLayout();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
@@ -162,11 +163,12 @@ void algorithmTemplate::updateJObj() {
 	}
 	_global_obj->insert("ThreadNum", _thread_number_edit->text().trimmed());
 	_global_obj->insert("EVALUATE_TIMEOUT", _max_time_edit->text().trimmed());
+	_global_obj->insert("ALGORITHM_NAME", (*_algorithm)->name);
 }
 
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
-	*_algorithm = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
+	(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toInt());
 	initDefaultData();
 }
 

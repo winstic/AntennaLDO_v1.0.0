@@ -16,7 +16,7 @@ struct parsProblem {
 	unsigned int type;
 	QString oper;
 	double max_frequency;
-	parsProblem() : id(0), name(""), path(""), pImage("./images/antenna.png"), info(""), type(0), oper("i"), max_frequency(0.000001){}
+	parsProblem() : id(0), name(""), path(""), pImage("./images/antenna.png"), info(""), type(0), oper("i"), max_frequency(0.001){}
 };
 
 struct parsAlgorithm {
@@ -35,6 +35,7 @@ namespace dataPool{
 		~global(){}
 
 		static parsProblem* getProblemByID(const int id);
+		static parsProblem* getProblemByName(const QString name);
 		static parsAlgorithm* getAlgorithmByID(const int id);
 		//each algorithm has unique name
 		static parsAlgorithm* getAlgorithmByName(const QString name);

@@ -111,6 +111,17 @@ QLayout* gainTemplate::getLayout() {
 }
 
 bool gainTemplate::checkInputValid() {
+	_gain_table->clearSelection();
+	for (int i = 0; i < _gain_table->rowCount(); ++i) {
+		_gain_table->item(i, cthetalower)->setBackgroundColor(QColor(255, 255, 255));
+		_gain_table->item(i, cthetaupper)->setBackgroundColor(QColor(255, 255, 255));
+		_gain_table->item(i, cphilower)->setBackgroundColor(QColor(255, 255, 255));
+		_gain_table->item(i, cphiupper)->setBackgroundColor(QColor(255, 255, 255));
+		_gain_table->item(i, cdelta)->setBackgroundColor(QColor(255, 255, 255));
+		_gain_table->item(i, cobjvalue)->setBackgroundColor(QColor(255, 255, 255));
+		_gain_table->item(i, cweight)->setBackgroundColor(QColor(255, 255, 255));
+	}
+	//_gain_table->setStyleSheet("background-color: white;");
 	for (int i = 0; i < _gain_table->rowCount(); i++) {
 		QString theta_low_value = _gain_table->item(i, cthetalower)->text().trimmed();
 		QString theta_up_value = _gain_table->item(i, cthetaupper)->text().trimmed();
@@ -125,7 +136,8 @@ bool gainTemplate::checkInputValid() {
 			qCritical("too small theta low value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "起始theta值过小。";
-			_gain_table->item(i, cthetalower)->setSelected(true);
+			//_gain_table->item(i, cthetalower)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cthetalower));
 			emit signal_checkValid();
 			return false;
 		}
@@ -133,7 +145,17 @@ bool gainTemplate::checkInputValid() {
 			qCritical("too large theta up value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "终止theta值过大。";
-			_gain_table->item(i, cthetaupper)->setSelected(true);
+			//_gain_table->item(i, cthetaupper)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cthetaupper));
+			emit signal_checkValid();
+			return false;
+		}
+		if (theta_up_value.toDouble() < theta_low_value.toDouble()) {
+			qCritical("invalid range of theta.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "theta范围设置有误。";
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cthetalower));
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cthetaupper));
 			emit signal_checkValid();
 			return false;
 		}
@@ -141,7 +163,8 @@ bool gainTemplate::checkInputValid() {
 			qCritical("too small phi low value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "起始phi值过小。";
-			_gain_table->item(i, cphilower)->setSelected(true);
+			//_gain_table->item(i, cphilower)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cphilower));
 			emit signal_checkValid();
 			return false;
 		}
@@ -149,7 +172,17 @@ bool gainTemplate::checkInputValid() {
 			qCritical("too large phi up value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "终止phi值过大。";
-			_gain_table->item(i, cphiupper)->setSelected(true);
+			//_gain_table->item(i, cphiupper)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cphiupper));
+			emit signal_checkValid();
+			return false;
+		}
+		if (phi_up_value.toDouble() < phi_low_value.toDouble()) {
+			qCritical("invalid range of phi.");
+			checkInfo->code = eInvalid;
+			checkInfo->message = "phi范围设置有误。";
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cphilower));
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cphiupper));
 			emit signal_checkValid();
 			return false;
 		}
@@ -158,7 +191,8 @@ bool gainTemplate::checkInputValid() {
 			qCritical("invalid delat value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置delta误差值。";
-			_gain_table->item(i, cdelta)->setSelected(true);
+			//_gain_table->item(i, cdelta)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cdelta));
 			emit signal_checkValid();
 			return false;
 		}
@@ -166,7 +200,8 @@ bool gainTemplate::checkInputValid() {
 			qCritical("invalid gain object value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置增益的目标值。";
-			_gain_table->item(i, cobjvalue)->setSelected(true);
+			//_gain_table->item(i, cobjvalue)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cobjvalue));
 			emit signal_checkValid();
 			return false;
 		}
@@ -174,10 +209,18 @@ bool gainTemplate::checkInputValid() {
 			qCritical("invalid weight value.");
 			checkInfo->code = eInvalid;
 			checkInfo->message = "请设置增益目标的权值。";
-			_gain_table->item(i, cweight)->setSelected(true);
-			emit signal_checkValid();
+			//_gain_table->item(i, cweight)->setSelected(true);
+			_gain_table->setWarningBackGroundColor(_gain_table->item(i, cweight));
+			emit signal_checkValid(); 
 			return false;
 		}
+	}
+	if (!_gain_table->checkRectangleCross(_theta_step, _phi_step)) {
+		qCritical("invalid setting the range of theta and phi.");
+		checkInfo->code = eInvalid;
+		checkInfo->message = "theta、phi范围设置有交叉，请修正。";
+		emit signal_checkValid();
+		return false;
 	}
 	return true;
 }
@@ -195,13 +238,13 @@ void gainTemplate::updateJObj() {
 		gain_str[3] << _gain_table->item(i, cphiupper)->text().trimmed();
 
 		QComboBox *goType = qobject_cast<QComboBox *>(_gain_table->cellWidget(i, coptimaltype));
-		if (3 == goType->currentIndex())
+		if (onone == goType->currentIndex())
 			gain_str[4] << goType->currentText().trimmed();
 		else
 			gain_str[4] << QString("'%1'").arg(goType->currentText().trimmed());
 
 		QString delta_value = _gain_table->item(i, cdelta)->text().trimmed();
-		if (delta_value.isEmpty() || delta_value.isNull())
+		if (goType->currentIndex() != odelta)
 			delta_value = "None";
 		gain_str[5] << delta_value;
 		gain_str[6] << _gain_table->item(i, cobjvalue)->text().trimmed();

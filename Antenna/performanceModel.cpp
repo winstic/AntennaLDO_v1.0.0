@@ -1,6 +1,7 @@
 #pragma execution_character_set("utf-8")
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "../Utility/commonStyle.h"
 #include "performanceModel.h"
 
 performanceTab::performanceTab(parsProblem* atn_problem, unsigned int index, QWidget *parent)	: QDialog(parent),
@@ -17,9 +18,7 @@ _atn_problem(atn_problem) {
 	_third_tab = new QWidget(this);
 	_save_all_button = new QPushButton(QString("±£´æËùÓÐ"), this);
 	_hint = new QLabel(this);
-	QFont font;
-	font.setPixelSize(20);
-	_hint->setFont(font);
+	commonStyle::setHintStyle(_hint);
 
 	_problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
 	if (_problem_obj.isEmpty()) {

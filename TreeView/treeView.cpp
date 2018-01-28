@@ -2,6 +2,7 @@
 #include "treeView.h"
 #include "../Utility/macrodefined.h"
 #include "../Utility/parseJson.h"
+#include "../Antenna/goRun.h"
 
 treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
 	_pro_tree = new QTreeView(this);
@@ -244,13 +245,19 @@ void treeModel::parseItemElement(const QDomElement &element, QStandardItem *pare
 
 void treeModel::initMenu() {
 	QAction* act_close = new QAction("关闭", _pro_tree);
+	act_close->setEnabled(false);
 	QAction* act_del = new QAction("删除", _pro_tree);
+	act_del->setEnabled(false);
 	//connect(act_del, &QAction::triggered, this, &treeModel::slot_del);
 
 	QAction* act_design_copy = new QAction("复制", _pro_tree);
+	act_design_copy->setEnabled(false);
 	QAction* act_design_run = new QAction("运行", _pro_tree);	
+	connect(act_design_run, &QAction::triggered, this, &treeModel::slot_run);
 	QAction* act_design_stop = new QAction("停止", _pro_tree);
+	connect(act_design_stop, &QAction::triggered, this, &treeModel::slot_stopRun);
 	QAction* act_design_del = new QAction("删除", _pro_tree);
+	act_design_del->setEnabled(false);
 
 	QAction* act_performance_add = new QAction("新增", _pro_tree);
 
@@ -281,7 +288,14 @@ void treeModel::modifyGeometryVariables() {
 }
 
 void treeModel::modefyAlgorithmParameters() {
-	algorithmModel* algorithm_model = new algorithmModel(_atn_problem, nullptr);
+	QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
+	if (global_obj.isEmpty()) {
+		qCritical("get global json object field.");
+		QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
+		return;
+	}
+	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
+	algorithmModel* algorithm_model = new algorithmModel(_atn_problem, palgorithm, global_obj);
 	algorithm_model->exec();
 }
 
@@ -360,17 +374,24 @@ void treeModel::slot_clicked(const QModelIndex& item_index) {
 	_curr_item_index = const_cast<QModelIndex*>(&item_index);
 }
 
-/*void treeModel::slot_optimizeStop() {
-	QDir dir(QDir::currentPath());
-	QString o_stop_path = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());
+void treeModel::slot_run() {
+	optRunProcess = new QProcess(this);
+	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
+	goRun *oRun = new goRun(optRunProcess);
+	oRun->start();
+}
+
+void treeModel::slot_stopRun() {
+	optRunProcess->close();
+	/*QDir dir(QDir::currentPath());
+	QString stop_path = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());
 	//QString ostopPath = QString("./DEA4AD/trunk/end.bat");
-	qDebug() << o_stop_path;
 	QProcess p(0);
 	//"/c" mean close cmd window after execute .bat file.
-	p.execute("cmd.exe", QStringList() << "/c" << o_stop_path);
+	p.execute("cmd.exe", QStringList() << "/c" << stop_path);
 	p.waitForFinished();
-	qDebug() << p.readAllStandardOutput();
-}*/
+	qDebug() << p.readAllStandardOutput();*/
+}
 
 //optimize run process to read pipe
 void treeModel::slot_readyRead() {
