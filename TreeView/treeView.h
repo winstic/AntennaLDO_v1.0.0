@@ -37,6 +37,7 @@ public:
 
 signals:
 	void signal_outputMessage(QString);
+	void signal_calculate(bool);
 
 public slots:
 	void slot_showAll();

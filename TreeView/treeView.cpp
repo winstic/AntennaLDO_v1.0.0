@@ -260,6 +260,7 @@ void treeModel::initMenu() {
 	act_design_del->setEnabled(false);
 
 	QAction* act_performance_add = new QAction("新增", _pro_tree);
+	act_performance_add->setEnabled(false);
 
 	QAction* act_performance_item_del = new QAction("删除", _pro_tree);
 
@@ -375,22 +376,24 @@ void treeModel::slot_clicked(const QModelIndex& item_index) {
 }
 
 void treeModel::slot_run() {
-	optRunProcess = new QProcess(this);
+	optRunProcess = new QProcess();
 	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
+	emit signal_calculate(true);
 	goRun *oRun = new goRun(optRunProcess);
 	oRun->start();
 }
 
 void treeModel::slot_stopRun() {
-	optRunProcess->close();
-	/*QDir dir(QDir::currentPath());
-	QString stop_path = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());
-	//QString ostopPath = QString("./DEA4AD/trunk/end.bat");
-	QProcess p(0);
+	//optRunProcess->close();
+	//delete optRunProcess;
+	//optRunProcess = nullptr;
+	QDir dir(QDir::currentPath());
+	QString ostopPath = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());
+	QProcess* p = new QProcess;
 	//"/c" mean close cmd window after execute .bat file.
-	p.execute("cmd.exe", QStringList() << "/c" << stop_path);
-	p.waitForFinished();
-	qDebug() << p.readAllStandardOutput();*/
+	p->start("cmd.exe", QStringList() << "/c" << ostopPath);
+	p->waitForFinished();
+	emit signal_calculate(false);
 }
 
 //optimize run process to read pipe
