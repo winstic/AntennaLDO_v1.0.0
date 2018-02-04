@@ -3,7 +3,11 @@
 goRun::goRun(QProcess* &optRunP) : _p(optRunP){}
 
 void goRun::run() {
-
+	//更新global_conf.json
+	if (!dataPool::copyFile(dataPool::global::getGCurrentGlobalJsonPath(), QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()))) {
+		qCritical("update global_json file failed.");
+		return;
+	}
 	//start以子进程方式打开新进程；而execute以阻塞方式打开进程；startDetached以隔离方式打开，与打开它的进程无关。
 	//添加'-i'参数，'-i'表示的是对标准输入不是终端的情况下，依然强制输出
 	_p->start("python.exe", QStringList() << QString("%1/start.py").arg(dataPool::global::getGDEA4ADPath()) << "AntennaLDO");

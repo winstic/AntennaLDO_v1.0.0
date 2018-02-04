@@ -16,6 +16,7 @@ atnLibrary::atnLibrary(QWidget *parent) : QWidget(parent), _atn_problem(nullptr)
 	_table_view->setShowGrid(false);
 
 	_item_menu = new QMenu;	
+	_act_new = nullptr;
 	initMenu();
 	initAtnCellList();
 	atnLibraryLayout();
@@ -25,11 +26,11 @@ atnLibrary::atnLibrary(QWidget *parent) : QWidget(parent), _atn_problem(nullptr)
 }
 
 void atnLibrary::initMenu() {
-	QAction* act_new = new QAction("新建工程", this);
+	_act_new = new QAction("新建工程", this);
 	QAction* act_property = new QAction("属性", this);
-	connect(act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
+	connect(_act_new, &QAction::triggered, this, &atnLibrary::slot_newProject);
 	connect(act_property, &QAction::triggered, this, &atnLibrary::slot_property);
-	_item_menu->addAction(act_new);
+	_item_menu->addAction(_act_new);
 	_item_menu->addAction(act_property);
 }
 
@@ -79,22 +80,30 @@ void atnLibrary::newProject() {
 	if (_atn_problem != nullptr) {
 		projectWizard* wizard = new projectWizard(_atn_problem, this);
 		//wizard->setAttribute(Qt::WA_DeleteOnClose);
-		if (wizard->exec() == 1) {
-			QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
-			if (global_obj.isEmpty()) {
-				qCritical("get global json object field.");
-				QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
-				return;
-			}
+		if (wizard->exec() == 1) {			
 			QString working_path = dataPool::global::getGWorkingProjectPath();
 			QString project_name = dataPool::global::getGProjectName();
 
 			QString rel_file = QString("%1.rel").arg(project_name);
-			bool is_success = true;
 
 			//create project dir
 			QDir *dir = new QDir();
 			dir->mkdir(working_path);
+
+			if (! dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()),
+				QString("%1/global_conf.json").arg(working_path))) {
+				qCritical("loss global_json file.");
+				QMessageBox::critical(0, QString("Error"), QString("缺失global_json.json文件。"));
+				return;
+			}
+			/*if (!dataPool::copyFile(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name),
+				QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name))) {
+				qCritical("loss problem_json file.");
+				QMessageBox::critical(0, QString("Error"), QString("缺失problem_json.json文件。"));
+				return;
+			}*/
+			dataPool::global::setGCurrentGlobalJsonPath(QString("%1/global_conf.json").arg(working_path));
+			//dataPool::global::setGCurrentProblemJsonPath(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name));
 
 			dir->mkdir(QString("%1/outfilepath").arg(working_path));
 			if (_atn_problem->type == HFSS) {
@@ -108,10 +117,16 @@ void atnLibrary::newProject() {
 			out << PROBLEM_NAME << ":" << _atn_problem->name << endl;			
 			inFile.close();
 		
+			QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(working_path));
+			if (global_obj.isEmpty()) {
+				qCritical("get global json object field.");
+				QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
+				return;
+			}
 			global_obj.insert("PROBLEM_NAME", _atn_problem->name);
 			global_obj.insert("outfilepath", QString("%1/outfilepath").arg(dataPool::global::getGWorkingProjectPath()));
 			global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(dataPool::global::getGWorkingProjectPath()));
-			if (parseJson::write(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), &global_obj))
+			if (parseJson::write(QString("%1/global_conf.json").arg(working_path), &global_obj))
 				this->close();
 			else {
 				qCritical("save failed in global json.");
@@ -189,6 +204,12 @@ void atnLibrary::slot_searchTextChange(QString searchText) {
 	atnLibraryLayout();
 }
 
+void atnLibrary::slot_checkNewProject(bool flag) {
+	if (flag)
+		_act_new->setEnabled(false);
+	else
+		_act_new->setEnabled(true);
+}
 
 atnLibrary::~atnLibrary() {
 	//qt支持父子控件，一旦atnLibrary实例析构后，会自动调用内部控件的析构函数

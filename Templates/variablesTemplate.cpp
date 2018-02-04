@@ -60,7 +60,7 @@ void variablesTemplate::initDefaultData() {
 		if (value_list_length == 1) {
 			up_edit->setText(var_value[0]);
 		}
-		else if (value_list_length == 2) {
+		else if (value_list_length >= 2 && value_list_length <= 3) {
 			up_edit->setText(var_value[1]);
 		}
 		else {

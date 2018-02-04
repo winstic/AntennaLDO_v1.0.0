@@ -71,4 +71,7 @@ private:
 	//optimizal process
 	QProcess* optRunProcess; //better? i don't know. maybe
 	//QDockWidget* outputDock;
+
+	QAction* _act_design_run;
+	QAction* _act_design_stop;	
 };

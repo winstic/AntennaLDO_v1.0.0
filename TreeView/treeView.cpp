@@ -10,6 +10,8 @@ treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
 	_atn_design_menu = new QMenu(this);
 	_performance_menu = new QMenu(this);
 	_item_performance_menu = new QMenu(this);
+	_act_design_run = nullptr;
+	_act_design_stop = nullptr;
 	_curr_item_index = new QModelIndex();
 	
 	initMenu();
@@ -252,10 +254,11 @@ void treeModel::initMenu() {
 
 	QAction* act_design_copy = new QAction("复制", _pro_tree);
 	act_design_copy->setEnabled(false);
-	QAction* act_design_run = new QAction("运行", _pro_tree);	
-	connect(act_design_run, &QAction::triggered, this, &treeModel::slot_run);
-	QAction* act_design_stop = new QAction("停止", _pro_tree);
-	connect(act_design_stop, &QAction::triggered, this, &treeModel::slot_stopRun);
+	_act_design_run = new QAction("运行", _pro_tree);	
+	connect(_act_design_run, &QAction::triggered, this, &treeModel::slot_run);
+	_act_design_stop = new QAction("停止", _pro_tree);
+	_act_design_stop->setEnabled(false);
+	connect(_act_design_stop, &QAction::triggered, this, &treeModel::slot_stopRun);
 	QAction* act_design_del = new QAction("删除", _pro_tree);
 	act_design_del->setEnabled(false);
 
@@ -268,8 +271,8 @@ void treeModel::initMenu() {
 	_project_menu->addAction(act_del);
 
 	_atn_design_menu->addAction(act_design_copy);
-	_atn_design_menu->addAction(act_design_run);
-	_atn_design_menu->addAction(act_design_stop);
+	_atn_design_menu->addAction(_act_design_run);
+	_atn_design_menu->addAction(_act_design_stop);
 	_atn_design_menu->addSeparator();
 	_atn_design_menu->addAction(act_design_del);
 
@@ -289,7 +292,7 @@ void treeModel::modifyGeometryVariables() {
 }
 
 void treeModel::modefyAlgorithmParameters() {
-	QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()));
+	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
 	if (global_obj.isEmpty()) {
 		qCritical("get global json object field.");
 		QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
@@ -378,6 +381,8 @@ void treeModel::slot_clicked(const QModelIndex& item_index) {
 void treeModel::slot_run() {
 	optRunProcess = new QProcess();
 	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
+	_act_design_run->setEnabled(false);
+	_act_design_stop->setEnabled(true);
 	emit signal_calculate(true);
 	goRun *oRun = new goRun(optRunProcess);
 	oRun->start();
@@ -387,13 +392,15 @@ void treeModel::slot_stopRun() {
 	//optRunProcess->close();
 	//delete optRunProcess;
 	//optRunProcess = nullptr;
+	_act_design_run->setEnabled(true);
+	_act_design_stop->setEnabled(false);
+	emit signal_calculate(false);
 	QDir dir(QDir::currentPath());
 	QString ostopPath = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());
-	QProcess* p = new QProcess;
+	QProcess* p = new QProcess();
 	//"/c" mean close cmd window after execute .bat file.
 	p->start("cmd.exe", QStringList() << "/c" << ostopPath);
 	p->waitForFinished();
-	emit signal_calculate(false);
 }
 
 //optimize run process to read pipe

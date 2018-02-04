@@ -7,17 +7,19 @@ antennaCell::antennaCell(parsProblem* atn_problem, QFrame* parent) : QFrame(pare
 	QPixmap mPixmap = QPixmap(_atn_problem->pImage);
 	_atn_photo->setPixmap(mPixmap.scaled(ANTENNA_IMGWH, ANTENNA_IMGWH, Qt::KeepAspectRatio));
 
-	QGroupBox* group_box = new QGroupBox;
+	//QGroupBox* group_box = new QGroupBox;
 	_vlayout = new QVBoxLayout;
 	_hlayout = new QHBoxLayout;
 	_vlayout->addWidget(_atn_photo);
 	_vlayout->addWidget(_atn_name_label);	
 	_vlayout->setStretch(0, 3);
 	_vlayout->setStretch(1, 1);
-	group_box->setLayout(_vlayout);
-	_hlayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-	_hlayout->addWidget(group_box);
-	_hlayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	//group_box->setLayout(_vlayout);
+	//_hlayout->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
+	_hlayout->addStretch();
+	//_hlayout->addWidget(group_box);
+	_hlayout->addLayout(_vlayout);
+	_hlayout->addStretch();
 	setLayout(_hlayout);
 	setMouseTracking(true);
 }

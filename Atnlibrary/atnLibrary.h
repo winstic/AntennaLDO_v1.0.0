@@ -28,6 +28,8 @@ public slots:
 	void slot_newProject();
 	//search antenna
 	void slot_searchTextChange(QString);
+	//正在运行时，不能新建工程
+	void slot_checkNewProject(bool);
 
 private:
 	void initAtnCellList();
@@ -39,5 +41,6 @@ private:
 	QTableWidget* _table_view;
 	modelInfo* _model_info;
 	QMenu* _item_menu;
+	QAction* _act_new;
 };
 

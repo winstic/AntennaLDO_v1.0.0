@@ -24,6 +24,8 @@ QArelated::QArelated(parsProblem* atn_problem, QWidget *parent) : QDialog(parent
 	_unrelated_algorithm_table->verticalHeader()->setVisible(false);
 	_related_algorithm_table->setSelectionMode(QAbstractItemView::SingleSelection);
 	_unrelated_algorithm_table->setSelectionMode(QAbstractItemView::SingleSelection);
+	_related_algorithm_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
+	_unrelated_algorithm_table->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	_related_algorithm_table->setColumnCount(1);
 	_unrelated_algorithm_table->setColumnCount(1);
 	QStringList header1, header2;

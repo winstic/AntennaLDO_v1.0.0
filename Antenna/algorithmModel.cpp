@@ -49,7 +49,7 @@ void algorithmModel::slot_saveAllButton(bool) {
 		iter->updateJObj();
 
 	if (parseJson::write(QString("%1/%2_conf.json").arg(_algorithm->path).arg(_algorithm->name), _algorithm_obj) 
-		&& parseJson::write(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()), &_global_obj))
+		&& parseJson::write(dataPool::global::getGCurrentGlobalJsonPath(), &_global_obj))
 		this->close();
 	else {
 		qCritical("save failed in algorithm tabWidget.");
