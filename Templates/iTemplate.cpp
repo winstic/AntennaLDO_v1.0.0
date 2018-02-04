@@ -80,3 +80,30 @@ QRegExpValidator* iTemplate::getAngleReg() {
 	//return new QRegExpValidator(QRegExp("^-?(180|1?[0-7]?\\d(\\.\\d+)?)$"));
 	return new QRegExpValidator(QRegExp("^-?(((([1-9]?[0-9])|(1[0-7][0-9]))(\\.\\d+)?)|180(\\.[0]+)?)$"));
 }
+
+void iTemplate::traversalWidgets(const QObjectList& ws, bool flag) {
+	for (int i = 0; i < ws.length(); i++) {
+		//if (!ws.at(i)->children().empty()) {
+			//traversalWidgets(ws.at(i)->children(), flag);
+		//}
+		//else {
+			QObject* obj = ws.at(i);
+			if (obj->inherits("QLineEdit")) {
+				QLineEdit* edit = qobject_cast<QLineEdit*>(obj);
+				edit->setEnabled(flag);
+			}
+			else if (obj->inherits("QTableWidget")) {
+				QTableWidget* table = qobject_cast<QTableWidget*>(obj);
+				table->setEnabled(flag);
+			}
+			else if (obj->inherits("QComboBox")) {
+				QComboBox* comb = qobject_cast<QComboBox*>(obj);
+				comb->setEnabled(flag);
+			}
+			else if (obj->inherits("QPushButton")) {
+				QPushButton* butt = qobject_cast<QPushButton*>(obj);
+				butt->setEnabled(flag);
+			}
+		//}
+	}
+}

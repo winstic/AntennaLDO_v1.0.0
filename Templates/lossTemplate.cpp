@@ -6,7 +6,7 @@
 
 lossTemplate::lossTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _index(index) {
-	_loss_table = new tableTemplate();
+	_loss_table = new tableTemplate(this);
 	_loss_table->setColumnCount(9);
 	QStringList header;
 	header << "Z0实部" << "Z0虚部" << "回波损失类型" << "优化方式" << "误差实部" << "误差虚部" << "值实部" << "值虚部" << "权值";

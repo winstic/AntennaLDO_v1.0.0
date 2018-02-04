@@ -4,7 +4,7 @@
 #include "../Utility/parseJson.h"
 #include "../Antenna/goRun.h"
 
-treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr){
+treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr), _is_running(false){
 	_pro_tree = new QTreeView(this);
 	_project_menu = new QMenu(this);
 	_atn_design_menu = new QMenu(this);
@@ -287,7 +287,8 @@ void treeModel::openFile() {
 }
 
 void treeModel::modifyGeometryVariables() {
-	geometryModel* geometry_model = new geometryModel(_atn_problem);
+	geometryModel* geometry_model = new geometryModel(_atn_problem, _is_running);
+	//connect(this, SIGNAL(signal_calculate(bool)), geometry_model, SLOT(slot_checkRunning(bool)));	
 	geometry_model->exec();
 }
 
@@ -299,12 +300,12 @@ void treeModel::modefyAlgorithmParameters() {
 		return;
 	}
 	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
-	algorithmModel* algorithm_model = new algorithmModel(_atn_problem, palgorithm, global_obj);
+	algorithmModel* algorithm_model = new algorithmModel(_atn_problem, palgorithm, global_obj, _is_running);
 	algorithm_model->exec();
 }
 
 void treeModel::modifyPerformanceParameters(unsigned int index) {
-	performanceTab* performance_tab = new performanceTab(_atn_problem, index);
+	performanceTab* performance_tab = new performanceTab(_atn_problem, index, _is_running);
 	performance_tab->exec();
 }
 
@@ -383,6 +384,7 @@ void treeModel::slot_run() {
 	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
 	_act_design_run->setEnabled(false);
 	_act_design_stop->setEnabled(true);
+	_is_running = true;
 	emit signal_calculate(true);
 	goRun *oRun = new goRun(optRunProcess);
 	oRun->start();
@@ -394,6 +396,7 @@ void treeModel::slot_stopRun() {
 	//optRunProcess = nullptr;
 	_act_design_run->setEnabled(true);
 	_act_design_stop->setEnabled(false);
+	_is_running = false;
 	emit signal_calculate(false);
 	QDir dir(QDir::currentPath());
 	QString ostopPath = QString("%1/DEA4AD/trunk/end.bat").arg(dir.path());

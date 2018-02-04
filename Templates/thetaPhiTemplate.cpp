@@ -6,7 +6,7 @@
 thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj){
 
-	_far_field_table = new tableTemplate();
+	_far_field_table = new tableTemplate(this);
 	_far_field_table->setColumnCount(6);
 	QStringList header;
 	header << "起始θ" << "终止θ" << "θ步长" << "起始φ" << "终止φ" << "φ步长";
@@ -17,7 +17,7 @@ _atn_problem(atn_problem), _obj(obj){
 	_far_field_table->setFrameShape(QFrame::NoFrame);                   //setting no frame
 	_far_field_table->setShowGrid(false);                               //setting no grid line
 
-	_confirm_button = new QPushButton("确认"); 
+	_confirm_button = new QPushButton("确认", this); 
 
 	_theta_low_edit = new QLineEdit(this);
 	_theta_up_edit = new QLineEdit(this);

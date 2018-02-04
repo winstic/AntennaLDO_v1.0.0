@@ -8,8 +8,8 @@
 class performanceTab : public QDialog {
 	Q_OBJECT
 public:
-	performanceTab(parsProblem* atn_problem, unsigned int index = 0, QWidget *parent = 0);
-	~performanceTab() {}
+	performanceTab(parsProblem* atn_problem, unsigned int index = 0, bool is_running = false, QWidget *parent = 0);
+	~performanceTab();
 
 	public slots:
 	void slot_saveAllButton(bool);
@@ -31,4 +31,6 @@ private:
 	axialTemplate* _axial_widget;
 	lossTemplate* _loss_widget;
 	QLabel* _hint;
+
+	bool _is_running;
 };

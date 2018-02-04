@@ -7,15 +7,15 @@
 axialTemplate::axialTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _theta_start(-180), _theta_end(180), _theta_step(5),
 _phi_start(-180), _phi_end(180), _phi_step(5), _index(index) {
-	_axial_table = new tableTemplate();
+	_axial_table = new tableTemplate(this);
 	_axial_table->setColumnCount(8);
 	QStringList header;
 	header << "起始θ" << "终止θ" << "起始φ" << "终止φ" << "优化方式" << "误差值" << "轴比(dB)" << "权值";
 	_axial_table->setHorizontalHeaderLabels(header);
 	_axial_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	//_axial_table->setShowGrid(false);                               //setting no grid line
-	_add_button = new QPushButton("增加");
-	_del_button = new QPushButton("删除");
+	_add_button = new QPushButton("增加", this);
+	_del_button = new QPushButton("删除", this);
 	_axial_table->setEnabled(false);
 	_add_button->setEnabled(false);
 	_del_button->setEnabled(false);

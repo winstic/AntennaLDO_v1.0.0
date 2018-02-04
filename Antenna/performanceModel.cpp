@@ -4,8 +4,8 @@
 #include "../Utility/commonStyle.h"
 #include "performanceModel.h"
 
-performanceTab::performanceTab(parsProblem* atn_problem, unsigned int index, QWidget *parent)	: QDialog(parent),
-_atn_problem(atn_problem) {
+performanceTab::performanceTab(parsProblem* atn_problem, unsigned int index, bool is_running, QWidget *parent)	: QDialog(parent),
+_atn_problem(atn_problem), _is_running(is_running) {
 	setWindowTitle("天线优化");
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 	//remove help menu
@@ -13,9 +13,9 @@ _atn_problem(atn_problem) {
 	//setStyleSheet("background-color: white");
 
 	_tab_widget = new QTabWidget(this);
-	_first_tab = new QWidget(this);
-	_second_tab = new QWidget(this);
-	_third_tab = new QWidget(this);
+	_first_tab = new QWidget();
+	_second_tab = new QWidget();
+	_third_tab = new QWidget();
 	_save_all_button = new QPushButton(QString("保存所有"), this);
 	_hint = new QLabel(this);
 	commonStyle::setHintStyle(_hint);
@@ -45,6 +45,13 @@ _atn_problem(atn_problem) {
 }
 
 void performanceTab::initLayout() {
+	_frequency_widget->traversalWidgets(_frequency_widget->children(), !_is_running);
+	_theta_phi_widget->traversalWidgets(_theta_phi_widget->children(), !_is_running);
+	//_gain_widget->traversalWidgets(_gain_widget->children(), !_is_running);
+	//_axial_widget->traversalWidgets(_axial_widget->children(), !_is_running);
+	_loss_widget->traversalWidgets(_loss_widget->children(), !_is_running);
+	_save_all_button->setEnabled(!_is_running);
+
 	//first tab
 	QLayout* frequency_layout = _frequency_widget->getLayout();
 	//设置tab页面内容与边界的距离
@@ -106,3 +113,5 @@ void performanceTab::slot_saveAllButton(bool) {
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
 	}
 }
+
+performanceTab::~performanceTab() {}

@@ -4,8 +4,8 @@
 #include "../Utility/commonStyle.h"
 #include "algorithmModel.h"
 
-algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QJsonObject global_obj, QWidget *parent)
-	: QDialog(parent), _atn_problem(atn_problem), _algorithm(algorithm), _global_obj(global_obj) {
+algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QJsonObject global_obj, bool is_running, QWidget *parent)
+	: QDialog(parent), _atn_problem(atn_problem), _algorithm(algorithm), _global_obj(global_obj), _is_running(is_running) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
@@ -32,6 +32,10 @@ void algorithmModel::initLayout() {
 	vlayout->addLayout(varlayout);
 	vlayout->addLayout(hlayout);
 	vlayout->setContentsMargins(10, 20, 10, 2);
+
+	_algorithm_widget->traversalWidgets(_algorithm_widget->children(), !_is_running);
+	_save_all_button->setEnabled(!_is_running);
+
 	setLayout(vlayout);
 }
 

@@ -9,7 +9,7 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 	_alg_label->setFixedWidth(80);
 	_alg_combox = new QComboBox(this);
 	_alg_combox->setMinimumSize(200, 25);
-	_alg_vars_table = new tableTemplate();
+	_alg_vars_table = new tableTemplate(this);
 	_alg_vars_table->horizontalHeader()->setVisible(false);
 	_alg_vars_table->setColumnCount(2);
 	_alg_vars_table->horizontalHeader()->setSectionResizeMode(valueFlag, QHeaderView::Stretch);
@@ -83,7 +83,9 @@ void algorithmTemplate::initDefaultData() {
 		row_number++;
 	}
 	_alg_vars_table->insert2table(row_number, keyFlag, "启动进程数");
-	_thread_number_edit->setText(QString::number(_global_obj->value("ThreadNum").toString().trimmed().toInt()));
+	int core_number = _global_obj->value("ThreadNum").toString().trimmed().toInt();
+	if (core_number <= 1) core_number = 2;
+	_thread_number_edit->setText(QString::number(core_number - 1));
 	_alg_vars_table->setCellWidget(row_number, valueFlag, _thread_number_edit);
 	row_number++;
 	_alg_vars_table->insert2table(row_number, keyFlag, "评估容忍时间");
@@ -161,7 +163,7 @@ void algorithmTemplate::updateJObj() {
 		(*_algorithm_obj)->insert(varKey, itemobj);
 		connect(value_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
 	}
-	_global_obj->insert("ThreadNum", _thread_number_edit->text().trimmed());
+	_global_obj->insert("ThreadNum", QString::number(_thread_number_edit->text().trimmed().toInt() + 1));
 	_global_obj->insert("EVALUATE_TIMEOUT", _max_time_edit->text().trimmed());
 	_global_obj->insert("ALGORITHM_NAME", (*_algorithm)->name);
 }

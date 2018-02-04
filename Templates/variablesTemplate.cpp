@@ -6,7 +6,7 @@
 variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj, iTemplate *parent)
 	: iTemplate(parent), _atn_problem(atn_problem), _obj(obj){
 	_atn_image_label = new QLabel(this);
-	_vars_table = new tableTemplate();
+	_vars_table = new tableTemplate(this);
 	_vars_table->setColumnCount(4);
 	QStringList header;
 	header << "变量" << "最小值" << "最大值" << "单位";

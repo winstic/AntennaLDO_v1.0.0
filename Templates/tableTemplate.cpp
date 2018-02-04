@@ -1,6 +1,6 @@
 ﻿#include "tableTemplate.h"
 
-tableTemplate::tableTemplate(QTableWidget* parent) : QTableWidget(parent) {
+tableTemplate::tableTemplate(QWidget* parent) : QTableWidget(parent) {
 	//_table = new QTableWidget;
 	QFont ft;
 	ft.setBold(true);

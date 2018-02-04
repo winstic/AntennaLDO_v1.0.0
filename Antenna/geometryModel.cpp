@@ -4,8 +4,8 @@
 #include "../Utility/commonStyle.h"
 #include "geometryModel.h"
 
-geometryModel::geometryModel(parsProblem* atn_problem, QWidget *parent) : QDialog(parent), 
-_atn_problem(atn_problem) {
+geometryModel::geometryModel(parsProblem* atn_problem, bool is_running, QWidget *parent) : QDialog(parent), 
+_atn_problem(atn_problem), _is_running(is_running) {
 	//remove help menu
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
@@ -38,6 +38,9 @@ void geometryModel::initLayout() {
 	vlayout->addLayout(varlayout);
 	vlayout->addLayout(hlayout);
 	vlayout->setContentsMargins(10, 20, 10, 2);
+
+	_variables_widget->traversalWidgets(_variables_widget->children(), !_is_running);
+	_save_all_button->setEnabled(!_is_running);
 	setLayout(vlayout);
 }
 

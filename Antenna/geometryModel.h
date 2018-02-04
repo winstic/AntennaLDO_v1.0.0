@@ -6,7 +6,7 @@
 class geometryModel : public QDialog {
 	Q_OBJECT
 public:
-	geometryModel(parsProblem* atn_problem, QWidget *parent = 0);
+	geometryModel(parsProblem* atn_problem, bool is_running = false, QWidget *parent = 0);
 	~geometryModel();
 
 public slots:
@@ -21,4 +21,6 @@ private:
 	variablesTemplate* _variables_widget;
 	QPushButton* _save_all_button;
 	QLabel* _hint;
+
+	bool _is_running;
 };

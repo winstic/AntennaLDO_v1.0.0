@@ -37,8 +37,10 @@ void atnLibrary::initMenu() {
 void atnLibrary::initAtnCellList() {
 	QVector<parsProblem>::iterator iter;
 	for (iter = dataPool::global::g_problems.begin(); iter != dataPool::global::g_problems.end(); ++iter) {
-		antennaCell* atnCellTemp = new antennaCell(iter);
-		_atn_cell_list.append(atnCellTemp);
+		if (iter->oper == "i") {
+			antennaCell* atnCellTemp = new antennaCell(iter);
+			_atn_cell_list.append(atnCellTemp);
+		}
 	}
 }
 
@@ -175,7 +177,10 @@ void atnLibrary::slot_cellPressed(int row, int col) {
 }
 
 void atnLibrary::slot_customContextMenuRequested(QPoint pos) {
-	if (_table_view->indexAt(pos).model())
+	int row = _table_view->indexAt(pos).row();
+	int column = _table_view->indexAt(pos).column();
+	int index = row * _table_view->columnCount() + column;
+	if (index < _atn_cell_list.size())
 		_item_menu->exec(QCursor::pos());
 }
 
@@ -196,7 +201,7 @@ void atnLibrary::slot_searchTextChange(QString searchText) {
 	QVector<parsProblem>::iterator iter;
 	for (iter = dataPool::global::g_problems.begin(); iter != dataPool::global ::g_problems.end(); ++iter) {
 		//we can use kmp algorithm instead
-		if (iter->name.contains(searchText) || iter->info.contains(searchText)) {
+		if (iter->oper == "i" && (iter->name.contains(searchText) || iter->info.contains(searchText))) {
 			antennaCell* atn_cell_temp = new antennaCell(iter);
 			_atn_cell_list.append(atn_cell_temp);
 		}
@@ -205,10 +210,14 @@ void atnLibrary::slot_searchTextChange(QString searchText) {
 }
 
 void atnLibrary::slot_checkNewProject(bool flag) {
-	if (flag)
+	if (flag) {
 		_act_new->setEnabled(false);
-	else
+		disconnect(_table_view, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slot_tableCellDoubleClick(int, int)));
+	}
+	else {
 		_act_new->setEnabled(true);
+		connect(_table_view, SIGNAL(cellDoubleClicked(int, int)), this, SLOT(slot_tableCellDoubleClick(int, int)));
+	}
 }
 
 atnLibrary::~atnLibrary() {

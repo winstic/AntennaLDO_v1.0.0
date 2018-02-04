@@ -8,15 +8,15 @@
 gainTemplate::gainTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
 _atn_problem(atn_problem), _obj(obj), _theta_start(-180), _theta_end(180), _theta_step(5), 
 _phi_start(-180), _phi_end(180), _phi_step(5), _index(index) {
-	_gain_table = new tableTemplate();
+	_gain_table = new tableTemplate(this);
 	_gain_table->setColumnCount(8);
 	QStringList header;
 	header << "起始θ" << "终止θ" << "起始φ" << "终止φ" << "优化方式" << "误差值" << "增益(dB)" << "权值";
 	_gain_table->setHorizontalHeaderLabels(header);
 	_gain_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	//_gain_table->setShowGrid(false);                               //setting no grid line
-	_add_button = new QPushButton("增加");
-	_del_button = new QPushButton("删除");
+	_add_button = new QPushButton("增加", this);
+	_del_button = new QPushButton("删除", this);
 	_gain_table->setEnabled(false);
 	_add_button->setEnabled(false);
 	_del_button->setEnabled(false);

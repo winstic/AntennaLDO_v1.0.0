@@ -21,6 +21,7 @@ public:
 	void initUnitComBo(QComboBox *comb);
 	void initAngleComboBox(QComboBox* comb, const double low, const double up, const double step) const;
 	double unitConversion(double source_data, int pre_unit, int curr_unit, double max_frequency = 0.0);
+	void traversalWidgets(const QObjectList& ws, bool flag);
 	QRegExpValidator* getFloatReg();
 	QRegExpValidator* getNonNegativeFloatReg();
 	QRegExpValidator* getPositiveIntReg();

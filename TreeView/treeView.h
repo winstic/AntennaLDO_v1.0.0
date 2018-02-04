@@ -74,4 +74,6 @@ private:
 
 	QAction* _act_design_run;
 	QAction* _act_design_stop;	
+
+	bool _is_running;
 };

@@ -72,7 +72,8 @@ void QArelated::fillRelatedAlgorithm() {
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
 		if (atn_problem->id == iter.key().second) {
 			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(iter.key().first);
-			algorithm_list.append(algorithm->name);
+			if(algorithm->oper == "i")
+				algorithm_list.append(algorithm->name);
 		}
 	}
 	_related_algorithm_table->setRowCount(algorithm_list.length());
@@ -88,14 +89,16 @@ void QArelated::fillUnRelatedAlgorithm() {
 	QStringList algorithm_list;
 	QVector<parsAlgorithm>::iterator iter;
 	for (iter = dataPool::global::g_algorithms.begin(); iter != dataPool::global::g_algorithms.end(); ++iter) {
-		int i = 0;
-		QString algname = _related_algorithm_table->item(i, 0)->text();
-		for (; i < _related_algorithm_table->rowCount(); ++i) {
-			if (iter->name == _related_algorithm_table->item(i, 0)->text().trimmed())
-				break;
+		if (iter->oper == "i") {
+			int i = 0;
+			QString algname = _related_algorithm_table->item(i, 0)->text();
+			for (; i < _related_algorithm_table->rowCount(); ++i) {
+				if (iter->name == _related_algorithm_table->item(i, 0)->text().trimmed())
+					break;
+			}
+			if (i == _related_algorithm_table->rowCount())
+				algorithm_list.append(iter->name);
 		}
-		if(i == _related_algorithm_table->rowCount())
-			algorithm_list.append(iter->name);
 	}
 	_unrelated_algorithm_table->setRowCount(algorithm_list.size());
 	for (int i = 0; i < algorithm_list.size(); ++i)
