@@ -115,11 +115,13 @@ bool tableTemplate::checkRectangleCross(const double theta_step, const double ph
 		for (int k = j + 1; k < rect_size; ++k) {
 			rectParameter rect2 = datas[k];
 			if (abs(rect1.theta_up - rect2.theta_low) <= 0.000001) {
-				if ((rect1.phi_up > rect2.phi_low) || (abs(rect1.phi_up - rect2.phi_low) <= 0.000001)) {
+				if ((rect1.phi_up > rect2.phi_low && rect1.phi_low < rect2.phi_up) 
+					|| (abs(rect1.phi_up - rect2.phi_low) <= 0.000001)
+					|| (abs(rect1.phi_low - rect2.phi_up) <= 0.000001)) {
 					//两个矩形上下边界有重叠部分,将下一个矩形的上边界下移step
 					rect2.theta_low += theta_step;
 					//调节后如果新矩形矛盾，则校验不通过
-					if (rect2.theta_low > rect2.theta_up) {
+					if (theta_step == 0 || rect2.theta_low > rect2.theta_up) {
 						setWarningRows(datas[j].row_number, datas[k].row_number);
 						return false;
 					}
@@ -130,12 +132,21 @@ bool tableTemplate::checkRectangleCross(const double theta_step, const double ph
 					//两个矩形左右边界有重叠部分,将下一个矩形的左边界右移step
 					rect2.phi_low += phi_step;
 					//调节后如果新矩形矛盾，则校验不通过
-					if (rect2.phi_low > rect2.phi_up) {
+					if (phi_step == 0 || rect2.phi_low > rect2.phi_up) {
 						setWarningRows(datas[j].row_number, datas[k].row_number);
 						return false;
 					}
 				}
-				else if (rect1.phi_up > rect2.phi_low) {
+				else if (abs(rect1.phi_low - rect2.phi_up) <= 0.000001) {
+					//两个矩形左右边界有重叠部分,将下一个矩形的右边界左移step
+					rect2.phi_up -= phi_step;
+					//调节后如果新矩形矛盾，则校验不通过
+					if (phi_step == 0 || rect2.phi_low > rect2.phi_up) {
+						setWarningRows(datas[j].row_number, datas[k].row_number);
+						return false;
+					}
+				}
+				else if (rect1.phi_up > rect2.phi_low && rect1.phi_low < rect2.phi_up) {
 					//两个矩形交叉，校验不通过
 					setWarningRows(datas[j].row_number, datas[k].row_number);
 					return false;

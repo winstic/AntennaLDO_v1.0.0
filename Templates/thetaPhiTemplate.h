@@ -23,6 +23,7 @@ signals:
 
 public slots:
 	void slot_confirmButton(bool);
+	void slot_editFarField();
 
 private:
 	void initReg();

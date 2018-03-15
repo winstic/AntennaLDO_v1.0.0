@@ -9,6 +9,10 @@ public:
 	algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorithm, QJsonObject global_obj, bool is_running = false, QWidget *parent = 0);
 	~algorithmModel();
 
+protected:
+	//关闭窗口时提示是否保存已经修改的数据
+	void closeEvent(QCloseEvent *event) override;
+
 public slots:
 	void slot_saveAllButton(bool);
 

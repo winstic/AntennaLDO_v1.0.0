@@ -61,4 +61,13 @@ void algorithmModel::slot_saveAllButton(bool) {
 	}
 }
 
+void algorithmModel::closeEvent(QCloseEvent *event) {
+	QMessageBox::StandardButton rb = QMessageBox::question(NULL, "删除", "保存所有修改的数据？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+	if (rb == QMessageBox::Yes) {
+		slot_saveAllButton(true);
+	}
+	else
+		return;
+}
+
 algorithmModel::~algorithmModel() {}

@@ -38,6 +38,14 @@ _atn_problem(atn_problem), _obj(obj){
 	connect(_phi_up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 	connect(_theta_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 	connect(_phi_step_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
+
+	//当文本框输入改变时，触发远场校验信号；
+	connect(_theta_low_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_editFarField()));
+	connect(_theta_up_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_editFarField()));
+	connect(_phi_low_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_editFarField()));
+	connect(_phi_up_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_editFarField()));
+	connect(_theta_step_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_editFarField()));
+	connect(_phi_step_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_editFarField()));
 }
 
 void thetaPhiTemplate::initReg() {
@@ -193,6 +201,10 @@ void thetaPhiTemplate::slot_confirmButton(bool){
 	}
 
 	emit signal_confirmFarField(info);
+}
+
+void thetaPhiTemplate::slot_editFarField() {
+	emit signal_confirmFarField("");
 }
 
 thetaPhiTemplate::~thetaPhiTemplate(){}
