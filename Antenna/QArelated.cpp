@@ -195,7 +195,7 @@ void QArelated::slot_add(bool) {
 		_related_algorithm_table->insert2table(new_row_index, 0, select_item);
 		_unrelated_algorithm_table->removeRow(curr_row);
 		_unrelated_algorithm_table->clearSelection();
-		updateAssociates();
+		//updateAssociates();
 	}
 }
 
@@ -208,11 +208,12 @@ void QArelated::slot_remove(bool) {
 		_unrelated_algorithm_table->insert2table(new_row_index, 0, select_item);
 		_related_algorithm_table->removeRow(curr_row);
 		_related_algorithm_table->clearSelection();
-		updateAssociates();
+		//updateAssociates();
 	}
 }
 
 void QArelated::slot_save(bool) {
+	updateAssociates();
 	const QString associate_json_file = "Utility/associates.json";
 	QJsonObject* obj = new QJsonObject;
 	QMap<alg4pro, QString>::iterator iter;
@@ -230,4 +231,9 @@ void QArelated::slot_save(bool) {
 	}
 }
 
-QArelated::~QArelated() {}
+QArelated::~QArelated() {
+	delete _related_algorithm_table;
+	_related_algorithm_table = nullptr;
+	delete _unrelated_algorithm_table;
+	_unrelated_algorithm_table = nullptr;
+}

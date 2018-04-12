@@ -193,6 +193,8 @@ void atnLibrary::slot_property() {
 	//mf->setAttribute(Qt::WA_DeleteOnClose);
 	_model_info->exec();
 	qInfo("scan '%s' antenna model info.", qUtf8Printable(_atn_problem->name));
+	delete _model_info;
+	_model_info = nullptr;
 }
 
 void atnLibrary::slot_searchTextChange(QString searchText) {

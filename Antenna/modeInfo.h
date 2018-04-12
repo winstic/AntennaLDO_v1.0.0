@@ -2,6 +2,7 @@
 
 #include <QtWidgets>
 #include "../Utility/global.h"
+#include "../Templates/tableTemplate.h"
 
 class modelInfo : public QDialog {
 	Q_OBJECT
@@ -10,6 +11,16 @@ public:
 	~modelInfo();
 
 private:
+	void initDefalultParametersRange();
+	void initDefalultParameters();
+	void initLayout();
+
+	void setFirstTitle(QLabel *label);
+	void setSecondTitle(QLabel *label);
+
+private:
 	parsProblem* _atn_problem;
-	QTextEdit* _atn_info;
+	QJsonObject _obj;
+	tableTemplate *_vars_range_table;
+	tableTemplate *_vars_table;
 };

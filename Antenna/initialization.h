@@ -53,7 +53,7 @@ void setProNdAlgAssociateParameters(QJsonObject& obj) {
 		QString alg_id = mbind_obj.value("algorithmID").toString().trimmed();
 		QString pro_id = mbind_obj.value("problemID").toString().trimmed();
 		parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(alg_id);
-		parsProblem* problem = dataPool::global::getProblemByID(alg_id);
+		parsProblem* problem = dataPool::global::getProblemByID(pro_id);
 		if(algorithm->oper == "i" && problem->oper == "i")
 			massociate = qMakePair(alg_id, pro_id);
 		dataPool::global::g_associates[massociate] = iter.key();

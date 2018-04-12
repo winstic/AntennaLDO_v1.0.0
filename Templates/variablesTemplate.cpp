@@ -71,15 +71,18 @@ void variablesTemplate::initDefaultData() {
 		_vars_table->setCellWidget(row_number, varmin, low_edit);
 		_vars_table->setCellWidget(row_number, varmax, up_edit);
 
-		QComboBox *unit_combox = new QComboBox();
-		initUnitComBo(unit_combox);
-		_vars_table->setCellWidget(row_number, varunit, unit_combox);
-		//map combobox signal
-		connect(unit_combox, SIGNAL(currentIndexChanged(int)), signals_map_unit, SLOT(map()));
-		signals_map_unit->setMapping(unit_combox, QString("%1-%2").arg(row_number).arg(varunit));
-		//in 'rownumber'th row of table, save default unitComBo current data
-		_vars_unit.insert(row_number, unit_combox->currentData(ROLE_MARK_UNIT).toInt());
-
+		//是否有单位标识
+		qint64 key_flag = var_obj.value("flag").toString().trimmed().toInt();
+		if (key_flag == 0) {
+			QComboBox *unit_combox = new QComboBox();
+			initUnitComBo(unit_combox);
+			_vars_table->setCellWidget(row_number, varunit, unit_combox);
+			//map combobox signal
+			connect(unit_combox, SIGNAL(currentIndexChanged(int)), signals_map_unit, SLOT(map()));
+			signals_map_unit->setMapping(unit_combox, QString("%1-%2").arg(row_number).arg(varunit));
+			//in 'rownumber'th row of table, save default unitComBo current data
+			_vars_unit.insert(row_number, unit_combox->currentData(ROLE_MARK_UNIT).toInt());
+		}
 		//当文本框输入改变时，触发校验信号；
 		connect(low_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));
 		connect(up_edit, SIGNAL(textChanged(QString)), this, SIGNAL(signal_checkValid()));

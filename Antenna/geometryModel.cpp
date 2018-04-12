@@ -65,4 +65,7 @@ void geometryModel::slot_saveAllButton(bool) {
 	}
 }
 
-geometryModel::~geometryModel() {}
+geometryModel::~geometryModel() {
+	delete _variables_widget;
+	_variables_widget = nullptr;
+}

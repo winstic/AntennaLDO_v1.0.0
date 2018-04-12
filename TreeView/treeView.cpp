@@ -284,12 +284,16 @@ void treeModel::openFile() {
 	_model_info = new modelInfo(_atn_problem, this);
 	//mf->setModal(true);
 	_model_info->exec();
+	delete _model_info;
+	_model_info = nullptr;
 }
 
 void treeModel::modifyGeometryVariables() {
 	geometryModel* geometry_model = new geometryModel(_atn_problem, _is_running);
 	//connect(this, SIGNAL(signal_calculate(bool)), geometry_model, SLOT(slot_checkRunning(bool)));	
 	geometry_model->exec();
+	delete geometry_model;
+	geometry_model = nullptr;
 }
 
 void treeModel::modefyAlgorithmParameters() {
@@ -302,11 +306,15 @@ void treeModel::modefyAlgorithmParameters() {
 	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());
 	algorithmModel* algorithm_model = new algorithmModel(_atn_problem, palgorithm, global_obj, _is_running);
 	algorithm_model->exec();
+	delete algorithm_model;
+	algorithm_model = nullptr;
 }
 
 void treeModel::modifyPerformanceParameters(unsigned int index) {
 	performanceTab* performance_tab = new performanceTab(_atn_problem, index, _is_running);
 	performance_tab->exec();
+	delete performance_tab;
+	performance_tab = nullptr;
 }
 
 // slot function
