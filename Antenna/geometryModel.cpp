@@ -28,20 +28,20 @@ _atn_problem(atn_problem), _is_running(is_running) {
 }
 
 void geometryModel::initLayout() {
-	QVBoxLayout* vlayout = new QVBoxLayout;
+	_layout = new QVBoxLayout;
 	QLayout* varlayout = _variables_widget->getLayout();
 	QHBoxLayout* hlayout = new QHBoxLayout;
 	//ÔÚ°´Å¥×ó²àÌí¼ÓÉìËõ£¬ÈÃ°´Å¥¾ÓÓÒ
 	hlayout->addWidget(_hint);
 	hlayout->addStretch();
 	hlayout->addWidget(_save_all_button);
-	vlayout->addLayout(varlayout);
-	vlayout->addLayout(hlayout);
-	vlayout->setContentsMargins(10, 20, 10, 2);
+	_layout->addLayout(varlayout);
+	_layout->addLayout(hlayout);
+	_layout->setContentsMargins(10, 20, 10, 2);
 
 	_variables_widget->traversalWidgets(_variables_widget->children(), !_is_running);
 	_save_all_button->setEnabled(!_is_running);
-	setLayout(vlayout);
+	setLayout(_layout);
 }
 
 void geometryModel::slot_saveAllButton(bool) {
@@ -66,6 +66,6 @@ void geometryModel::slot_saveAllButton(bool) {
 }
 
 geometryModel::~geometryModel() {
-	delete _variables_widget;
-	_variables_widget = nullptr;
+	delete _layout;
+	_layout = nullptr;
 }

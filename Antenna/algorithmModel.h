@@ -27,6 +27,6 @@ private:
 	algorithmTemplate* _algorithm_widget;
 	QPushButton* _save_all_button;
 	QLabel* _hint;
-
+	QVBoxLayout* _layout;
 	bool _is_running;
 };

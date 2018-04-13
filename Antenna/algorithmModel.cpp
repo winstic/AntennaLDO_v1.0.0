@@ -22,21 +22,21 @@ algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorith
 }
 
 void algorithmModel::initLayout() {
-	QVBoxLayout* vlayout = new QVBoxLayout;
+	_layout = new QVBoxLayout;
 	QLayout* varlayout = _algorithm_widget->getLayout();
 	QHBoxLayout* hlayout = new QHBoxLayout;
 	//ÔÚ°´Å¥×ó²àÌí¼ÓÉìËõ£¬ÈÃ°´Å¥¾ÓÓÒ
 	hlayout->addWidget(_hint);
 	hlayout->addStretch();
 	hlayout->addWidget(_save_all_button);
-	vlayout->addLayout(varlayout);
-	vlayout->addLayout(hlayout);
-	vlayout->setContentsMargins(10, 20, 10, 2);
+	_layout->addLayout(varlayout);
+	_layout->addLayout(hlayout);
+	_layout->setContentsMargins(10, 20, 10, 2);
 
 	_algorithm_widget->traversalWidgets(_algorithm_widget->children(), !_is_running);
 	_save_all_button->setEnabled(!_is_running);
 
-	setLayout(vlayout);
+	setLayout(_layout);
 }
 
 void algorithmModel::slot_saveAllButton(bool) {
@@ -70,4 +70,7 @@ void algorithmModel::closeEvent(QCloseEvent *event) {
 		return;
 }
 
-algorithmModel::~algorithmModel() {}
+algorithmModel::~algorithmModel() {
+	delete _layout;
+	_layout = nullptr;
+}

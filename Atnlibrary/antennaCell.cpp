@@ -43,12 +43,6 @@ parsProblem* antennaCell::getAntennaProblem() const {
 }
 
 antennaCell::~antennaCell() {
-	delete _atn_name_label;
-	_atn_name_label = nullptr;
-	delete _atn_photo;
-	_atn_photo = nullptr;
-	delete _vlayout;
-	_vlayout = nullptr;
 	delete _hlayout;
 	_hlayout = nullptr;
 }

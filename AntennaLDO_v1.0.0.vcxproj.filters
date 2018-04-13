@@ -298,6 +298,12 @@
     <ClCompile Include="Antenna\problemManage.cpp">
       <Filter>Antenna</Filter>
     </ClCompile>
+    <ClCompile Include="GeneratedFiles\Debug\moc_problemManage.cpp">
+      <Filter>Generated Files\Debug</Filter>
+    </ClCompile>
+    <ClCompile Include="GeneratedFiles\Release\moc_problemManage.cpp">
+      <Filter>Generated Files\Release</Filter>
+    </ClCompile>
   </ItemGroup>
   <ItemGroup>
     <CustomBuild Include="Resources\mainwindow.qrc">
@@ -387,6 +393,9 @@
     <CustomBuild Include="Antenna\QArelated.h">
       <Filter>Antenna</Filter>
     </CustomBuild>
+    <CustomBuild Include="Antenna\problemManage.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
   </ItemGroup>
   <ItemGroup>
     <ClInclude Include="Utility\macrodefined.h">
@@ -414,9 +423,6 @@
       <Filter>Antenna</Filter>
     </ClInclude>
     <ClInclude Include="Antenna\goRun.h">
-      <Filter>Antenna</Filter>
-    </ClInclude>
-    <ClInclude Include="Antenna\problemManage.h">
       <Filter>Antenna</Filter>
     </ClInclude>
   </ItemGroup>

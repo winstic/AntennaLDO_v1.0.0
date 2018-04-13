@@ -236,4 +236,7 @@ void variablesTemplate::slot_unitChange(QString pos) {
 }
 
 
-variablesTemplate::~variablesTemplate() {}
+variablesTemplate::~variablesTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

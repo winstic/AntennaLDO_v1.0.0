@@ -179,3 +179,8 @@ void algorithmTemplate::slot_textChanged(QString) {
 	commonStyle::clearLineEditWarningStyle(edit);
 	emit signal_checkValid();
 }
+
+algorithmTemplate::~algorithmTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

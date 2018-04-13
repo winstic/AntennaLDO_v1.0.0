@@ -359,4 +359,7 @@ void gainTemplate::slot_delSetting(bool) {
 	}
 }
 
-gainTemplate::~gainTemplate() {}
+gainTemplate::~gainTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

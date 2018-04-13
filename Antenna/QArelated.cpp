@@ -110,7 +110,7 @@ void QArelated::initLayout() {
 	QHBoxLayout* hlayout2 = new QHBoxLayout();
 	QHBoxLayout* hlayout3 = new QHBoxLayout();
 	QVBoxLayout* vlayout1 = new QVBoxLayout();
-	QVBoxLayout* vlayout = new QVBoxLayout();
+	_layout = new QVBoxLayout();
 	hlayout1->addWidget(_problem_label);
 	hlayout1->addWidget(_problem_combobox);
 	hlayout1->addStretch();
@@ -124,13 +124,13 @@ void QArelated::initLayout() {
 	hlayout3->addStretch();
 	hlayout3->addWidget(_save_button);
 
-	vlayout->addLayout(hlayout1);
-	vlayout->addSpacing(20);
-	vlayout->addLayout(hlayout2);
-	vlayout->addSpacing(20);
-	vlayout->addLayout(hlayout3);
-	vlayout->setContentsMargins(10, 20, 10, 20);
-	setLayout(vlayout);
+	_layout->addLayout(hlayout1);
+	_layout->addSpacing(20);
+	_layout->addLayout(hlayout2);
+	_layout->addSpacing(20);
+	_layout->addLayout(hlayout3);
+	_layout->setContentsMargins(10, 20, 10, 20);
+	setLayout(_layout);
 }
 
 void QArelated::updateAssociates() {
@@ -232,8 +232,6 @@ void QArelated::slot_save(bool) {
 }
 
 QArelated::~QArelated() {
-	delete _related_algorithm_table;
-	_related_algorithm_table = nullptr;
-	delete _unrelated_algorithm_table;
-	_unrelated_algorithm_table = nullptr;
+	delete _layout;
+	_layout = nullptr;
 }

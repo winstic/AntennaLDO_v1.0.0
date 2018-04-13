@@ -35,29 +35,29 @@ wizardAddSetting::wizardAddSetting(QWidget *parent) : QWizardPage(parent){
 }
 
 void wizardAddSetting::initSettingLayout() {
-	QVBoxLayout *vlayout = new QVBoxLayout;
+	_layout = new QVBoxLayout;
 	QHBoxLayout *hlayout1 = new QHBoxLayout; 
 	QHBoxLayout *hlayout2 = new QHBoxLayout;
 	QHBoxLayout *hlayout3 = new QHBoxLayout;	
 	hlayout1->addWidget(_project_name_label);
 	hlayout1->addWidget(_project_name_edit);
-	vlayout->addLayout(hlayout1);
+	_layout->addLayout(hlayout1);
 	
 	hlayout2->addWidget(_project_path_label);
 	hlayout2->addWidget(_project_path_edit);
 	hlayout2->addWidget(_select_path_btn);
-	vlayout->addLayout(hlayout2);
+	_layout->addLayout(hlayout2);
 
-	vlayout->addWidget(_always_path);
+	_layout->addWidget(_always_path);
 
 	hlayout3->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Minimum));
 	hlayout3->addWidget(_hint);
 	hlayout3->addSpacerItem(new QSpacerItem(1, 1, QSizePolicy::Expanding, QSizePolicy::Expanding));
-	vlayout->addLayout(hlayout3);
-	vlayout->setSpacing(20);
-	vlayout->setContentsMargins(2, 20, 10, 2);
+	_layout->addLayout(hlayout3);
+	_layout->setSpacing(20);
+	_layout->setContentsMargins(2, 20, 10, 2);
 
-	setLayout(vlayout);
+	setLayout(_layout);
 }
 
 bool wizardAddSetting::isComplete() const{	
@@ -86,4 +86,7 @@ void wizardAddSetting::slot_selectPath(){
 	open_file_path = nullptr;
 }
 
-wizardAddSetting::~wizardAddSetting(){}
+wizardAddSetting::~wizardAddSetting(){
+	delete _layout;
+	_layout = nullptr;
+}

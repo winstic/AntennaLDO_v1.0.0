@@ -30,4 +30,5 @@ private:
     QPushButton* _select_path_btn;
     QRadioButton* _always_path;
 	QLabel* _hint;
+	QVBoxLayout* _layout;
 };

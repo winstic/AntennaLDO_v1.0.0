@@ -8,7 +8,7 @@ class algorithmTemplate : public iTemplate {
 	Q_OBJECT
 public:
 	algorithmTemplate(parsProblem* atn_problem, QJsonObject* global_obj, parsAlgorithm** palgorithm, QJsonObject** algorithm_obj, iTemplate *parent = 0);
-	~algorithmTemplate() {}
+	~algorithmTemplate();
 
 	QLayout* getLayout();
 	//update _obj

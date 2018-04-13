@@ -88,9 +88,9 @@ void modelInfo::initLayout() {
 	scroll_area->setWidget(w);
 	scroll_area->setWidgetResizable(true);
 
-	QVBoxLayout *main_layout = new QVBoxLayout();
-	main_layout->addWidget(scroll_area);
-	setLayout(main_layout);
+	_main_layout = new QVBoxLayout();
+	_main_layout->addWidget(scroll_area);
+	setLayout(_main_layout);
 }
 
 void modelInfo::initDefalultParametersRange() {
@@ -188,8 +188,6 @@ void modelInfo::setSecondTitle(QLabel *label) {
 }
 
 modelInfo::~modelInfo() {
-	delete _vars_range_table;
-	_vars_range_table = nullptr;
-	delete _vars_table;
-	_vars_table = nullptr;
+	delete _main_layout;
+	_main_layout = nullptr;
 }

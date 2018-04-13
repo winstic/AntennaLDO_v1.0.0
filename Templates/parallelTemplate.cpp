@@ -130,3 +130,8 @@ void parallelTemplate::slot_delNodeButton() {
 	if (selectRow != -1)
 		_node_vars_table->removeRow(selectRow);
 }
+
+parallelTemplate::~parallelTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

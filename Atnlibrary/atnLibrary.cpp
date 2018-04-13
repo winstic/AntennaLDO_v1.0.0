@@ -143,6 +143,8 @@ void atnLibrary::newProject() {
 
 			emit signal_createAndParseXML(QString("%1/%2.xml").arg(working_path).arg(project_name), _atn_problem);
 		}
+		delete wizard;
+		wizard = nullptr;
 	}
 }
 

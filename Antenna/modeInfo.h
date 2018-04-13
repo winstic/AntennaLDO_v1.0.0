@@ -23,4 +23,5 @@ private:
 	QJsonObject _obj;
 	tableTemplate *_vars_range_table;
 	tableTemplate *_vars_table;
+	QVBoxLayout* _main_layout;
 };

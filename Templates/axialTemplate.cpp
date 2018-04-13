@@ -344,4 +344,7 @@ void axialTemplate::slot_delSetting(bool) {
 	}
 }
 
-axialTemplate::~axialTemplate() {}
+axialTemplate::~axialTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

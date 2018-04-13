@@ -161,4 +161,7 @@ void frequencyTemplate::slot_textChanged(QString) {
 	emit signal_checkValid();
 }
 
-frequencyTemplate::~frequencyTemplate(){}
+frequencyTemplate::~frequencyTemplate(){
+	delete _layout;
+	_layout = nullptr;
+}

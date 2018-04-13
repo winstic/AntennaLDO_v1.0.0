@@ -31,6 +31,6 @@ private:
 	axialTemplate* _axial_widget;
 	lossTemplate* _loss_widget;
 	QLabel* _hint;
-
+	QVBoxLayout* _layout;
 	bool _is_running;
 };

@@ -87,10 +87,10 @@ void performanceTab::initLayout() {
 	button_layout->addStretch();
 	button_layout->addWidget(_save_all_button);
 
-	QVBoxLayout* layout = new QVBoxLayout;
-	layout->addWidget(_tab_widget);
-	layout->addLayout(button_layout);
-	setLayout(layout);
+	_layout = new QVBoxLayout;
+	_layout->addWidget(_tab_widget);
+	_layout->addLayout(button_layout);
+	setLayout(_layout);
 }
 
 void performanceTab::slot_saveAllButton(bool) {
@@ -114,4 +114,7 @@ void performanceTab::slot_saveAllButton(bool) {
 	}
 }
 
-performanceTab::~performanceTab() {}
+performanceTab::~performanceTab() {
+	delete _layout;
+	_layout = nullptr;
+}

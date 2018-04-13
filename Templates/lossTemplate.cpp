@@ -339,4 +339,7 @@ void lossTemplate::slot_ChangeOptimaltype(QString pos) {
 }
 
 
-lossTemplate::~lossTemplate() {}
+lossTemplate::~lossTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

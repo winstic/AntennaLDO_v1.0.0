@@ -20,4 +20,5 @@ private:
 	parsProblem* _atn_problem;
     QTextEdit* _atn_info_text;
     QLabel* _atn_image_label;
+	QHBoxLayout* _layout;
 };

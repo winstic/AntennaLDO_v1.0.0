@@ -263,4 +263,7 @@ void varsDefaultValueTemplate::slot_unitChange(QString pos) {
 }
 
 
-varsDefaultValueTemplate::~varsDefaultValueTemplate() {}
+varsDefaultValueTemplate::~varsDefaultValueTemplate() {
+	delete _layout;
+	_layout = nullptr;
+}

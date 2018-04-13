@@ -34,4 +34,5 @@ private:
 	QPushButton* _add_button;
 	QPushButton* _remove_button;
 	QPushButton* _save_button;
+	QVBoxLayout* _layout;
 };

@@ -18,15 +18,18 @@ void wizardIntroduce::initIntroduceLayout() {
 	else
 		_atn_image_label->setPixmap(mPixmap);
 
-	QHBoxLayout *layout = new QHBoxLayout;
-	layout->addWidget(_atn_info_text);
-	layout->addWidget(_atn_image_label);
-	layout->setContentsMargins(2, 20, 10, 2);
-	setLayout(layout);
+	_layout = new QHBoxLayout;
+	_layout->addWidget(_atn_info_text);
+	_layout->addWidget(_atn_image_label);
+	_layout->setContentsMargins(2, 20, 10, 2);
+	setLayout(_layout);
 }
 
 bool wizardIntroduce::isComplete() const {
 	return true;
 }
 
-wizardIntroduce::~wizardIntroduce(){}
+wizardIntroduce::~wizardIntroduce(){
+	delete _layout;
+	_layout = nullptr;
+}

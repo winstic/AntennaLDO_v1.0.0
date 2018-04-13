@@ -8,7 +8,7 @@ class parallelTemplate : public iTemplate {
 	Q_OBJECT
 public:
 	parallelTemplate(QJsonObject& obj, iTemplate *parent = 0);
-	~parallelTemplate() {}
+	~parallelTemplate();
 
 	QLayout* getLayout();
 	//update _obj

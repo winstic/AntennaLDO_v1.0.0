@@ -21,6 +21,6 @@ private:
 	variablesTemplate* _variables_widget;
 	QPushButton* _save_all_button;
 	QLabel* _hint;
-
+	QVBoxLayout* _layout;
 	bool _is_running;
 };

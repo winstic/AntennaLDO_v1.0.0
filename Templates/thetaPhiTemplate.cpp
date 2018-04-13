@@ -207,4 +207,7 @@ void thetaPhiTemplate::slot_editFarField() {
 	emit signal_confirmFarField("");
 }
 
-thetaPhiTemplate::~thetaPhiTemplate(){}
+thetaPhiTemplate::~thetaPhiTemplate(){
+	delete _layout;
+	_layout = nullptr;
+}
