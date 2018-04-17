@@ -16,16 +16,13 @@ _atn_problem(atn_problem), _is_running(is_running) {
 	_first_tab = new QWidget();
 	_second_tab = new QWidget();
 	_third_tab = new QWidget();
-	_save_all_button = new QPushButton(QString("保存所有"), this);
+	_confirm_button = new QPushButton(QString("确定"), this);
+	_cancel_button = new QPushButton(QString("取消"), this);
 	_hint = new QLabel(this);
 	commonStyle::setHintStyle(_hint);
 
 	_problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
-	if (_problem_obj.isEmpty()) {
-		qCritical("get problem json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
-	}
-	else {
+	if (!_problem_obj.isEmpty()) {
 		_frequency_widget = new frequencyTemplate(_atn_problem, &_problem_obj, index);
 		_theta_phi_widget = new thetaPhiTemplate(_atn_problem, &_problem_obj, index);
 		_gain_widget = new gainTemplate(_atn_problem, &_problem_obj, index);
@@ -37,7 +34,8 @@ _atn_problem(atn_problem), _is_running(is_running) {
 		_tab_widget->addTab(_second_tab, QIcon(""), "增益轴比设置");
 		_tab_widget->addTab(_third_tab, QIcon(""), "回波损失设置");
 
-		connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));
+		connect(_confirm_button, SIGNAL(clicked(bool)), this, SLOT(slot_confirmButton(bool)));
+		connect(_cancel_button, SIGNAL(clicked(bool)), this, SLOT(slot_cancelButton(bool)));
 		connect(_theta_phi_widget, SIGNAL(signal_confirmFarField(QString)), _gain_widget, SLOT(slot_confirmFarField(QString)));
 		connect(_theta_phi_widget, SIGNAL(signal_confirmFarField(QString)), _axial_widget, SLOT(slot_confirmFarField(QString)));
 		initLayout();
@@ -50,7 +48,7 @@ void performanceTab::initLayout() {
 	//_gain_widget->traversalWidgets(_gain_widget->children(), !_is_running);
 	//_axial_widget->traversalWidgets(_axial_widget->children(), !_is_running);
 	_loss_widget->traversalWidgets(_loss_widget->children(), !_is_running);
-	_save_all_button->setEnabled(!_is_running);
+	_confirm_button->setEnabled(!_is_running);
 
 	//first tab
 	QLayout* frequency_layout = _frequency_widget->getLayout();
@@ -85,7 +83,8 @@ void performanceTab::initLayout() {
 	//在按钮左侧添加伸缩，让按钮居右
 	button_layout->addWidget(_hint);
 	button_layout->addStretch();
-	button_layout->addWidget(_save_all_button);
+	button_layout->addWidget(_confirm_button);
+	button_layout->addWidget(_cancel_button);
 
 	_layout = new QVBoxLayout;
 	_layout->addWidget(_tab_widget);
@@ -93,7 +92,7 @@ void performanceTab::initLayout() {
 	setLayout(_layout);
 }
 
-void performanceTab::slot_saveAllButton(bool) {
+void performanceTab::slot_confirmButton(bool) {
 	_hint->clear();
 	QList<iTemplate*> templates{ _frequency_widget, _theta_phi_widget, _gain_widget, _axial_widget, _loss_widget };
 	for (iTemplate* iter : templates) {
@@ -112,6 +111,10 @@ void performanceTab::slot_saveAllButton(bool) {
 		qCritical("save failed in freformance tabWidget.");
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
 	}
+}
+
+void performanceTab::slot_cancelButton(bool) {
+	this->close();
 }
 
 performanceTab::~performanceTab() {

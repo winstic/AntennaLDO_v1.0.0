@@ -10,7 +10,8 @@ public:
 	~geometryModel();
 
 public slots:
-	void slot_saveAllButton(bool);
+	void slot_confirmButton(bool);
+	void slot_cancelButton(bool);
 
 private:
 	void initLayout();
@@ -19,7 +20,8 @@ private:
 	parsProblem* _atn_problem;
 	QJsonObject _problem_obj;
 	variablesTemplate* _variables_widget;
-	QPushButton* _save_all_button;
+	QPushButton* _confirm_button;
+	QPushButton* _cancel_button;
 	QLabel* _hint;
 	QVBoxLayout* _layout;
 	bool _is_running;

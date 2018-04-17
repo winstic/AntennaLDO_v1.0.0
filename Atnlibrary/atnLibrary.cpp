@@ -108,21 +108,18 @@ void atnLibrary::newProject() {
 			//dataPool::global::setGCurrentProblemJsonPath(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name));
 
 			dir->mkdir(QString("%1/outfilepath").arg(working_path));
-			if (_atn_problem->type == HFSS) {
+			if (_atn_problem->type == "HFSS") {
 				dir->mkdir(QString("%1/outhfsspath").arg(working_path));
 			}
 			//writen project file(.rel)
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);
 			QTextStream out(&inFile);
-			out << PROBLEM_ID << ":" << _atn_problem->id << endl;
 			out << PROBLEM_NAME << ":" << _atn_problem->name << endl;			
 			inFile.close();
 		
 			QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(working_path));
 			if (global_obj.isEmpty()) {
-				qCritical("get global json object field.");
-				QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
 				return;
 			}
 			global_obj.insert("PROBLEM_NAME", _atn_problem->name);

@@ -63,8 +63,6 @@ void thetaPhiTemplate::initReg() {
 void thetaPhiTemplate::initDefaultData() {
 	QJsonObject far_field_obj = parseJson::getSubJsonObj(*_obj, "ThetaPhiStep");
 	if (far_field_obj.isEmpty()) {
-		qCritical("get 'ThetaPhiStep' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	_far_field_table->setRowCount(1);

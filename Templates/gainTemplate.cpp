@@ -31,8 +31,6 @@ _phi_start(-180), _phi_end(180), _phi_step(5), _index(index) {
 void gainTemplate::initDefaultData() {
 	QJsonObject gain_obj = parseJson::getSubJsonObj(*_obj, "GainSetting");
 	if (gain_obj.isEmpty()) {
-		qCritical("get 'GainSetting' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QSignalMapper* gain_signals_map = new QSignalMapper;

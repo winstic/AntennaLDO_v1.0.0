@@ -13,12 +13,14 @@ algorithmModel::algorithmModel(parsProblem* atn_problem, parsAlgorithm* algorith
 	_algorithm_obj = nullptr;
 	_algorithm_widget = new algorithmTemplate(_atn_problem, &_global_obj, &_algorithm, &_algorithm_obj);
 
-	_save_all_button = new QPushButton(QString("保存所有"), this);
+	_confirm_button = new QPushButton(QString("确定"), this);
+	_cancel_button = new QPushButton(QString("取消"), this);
 	_hint = new QLabel(this);
 	commonStyle::setHintStyle(_hint);
 
 	initLayout();
-	connect(_save_all_button, SIGNAL(clicked(bool)), this, SLOT(slot_saveAllButton(bool)));	
+	connect(_confirm_button, SIGNAL(clicked(bool)), this, SLOT(slot_confirmButton(bool)));
+	connect(_cancel_button, SIGNAL(clicked(bool)), this, SLOT(slot_cancelButton(bool)));
 }
 
 void algorithmModel::initLayout() {
@@ -28,18 +30,20 @@ void algorithmModel::initLayout() {
 	//在按钮左侧添加伸缩，让按钮居右
 	hlayout->addWidget(_hint);
 	hlayout->addStretch();
-	hlayout->addWidget(_save_all_button);
+	hlayout->addWidget(_confirm_button);
+	hlayout->addWidget(_cancel_button);
 	_layout->addLayout(varlayout);
+	_layout->addSpacing(20);
 	_layout->addLayout(hlayout);
-	_layout->setContentsMargins(10, 20, 10, 2);
+	_layout->setContentsMargins(10, 20, 10, 10);
 
 	_algorithm_widget->traversalWidgets(_algorithm_widget->children(), !_is_running);
-	_save_all_button->setEnabled(!_is_running);
+	_confirm_button->setEnabled(!_is_running);
 
 	setLayout(_layout);
 }
 
-void algorithmModel::slot_saveAllButton(bool) {
+void algorithmModel::slot_confirmButton(bool) {
 	QList<iTemplate*> templates{ _algorithm_widget };
 
 	_hint->clear();
@@ -61,7 +65,11 @@ void algorithmModel::slot_saveAllButton(bool) {
 	}
 }
 
-void algorithmModel::closeEvent(QCloseEvent *event) {
+void algorithmModel::slot_cancelButton(bool) {
+	this->close();
+}
+
+/*void algorithmModel::closeEvent(QCloseEvent *event) {
 	QMessageBox::StandardButton rb = QMessageBox::question(NULL, "删除", "保存所有修改的数据？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 	if (rb == QMessageBox::Yes) {
 		slot_saveAllButton(true);
@@ -69,6 +77,7 @@ void algorithmModel::closeEvent(QCloseEvent *event) {
 	else
 		return;
 }
+*/
 
 algorithmModel::~algorithmModel() {
 	delete _layout;

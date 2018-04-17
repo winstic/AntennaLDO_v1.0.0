@@ -12,6 +12,7 @@ QArelated::QArelated(parsProblem* atn_problem, QWidget *parent) : QDialog(parent
 	_problem_label = new QLabel("问题选择", this);
 	_problem_combobox = new QComboBox(this);
 	_problem_combobox->setMinimumSize(200, 25);
+	initProblemCombobox();
 	if (_atn_problem == nullptr)
 		_problem_combobox->setCurrentText("");
 	else
@@ -32,7 +33,7 @@ QArelated::QArelated(parsProblem* atn_problem, QWidget *parent) : QDialog(parent
 	header1 << "已关联算法";	
 	_related_algorithm_table->setHorizontalHeaderLabels(header1);
 	_related_algorithm_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
-	header2 << "可选与其关联的算法";	
+	header2 << "选择与其关联的算法";	
 	_unrelated_algorithm_table->setHorizontalHeaderLabels(header2);
 	_unrelated_algorithm_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 
@@ -41,7 +42,6 @@ QArelated::QArelated(parsProblem* atn_problem, QWidget *parent) : QDialog(parent
 	_remove_button = new QPushButton("移除>>", this);
 	_remove_button->setEnabled(false);
 	_save_button = new QPushButton("保存", this);
-	initProblemCombobox();
 	fillRelatedAlgorithm();
 	fillUnRelatedAlgorithm();
 	initLayout();
@@ -70,8 +70,8 @@ void QArelated::fillRelatedAlgorithm() {
 	parsProblem* atn_problem = dataPool::global::getProblemByName(_problem_combobox->currentText().trimmed());
 	QMap<alg4pro, QString>::iterator iter;
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
-		if (atn_problem->id == iter.key().second) {
-			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(iter.key().first);
+		if (atn_problem->name == iter.key().second) {
+			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByName(iter.key().first);
 			if(algorithm->oper == "i")
 				algorithm_list.append(algorithm->name);
 		}
@@ -84,14 +84,13 @@ void QArelated::fillRelatedAlgorithm() {
 void QArelated::fillUnRelatedAlgorithm() {
 	_unrelated_algorithm_table->clear();
 	QStringList header2;
-	header2 << "可选与其关联的算法";
+	header2 << "选择与其关联的算法";
 	_unrelated_algorithm_table->setHorizontalHeaderLabels(header2);
 	QStringList algorithm_list;
 	QVector<parsAlgorithm>::iterator iter;
 	for (iter = dataPool::global::g_algorithms.begin(); iter != dataPool::global::g_algorithms.end(); ++iter) {
 		if (iter->oper == "i") {
 			int i = 0;
-			QString algname = _related_algorithm_table->item(i, 0)->text();
 			for (; i < _related_algorithm_table->rowCount(); ++i) {
 				if (iter->name == _related_algorithm_table->item(i, 0)->text().trimmed())
 					break;
@@ -141,7 +140,7 @@ void QArelated::updateAssociates() {
 	QList<alg4pro> delete_keys;
 	QMap<alg4pro, QString>::iterator iter;
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
-		if (problem->id == iter.key().second) {
+		if (problem->name == iter.key().second) {
 			delete_keys.append(iter.key());
 		}
 	}
@@ -151,11 +150,10 @@ void QArelated::updateAssociates() {
 
 	//then insert newest item
 	for (int i = 0; i < _related_algorithm_table->rowCount(); ++i) {
-		QUuid id = QUuid::createUuid();
-		parsAlgorithm* algorithm = dataPool::global::getAlgorithmByName(_related_algorithm_table->item(i, 0)->text().trimmed());
+		parsAlgorithm* algorithm = dataPool::global::getAlgorithmByName(_related_algorithm_table->item(i, 0)->text().simplified());
 		alg4pro massociate;
-		massociate = qMakePair(algorithm->id, problem->id);
-		dataPool::global::g_associates[massociate] = id.toString();
+		massociate = qMakePair(algorithm->name, problem->name);
+		dataPool::global::g_associates[massociate] = QString("%1-%2").arg(algorithm->name).arg(problem->name);
 	}
 }
 
@@ -219,8 +217,8 @@ void QArelated::slot_save(bool) {
 	QMap<alg4pro, QString>::iterator iter;
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
 		QJsonObject* tmpobj = new QJsonObject;
-		tmpobj->insert("algorithmID", iter.key().first);
-		tmpobj->insert("problemID", iter.key().second);
+		tmpobj->insert("algorithm", iter.key().first);
+		tmpobj->insert("problem", iter.key().second);
 		obj->insert(iter.value(), *tmpobj);
 	}
 	if (parseJson::write(associate_json_file, obj))

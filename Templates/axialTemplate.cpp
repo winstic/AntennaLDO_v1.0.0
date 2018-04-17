@@ -30,8 +30,6 @@ _phi_start(-180), _phi_end(180), _phi_step(5), _index(index) {
 void axialTemplate::initDefaultData() {
 	QJsonObject axial_obj = parseJson::getSubJsonObj(*_obj, "AxialratioSetting");
 	if (axial_obj.isEmpty()) {
-		qCritical("get 'AxialratioSetting' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QSignalMapper* axial_signals_map = new QSignalMapper;

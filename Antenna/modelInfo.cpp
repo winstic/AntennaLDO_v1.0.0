@@ -96,8 +96,6 @@ void modelInfo::initLayout() {
 void modelInfo::initDefalultParametersRange() {
 	QJsonObject variables_obj = parseJson::getSubJsonObj(_obj, "variables");
 	if (variables_obj.isEmpty()) {
-		qCritical("get 'variables' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	_vars_range_table->setColumnCount(3);
@@ -148,8 +146,6 @@ void modelInfo::initDefalultParametersRange() {
 void modelInfo::initDefalultParameters() {
 	QJsonObject vars_value_obj = parseJson::getSubJsonObj(_obj, "varsValue");
 	if (vars_value_obj.isEmpty()) {
-		qCritical("get 'varsValue' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	_vars_table->setFixedHeight(80);

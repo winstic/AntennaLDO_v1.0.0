@@ -71,7 +71,7 @@
 //enum problemType { TEST = 0, HFSS, FEKO, NEC };
 
 enum ERRORCODE {eNormal = 0, eNull, eInvalid, eOther};
-enum PROBLEMTYPE { TEST = 0, HFSS, FEKO, NEC };
+//enum PROBLEMTYPE { TEST = 0, HFSS, FEKO, NEC };
 enum GACOLUMN { cthetalower = 0, cthetaupper, cphilower, cphiupper, coptimaltype, cdelta, cobjvalue, cweight };
 enum LOSSCOLUMN { cz0real = 0, cz0imag, closstype, clossoptimaltype, cdeltareal, cdeltaimag, cobjreal, cobjimag, clossweight };
 enum NODESCOLUMN { nodeFlag = 0, coreFlag };

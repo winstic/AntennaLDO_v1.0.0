@@ -51,8 +51,6 @@ void frequencyTemplate::initDefaultData() {
 	//setting default data
 	QJsonObject frequency_obj = parseJson::getSubJsonObj(*_obj, "FreSetting");
 	if (frequency_obj.isEmpty()) {
-		qCritical("get 'FreSetting' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QStringList fre_start_list, fre_end_list, fre_number_list, pm_list, sweep_type_list;

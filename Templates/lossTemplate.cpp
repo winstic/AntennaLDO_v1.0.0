@@ -24,8 +24,6 @@ _atn_problem(atn_problem), _obj(obj), _index(index) {
 void lossTemplate::initDefaultData() {
 	QJsonObject loss_obj = parseJson::getSubJsonObj(*_obj, "VSWRSetting");
 	if (loss_obj.isEmpty()) {
-		qCritical("get 'VSWRSetting' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QSignalMapper* loss_signals_map = new QSignalMapper;

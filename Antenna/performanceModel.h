@@ -12,7 +12,8 @@ public:
 	~performanceTab();
 
 	public slots:
-	void slot_saveAllButton(bool);
+	void slot_confirmButton(bool);
+	void slot_cancelButton(bool);
 
 private:
 	void initLayout();
@@ -24,7 +25,8 @@ private:
 	QWidget* _first_tab;
 	QWidget* _second_tab;
 	QWidget* _third_tab;
-	QPushButton* _save_all_button;
+	QPushButton* _confirm_button;
+	QPushButton* _cancel_button;
 	frequencyTemplate* _frequency_widget;
 	thetaPhiTemplate* _theta_phi_widget;
 	gainTemplate* _gain_widget;

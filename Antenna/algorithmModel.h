@@ -11,10 +11,11 @@ public:
 
 protected:
 	//关闭窗口时提示是否保存已经修改的数据
-	void closeEvent(QCloseEvent *event) override;
+	//void closeEvent(QCloseEvent *event) override;
 
 public slots:
-	void slot_saveAllButton(bool);
+	void slot_confirmButton(bool);
+	void slot_cancelButton(bool);
 
 private:
 	void initLayout();
@@ -25,7 +26,8 @@ private:
 	QJsonObject* _algorithm_obj;
 	QJsonObject _global_obj;
 	algorithmTemplate* _algorithm_widget;
-	QPushButton* _save_all_button;
+	QPushButton* _confirm_button;
+	QPushButton* _cancel_button;
 	QLabel* _hint;
 	QVBoxLayout* _layout;
 	bool _is_running;

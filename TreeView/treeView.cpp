@@ -299,8 +299,6 @@ void treeModel::modifyGeometryVariables() {
 void treeModel::modefyAlgorithmParameters() {
 	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
 	if (global_obj.isEmpty()) {
-		qCritical("get global json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取全局配置文件失败！"));
 		return;
 	}
 	parsAlgorithm* palgorithm = dataPool::global::getAlgorithmByName(global_obj.value("ALGORITHM_NAME").toString().trimmed());

@@ -12,7 +12,7 @@ QJsonObject parseJson::getJsonObj(const QString &path) {
 	QJsonObject obj;
 	QFile file(path);
 	if (!file.open(QFile::ReadOnly | QFile::Text))
-		qCritical("Cannot read file: '%s'", qUtf8Printable(path));
+		qCritical("not exist or can not read file:%s", qUtf8Printable(path));
 	else {
 		QByteArray byteArray = file.readAll();
 		file.close();
@@ -22,6 +22,9 @@ QJsonObject parseJson::getJsonObj(const QString &path) {
 			if (jsonDocument.isObject()) {
 				obj = jsonDocument.object();
 			}
+		}
+		else {
+			qCritical("%s in %s", qUtf8Printable(jsonError.errorString()), qUtf8Printable(path));
 		}
 	}
 	return obj;
@@ -62,7 +65,6 @@ void parseJson::updateConfigFile(const QString& key, const QString& value) {
 	const QString config_json_file = dataPool::global::getGConfigFile();
 	QJsonObject conf_obj = getJsonObj(config_json_file);
 	if (conf_obj.isEmpty()) {
-		qCritical("something wrong about config.json.");
 		exit(1);
 	}
 	conf_obj.insert(key, value);

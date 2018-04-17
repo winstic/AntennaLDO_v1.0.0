@@ -27,8 +27,6 @@ variablesTemplate::variablesTemplate(parsProblem* atn_problem, QJsonObject* obj,
 void variablesTemplate::initDefaultData() {
 	QJsonObject variables_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (variables_obj.isEmpty()) {
-		qCritical("get 'variables' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QJsonObject var_obj;

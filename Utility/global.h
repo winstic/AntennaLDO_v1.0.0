@@ -8,23 +8,23 @@
 typedef QPair<QString, QString> alg4pro;
 
 struct parsProblem {
-	QString id;
 	QString name;
 	QString path;
 	QString pImage;
 	QString info;
-	unsigned int type;
+	QString type;
 	QString oper;
 	double max_frequency;
-	parsProblem() : id(""), name(""), path(""), pImage("./images/antenna.png"), info(""), type(0), oper("i"), max_frequency(0.001){}
+	parsProblem() : name(""), path(""), pImage("./images/antenna.png"), info(""), type(""), oper("i"), max_frequency(0.001){}
 };
 
 struct parsAlgorithm {
-	QString id;
 	QString name;
 	QString path;
 	QString info;
+	QString type;
 	QString oper;
+	parsAlgorithm() : name(""), path(""), info(""), type(""), oper("i") {}
 };
 
 namespace dataPool{
@@ -34,9 +34,7 @@ namespace dataPool{
 		global() {}
 		~global(){}
 
-		static parsProblem* getProblemByID(const QString id);
 		static parsProblem* getProblemByName(const QString name);
-		static parsAlgorithm* getAlgorithmByID(const QString id);
 		//each algorithm has unique name
 		static parsAlgorithm* getAlgorithmByName(const QString name);
 
@@ -64,6 +62,7 @@ namespace dataPool{
 		static QVector<parsProblem> g_problems;
 		static QVector<parsAlgorithm> g_algorithms;
 		static QMap<alg4pro, QString> g_associates;
+		static QMap<QString, QString> g_flags;
 	private:
 		static int g_window_width;
 		static int g_window_height;

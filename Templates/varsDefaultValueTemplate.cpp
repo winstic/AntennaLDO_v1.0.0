@@ -28,8 +28,6 @@ varsDefaultValueTemplate::varsDefaultValueTemplate(parsProblem* atn_problem, QJs
 void varsDefaultValueTemplate::initDefaultData() {
 	QJsonObject vars_value_obj = parseJson::getSubJsonObj(*_obj, "varsValue");
 	if (vars_value_obj.isEmpty()) {
-		qCritical("get 'varsValue' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	for (QJsonObject::iterator iter = vars_value_obj.begin(); iter != vars_value_obj.end(); ++iter) {
@@ -37,8 +35,6 @@ void varsDefaultValueTemplate::initDefaultData() {
 	}
 	QJsonObject vars_range_obj = parseJson::getSubJsonObj(*_obj, "variables");
 	if (vars_range_obj.isEmpty()) {
-		qCritical("get 'variables' json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取问题配置文件失败！"));
 		return;
 	}
 	QJsonObject var_obj;

@@ -24,13 +24,15 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 		qCritical("null pointer _algorithm.");
 		exit(1);
 	}
-	if ((*_algorithm) != nullptr && _alg_combox->findText((*_algorithm)->name)) {
+	if ((*_algorithm) != nullptr && (_alg_combox->findText((*_algorithm)->name) != -1)) {
 		_alg_combox->setCurrentText((*_algorithm)->name);
 	}
-	else {
+	else if (_alg_combox->count() >= 1) {
 		_alg_combox->setCurrentIndex(0);
-		(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->currentData().toString());
+		(*_algorithm) = dataPool::global::getAlgorithmByName(_alg_combox->currentText().simplified());
 	}
+	else
+		(*_algorithm) = nullptr;
 	initDefaultData();
 	initLayout();
 	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
@@ -50,11 +52,10 @@ void algorithmTemplate::initLayout() {
 }
 
 void algorithmTemplate::initDefaultData() {
+	if ((*_algorithm) == nullptr) return;
 	QString alg_json_path = QString("%1/%2_conf.json").arg((*_algorithm)->path).arg((*_algorithm)->name);
 	QJsonObject alg_obj = parseJson::getJsonObj(alg_json_path);
 	if (alg_obj.isEmpty()) {
-		qCritical("get algorithm json object field.");
-		QMessageBox::critical(0, QString("警告"), QString("读取算法配置文件失败！"));
 		return;
 	}
 	//+2 启动进程数，评估容忍时间
@@ -94,12 +95,11 @@ void algorithmTemplate::initDefaultData() {
 }
 
 void algorithmTemplate::initAlgComboItem() {
-	QString problem_id = _atn_problem->id;
 	QMap<alg4pro, QString>::iterator iter;		//like((algid, proid), associateId) 
 	for (iter = dataPool::global::g_associates.begin(); iter != dataPool::global::g_associates.end(); ++iter) {
-		if (iter.key().second == problem_id) {
-			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByID(iter.key().first);
-			_alg_combox->addItem(algorithm->name, algorithm->id);	//so you can get algorithm_id through _alg_combox->Data()
+		if (iter.key().second.compare(_atn_problem->name) == 0) {
+			parsAlgorithm* algorithm = dataPool::global::getAlgorithmByName(iter.key().first);
+			_alg_combox->addItem(algorithm->name);	//so you can get algorithm_id through _alg_combox->Data()
 		}
 	}
 }
@@ -170,7 +170,7 @@ void algorithmTemplate::updateJObj() {
 
 //slots function
 void algorithmTemplate::slot_algName(const int index) {
-	(*_algorithm) = dataPool::global::getAlgorithmByID(_alg_combox->itemData(index).toString());
+	(*_algorithm) = dataPool::global::getAlgorithmByName(_alg_combox->currentText().simplified());
 	initDefaultData();
 }
 

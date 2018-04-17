@@ -25,6 +25,7 @@ problemManage::problemManage(QWidget *parent) : QDialog(parent) {
 	_remove_problem_table->setColumnCount(1);
 
 	_add_button = new QPushButton("添加新问题>>", this);
+	_add_button->setProperty("add", 0);
 	_remove_button = new QPushButton("移除", this);
 	_remove_button->setEnabled(false);
 	_recovery_button = new QPushButton("恢复", this);
@@ -34,11 +35,12 @@ problemManage::problemManage(QWidget *parent) : QDialog(parent) {
 	_confirm_button = new QPushButton("确定", this);
 	_cancel_button = new QPushButton("取消", this);
 
-	_readme_text = new QTextEdit(this);
+	_readme_text = new QTextBrowser(this);
 	_readme_text->setFixedHeight(SUBWINDOW_HEIGHT / 2);
-	_readme_text->setReadOnly(true);
+	_readme_text->setOpenExternalLinks(true);
 	_select_directory_label = new QLabel("选择天线问题：", this);
 	_select_directory_text = new QLineEdit(this);
+	_select_directory_text->setReadOnly(true);
 	_select_directory_button = new QPushButton("浏览", this);
 
 	initExistProblem();
@@ -51,6 +53,7 @@ problemManage::problemManage(QWidget *parent) : QDialog(parent) {
 	connect(_remove_button, SIGNAL(clicked(bool)), this, SLOT(slot_remove(bool)));
 	connect(_recovery_button, SIGNAL(clicked(bool)), this, SLOT(slot_reconvery(bool)));
 	connect(_delete_button, SIGNAL(clicked(bool)), this, SLOT(slot_delete(bool)));
+	connect(_select_directory_button, SIGNAL(clicked(bool)), this, SLOT(slot_select_Directory(bool)));
 	connect(_confirm_button, SIGNAL(clicked(bool)), this, SLOT(slot_confirm(bool)));
 	connect(_cancel_button, SIGNAL(clicked(bool)), this, SLOT(slot_cancel(bool)));
 }
@@ -144,6 +147,94 @@ void problemManage::initLayout() {
 	setLayout(_layout);
 }
 
+void problemManage::initReadMeText() {
+	_readme_text->clear();
+	QFont font;
+	font.setPixelSize(14);
+	_readme_text->setFont(font);
+	_readme_text->setStyleSheet("border: none;");
+	QDir hfss_template_dir("./DEA4AD/trunk/problem/wifiAntenna/");
+	QString hfss_absolute_path = hfss_template_dir.absolutePath();
+	QDir feko_template_dir("./DEA4AD/trunk/problem/GP_WiFiAntenna/");
+	QString feko_absolute_path = feko_template_dir.absolutePath();
+	_readme_text->append("<h1 >添加新天线问题</h1>");
+	_readme_text->append("  在DEA4AD软件框架内，一个天线问题保存在一个文件夹内，问题文件夹内包含以下文件：");
+	_readme_text->append("<h2>ANSOFT HFSS问题（<a href="+ hfss_absolute_path +" >参考模板</a>）：</h2>");
+	_readme_text->append("<ol>1. ANSOFT HFSS 模型文件（wifiAntenna.hfss）；</ol>");
+	_readme_text->append("<ol>2. ANSOFT HFSS vbs脚本文件（wifiAntenna.vbs）；</ol>");
+	_readme_text->append("<ol>3. 天线问题编码文件（wifiAntenna.py）；</ul>");
+	_readme_text->append("<ol>4. 天线问题配置参数文件（wifiAntenna_conf.py）；</ol>");
+	_readme_text->append("<ol>5. 天线问题数据参数存储文件（wifiAntenna_conf.json）；</ol>");
+	_readme_text->append("<h2>FEKO问题（<a href="+ feko_absolute_path +" >参考模板</a>）：</h2>");
+	_readme_text->append("<ol>1. FEKO 模型文件（GP_WiFiAntenna.cfx）；</ol>");
+	_readme_text->append("<ol>2. 天线问题编码文件（GP_WiFiAntenna.py）；</ol>");
+	_readme_text->append("<ol>3. 天线问题配置参数文件（GP_WiFiAntenna_conf.py）；</ol>");
+	_readme_text->append("<ol>4. 天线问题数据参数存储文件（GP_WiFiAntenna_conf.json）；</ol>");
+	_readme_text->append("<h2>注意事项</h2>");
+	_readme_text->append("  问题文件的命名规则，<font color = \"red\">要求文件夹名即为天线问题名</font>，文件夹内文件命名请参考模板问题。");
+}
+
+bool problemManage::isCorrectProblemFormat(const QDir dir) {
+	QString antena_name = dir.dirName();
+	QStringList files_list = dir.entryList();
+	bool is_correct = files_list.contains(QString("%1.py").arg(antena_name)) &&
+		files_list.contains(QString("%1_conf.py").arg(antena_name)) &&
+		files_list.contains(QString("%1_conf.json").arg(antena_name));
+	if (is_correct && files_list.contains(QString("%1.vbs").arg(antena_name)) &&
+		files_list.contains(QString("%1.hfss").arg(antena_name))) {
+		//ANSOFT HFSS problem
+		_problem_type = 1;
+		return true;
+	}
+	else if (is_correct && files_list.contains(QString("%1.cfx").arg(antena_name))) {
+		//FEKO problem
+		_problem_type = 2;
+		return true;
+	}
+	return false;
+}
+
+void problemManage::add_antenna_problem(const QDir dir) {
+	//添加天线问题，1. 拷贝问题文件到DEA4AD（判重）；2.插入新数据到problems.json
+	QString antenna_name = dir.dirName();
+	QDir DEA4AD_problem_dir(QString("%1/problem/").arg(dataPool::global::getGDEA4ADPath()));
+	if (!DEA4AD_problem_dir.exists()) {
+		QMessageBox::critical(0, QString("警告"), QString("DEA4AD路径被更改，请将DEA4AD添加到程序exe文件同层目录下！"));
+		qCritical("DEA4AD路径被更改，请将DEA4AD添加到程序exe文件同层目录下！");
+		return;
+	}
+	QString DEA4AD_problem_path = DEA4AD_problem_dir.absolutePath();
+	QString new_problem_dir_path = QString("%1/%2/").arg(DEA4AD_problem_path).arg(antenna_name);
+	QDir new_problem_dir(new_problem_dir_path);
+	if (new_problem_dir.exists()) {
+		QMessageBox::StandardButton rb = QMessageBox::question(NULL, "提示", "天线问题在框架内已存在，是否替换？", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+		if (rb == QMessageBox::No)
+			return;
+		else
+			DEA4AD_problem_dir.rmdir(antenna_name);
+	}
+	DEA4AD_problem_dir.mkdir(antenna_name);
+
+	parsProblem new_problem;
+	new_problem.name = antenna_name;
+	new_problem.info = antenna_name;
+	new_problem.oper = "i";
+	new_problem.path = new_problem_dir_path;
+	new_problem.type = _problem_type;
+	//设置默认频率为最大频点（如果有）
+	/*QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(tmp.path).arg(tmp.name));
+	QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
+	QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
+	double fre_end = 0.01;
+	for (int i = 0; i < fre_end_list.size(); ++i) {
+		if (fre_end < fre_end_list[i].toDouble())
+			fre_end = fre_end_list[i].toDouble();
+	}
+	tmp.max_frequency = fre_end;*/
+
+	
+}
+
 //slots
 void problemManage::slot_existSelectChanged() {
 	int select_number = _exist_problem_table->selectedItems().size();
@@ -168,10 +259,36 @@ void problemManage::slot_removeSelectChanged() {
 	}
 }
 void problemManage::slot_add(bool) {
-	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
-	_manage_problem_layout->addWidget(_add_new_problem_box);
-	_add_button->setEnabled(false);
+	int add_flag = _add_button->property("add").toInt();
+	if (add_flag == 0) {		
+		initReadMeText();
+		_select_directory_text->clear();
+		_manage_problem_layout->addWidget(_add_new_problem_box);
+		_add_button->setText("<<添加新问题");
+		_add_button->setProperty("add", 1);
+		setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
+	}
+	else if (add_flag == 1) {
+		QString antenna_path = _select_directory_text->text();
+		if (!antenna_path.isEmpty()) {
+			QDir dir(antenna_path);
+			if (!isCorrectProblemFormat(dir)) {
+				QMessageBox::critical(0, QString("警告"), QString("新增天线问题部分文件缺失，请参照模板文件检测后重新添加！"));
+				qCritical("新增天线问题部分文件缺失");
+				return;
+			}
+			//do some check
+			add_antenna_problem(dir);
+		}
+		setMinimumSize(SUBWINDOW_WIDTH / 2, SUBWINDOW_HEIGHT);
+		_add_new_problem_box->setParent(nullptr);
+		_manage_problem_layout->removeWidget(_add_new_problem_box);
+		_add_button->setText("添加新问题>>");
+		resize(QSize(SUBWINDOW_WIDTH / 2, SUBWINDOW_HEIGHT));
+		_add_button->setProperty("add", 0);
+	}
 }
+
 void problemManage::slot_remove(bool) {
 	int curr_row = _exist_problem_table->currentRow();
 	if (curr_row != -1) {
@@ -181,6 +298,7 @@ void problemManage::slot_remove(bool) {
 		_remove_problem_table->insert2table(new_row_index, 0, select_item);
 		_exist_problem_table->removeRow(curr_row);
 		_exist_problem_table->clearSelection();
+		qInfo("remove antenna problem : '%s'", qUtf8Printable(select_item));
 	}
 }
 void problemManage::slot_reconvery(bool) {
@@ -192,20 +310,30 @@ void problemManage::slot_reconvery(bool) {
 		_exist_problem_table->insert2table(new_row_index, 0, select_item);
 		_remove_problem_table->removeRow(curr_row);
 		_remove_problem_table->clearSelection();
+		qInfo("recovery antenna problem : '%s'", qUtf8Printable(select_item));
 	}
 }
 void problemManage::slot_delete(bool) {
+	//删除天线问题->1.删除DEA4AD中的问题文件；2.删除problems.json中问题记录；3.删除associates.json中的相关性；
 	int curr_row = _remove_problem_table->currentRow();
 	if (curr_row != -1) {
 		QString select_item = _remove_problem_table->item(curr_row, 0)->text().trimmed();
 		//删除选中行
 		QMessageBox::StandardButton rb = QMessageBox::question(NULL, "删除", "删除选中行?（注意不可恢复）", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
 		if (rb == QMessageBox::Yes) {	
-			_remove_problem_table->removeRow(select_item.toInt());
+			_remove_problem_table->removeRow(curr_row);
 			_remove_problem_table->clearSelection();
+			qInfo("delete antenna problem : '%s'", qUtf8Printable(select_item));
 		}
 	}
 }
+
+void problemManage::slot_select_Directory(bool) {
+	QString dir = QFileDialog::getExistingDirectory(this, "打开文件夹", QStandardPaths::writableLocation(QStandardPaths::DocumentsLocation),
+		QFileDialog::DontResolveSymlinks);
+	_select_directory_text->setText(dir);
+}
+
 void problemManage::slot_confirm(bool) {
 
 }
