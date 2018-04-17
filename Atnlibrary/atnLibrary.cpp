@@ -125,11 +125,13 @@ void atnLibrary::newProject() {
 			global_obj.insert("PROBLEM_NAME", _atn_problem->name);
 			global_obj.insert("outfilepath", QString("%1/outfilepath").arg(dataPool::global::getGWorkingProjectPath()));
 			global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(dataPool::global::getGWorkingProjectPath()));
-			if (parseJson::write(QString("%1/global_conf.json").arg(working_path), &global_obj))
-				this->close();
-			else {
+			if (!parseJson::write(QString("%1/global_conf.json").arg(working_path), &global_obj)){
 				qCritical("save failed in global json.");
 				QMessageBox::critical(0, QString("Error"), QString("global_json 格式错误。"));
+				delete dir;
+				dir = nullptr;
+				delete wizard;
+				wizard = nullptr;
 				return;
 			}
 

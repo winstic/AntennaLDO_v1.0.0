@@ -386,6 +386,13 @@ void treeModel::slot_clicked(const QModelIndex& item_index) {
 }
 
 void treeModel::slot_run() {
+	//校验global_conf.json
+	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
+	if (global_obj.isEmpty() || global_obj.value("ALGORITHM_NAME").toString().isEmpty()) {
+		qCritical("请先设置算法。");
+		QMessageBox::critical(0, QString("警告"), QString("请先设置算法。"));
+		return;
+	}
 	optRunProcess = new QProcess();
 	connect(optRunProcess, SIGNAL(readyRead()), this, SLOT(slot_readyRead()));
 	_act_design_run->setEnabled(false);

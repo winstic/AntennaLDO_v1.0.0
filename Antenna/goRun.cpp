@@ -1,3 +1,4 @@
+#pragma execution_character_set("utf-8")
 #include "goRun.h"
 
 goRun::goRun(QProcess* &optRunP) : _p(optRunP){}

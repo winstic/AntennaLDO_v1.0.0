@@ -26,6 +26,7 @@ private:
 	void initAlgComboItem();
 	void initDefaultData();
 	void initLayout();
+	bool undateDefaultGlobalJson();
 
 public:
 	parsProblem* _atn_problem;

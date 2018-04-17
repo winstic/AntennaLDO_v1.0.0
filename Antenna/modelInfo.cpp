@@ -155,7 +155,7 @@ void modelInfo::initDefalultParameters() {
 	header << "变量" << "参数值";
 	_vars_table->setVerticalHeaderLabels(header);
 	_vars_table->verticalHeader()->setFixedWidth(50);
-	_vars_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
+	//_vars_table->horizontalHeader()->setSectionResizeMode(QHeaderView::Stretch);
 	_vars_table->horizontalHeader()->setVisible(false);
 	_vars_table->setEditTriggers(QAbstractItemView::NoEditTriggers);       //no edit
 

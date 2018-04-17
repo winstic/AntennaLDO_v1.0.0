@@ -32,12 +32,32 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 		(*_algorithm) = dataPool::global::getAlgorithmByName(_alg_combox->currentText().simplified());
 	}
 	else
-		(*_algorithm) = nullptr;
-	initDefaultData();
+		(*_algorithm) = nullptr;	
+	if (undateDefaultGlobalJson()) {
+		initDefaultData();
+		connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
+		connect(_thread_number_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
+		connect(_max_time_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
+	}
 	initLayout();
-	connect(_alg_combox, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_algName(int)));
-	connect(_thread_number_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
-	connect(_max_time_edit, SIGNAL(textChanged(QString)), this, SLOT(slot_textChanged(QString)));
+}
+
+bool algorithmTemplate::undateDefaultGlobalJson() {
+	//用默认选择的算法更新global_conf.json文件
+	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
+	if (global_obj.isEmpty()) {
+		return false;
+	}
+	QString algorithm_name;
+	if ((*_algorithm) == nullptr) algorithm_name = "";
+	else algorithm_name = (*_algorithm)->name;
+	global_obj.insert("ALGORITHM_NAME", algorithm_name);
+	if (!parseJson::write(dataPool::global::getGCurrentGlobalJsonPath(), &global_obj)){
+		qCritical("save failed in global json.");
+		QMessageBox::critical(0, QString("Error"), QString("global_json 格式错误。"));
+		return false;
+	}
+	return true;
 }
 
 void algorithmTemplate::initLayout() {

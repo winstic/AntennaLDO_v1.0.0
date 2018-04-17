@@ -1,5 +1,4 @@
 ﻿#pragma once
-
 #include <QtWidgets>
 #include "../Utility/global.h"
 #include "../Templates/tableTemplate.h"
