@@ -43,4 +43,9 @@ public:
 	QComboBox* _sweep_type_combox;
 	QComboBox* _polarization_combox;
 	unsigned int _index;
+	QStringList _fre_start_list;
+	QStringList _fre_end_list;
+	QStringList _fre_number_list;
+	QStringList _pm_list;
+	QStringList _sweep_type_list;
 };

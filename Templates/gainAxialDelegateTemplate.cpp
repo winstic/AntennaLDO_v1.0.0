@@ -16,14 +16,14 @@ QWidget* gainAxialDelegate::createEditor(QWidget* parent, const QStyleOptionView
 		QComboBox *comb = new QComboBox(parent);
 		comb->setEditable(true);
 		//comb->installEventFilter(const_cast<gainAxialDelegate *>(this));
-		connect(comb, SIGNAL(currentIndexChanged()), this, SLOT(slot_comboBoxCommitAndCloseEditor()));
+		connect(comb, SIGNAL(currentIndexChanged(int)), this, SLOT(slot_comboBoxCommitAndCloseEditor(int)));
 		return comb;
 	}
 	else if(_line_edit_columns.contains(col)) {
 		QLineEdit *edit = new QLineEdit(parent);
 		QRegExpValidator* floatValidReg = _itemplate->getFloatReg();    //float
 		edit->setValidator(floatValidReg);
-		connect(edit, SIGNAL(textChanged()), this, SLOT(slot_lineEditCommitAndCloseEditor()));
+		connect(edit, SIGNAL(textChanged(QString)), this, SLOT(slot_lineEditCommitAndCloseEditor(QString)));
 		return edit;
 	}
 	else {
@@ -64,12 +64,12 @@ void gainAxialDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 	}
 }
 
-void gainAxialDelegate::slot_comboBoxCommitAndCloseEditor() {
+void gainAxialDelegate::slot_comboBoxCommitAndCloseEditor(int) {
 	QComboBox *comb = qobject_cast<QComboBox *>(sender());
 	emit commitData(comb);
 	emit closeEditor(comb);
 }
-void gainAxialDelegate::slot_lineEditCommitAndCloseEditor() {
+void gainAxialDelegate::slot_lineEditCommitAndCloseEditor(QString) {
 	QLineEdit *edit = qobject_cast<QLineEdit *>(sender());
 	emit commitData(edit);
 	emit closeEditor(edit);

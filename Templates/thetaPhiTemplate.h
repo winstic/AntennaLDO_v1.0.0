@@ -13,7 +13,7 @@ public:
 public:
 	QLayout* getLayout();
 	//update _obj
-	void updateJObj();	
+	void updateJObj();
 	bool checkInputValid();
 
 signals:
@@ -44,4 +44,11 @@ public:
 	QLineEdit* _phi_low_edit;
 	QLineEdit* _phi_up_edit;
 	QLineEdit* _phi_step_edit;
+	unsigned int _index;
+	QStringList _theta_low_list;
+	QStringList _theta_up_list;
+	QStringList _theta_step_list;
+	QStringList _phi_low_list;
+	QStringList _phi_up_list;
+	QStringList _phi_step_list;
 };

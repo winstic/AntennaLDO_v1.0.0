@@ -11,8 +11,8 @@ public:
 	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
 private slots:
-	void slot_comboBoxCommitAndCloseEditor();
-	void slot_lineEditCommitAndCloseEditor();
+	void slot_comboBoxCommitAndCloseEditor(int);
+	void slot_lineEditCommitAndCloseEditor(QString);
 
 private:
 	iTemplate* _itemplate;

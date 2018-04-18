@@ -27,51 +27,54 @@ void lossTemplate::initDefaultData() {
 		return;
 	}
 	QSignalMapper* loss_signals_map = new QSignalMapper;
-	QStringList R0_real_lists, R0_image_lists, return_loss_type_lists, optimal_type_lists, delta_real_lists, delta_image_lists,
-		vswr_obj_lists, s11_obj_lists, R1_real_lists, R1_image_lists,weight_lists;
-
-	R0_real_lists = dataPool::strlist2list(loss_obj.value("R0_real").toString());
-	R0_image_lists = dataPool::strlist2list(loss_obj.value("R0_imag").toString());
-	return_loss_type_lists = dataPool::strlist2list(loss_obj.value("ReturnLossType").toString());
-	optimal_type_lists = dataPool::strlist2list(loss_obj.value("optimaltype_vswr").toString());
-	delta_real_lists = dataPool::strlist2list(loss_obj.value("delta_real").toString());
-	delta_image_lists = dataPool::strlist2list(loss_obj.value("delta_imag").toString());
-	vswr_obj_lists = dataPool::strlist2list(loss_obj.value("vswrobj").toString());
-	s11_obj_lists = dataPool::strlist2list(loss_obj.value("S11").toString());
-	R1_real_lists = dataPool::strlist2list(loss_obj.value("R1_real").toString());
-	R1_image_lists = dataPool::strlist2list(loss_obj.value("R1_imag").toString());
-	weight_lists = dataPool::strlist2list(loss_obj.value("weight_vswr").toString());
+	_R0_real_lists = dataPool::stack2list(loss_obj.value("R0_real").toString());
+	_R0_image_lists = dataPool::stack2list(loss_obj.value("R0_imag").toString());
+	_return_loss_type_lists = dataPool::stack2list(loss_obj.value("ReturnLossType").toString());
+	_optimal_type_lists = dataPool::stack2list(loss_obj.value("optimaltype_vswr").toString());
+	_delta_real_lists = dataPool::stack2list(loss_obj.value("delta_real").toString());
+	_delta_image_lists = dataPool::stack2list(loss_obj.value("delta_imag").toString());
+	_vswr_obj_lists = dataPool::stack2list(loss_obj.value("vswrobj").toString());
+	_s11_obj_lists = dataPool::stack2list(loss_obj.value("S11").toString());
+	_R1_real_lists = dataPool::stack2list(loss_obj.value("R1_real").toString());
+	_R1_image_lists = dataPool::stack2list(loss_obj.value("R1_imag").toString());
+	_weight_lists = dataPool::stack2list(loss_obj.value("weight_vswr").toString());
+	unsigned int length = _R0_real_lists.size();
+	if (_R0_image_lists.size() != length || _return_loss_type_lists.size() != length || _optimal_type_lists.size() != length 
+		|| _delta_real_lists.size() != length || _delta_image_lists.size() != length || _vswr_obj_lists.size() != length 
+		|| _s11_obj_lists.size() != length || _R1_real_lists.size() != length || _R1_image_lists.size() != length
+		|| _weight_lists.size() != length  || _index >= length) {
+		qCritical("问题json文件回波损失数据设置有误, 请仔细核对。");
+		return;
+	}
 
 	QStringList strListR0Real, strListR0imag, strListReturnLossType, strListOptimaltype, strListDeltaReal, strListDeltaImag,
 		strListVswrobj, strListS11, strListR1Real, strListR1Imag, strListWeight; 
-	if (_index < R0_real_lists.size())
-		strListR0Real = dataPool::str2list(R0_real_lists[_index]);
-	if (_index < R0_image_lists.size())
-		strListR0imag = dataPool::str2list(R0_image_lists[_index]);
-	if (_index < return_loss_type_lists.size())
-		strListReturnLossType = dataPool::str2list(return_loss_type_lists[_index]);
-	if (_index < optimal_type_lists.size())
-		strListOptimaltype = dataPool::str2list(optimal_type_lists[_index]);
-	if (_index < delta_real_lists.size())
-		strListDeltaReal = dataPool::str2list(delta_real_lists[_index]);
-	if (_index < delta_image_lists.size())
-		strListDeltaImag = dataPool::str2list(delta_image_lists[_index]);
-	if (_index < vswr_obj_lists.size())
-		strListVswrobj = dataPool::str2list(vswr_obj_lists[_index]);
-	if (_index < s11_obj_lists.size())
-		strListS11 = dataPool::str2list(s11_obj_lists[_index]);
-	if (_index < R1_real_lists.size())
-		strListR1Real = dataPool::str2list(R1_real_lists[_index]);
-	if (_index < R1_image_lists.size())
-		strListR1Imag = dataPool::str2list(R1_image_lists[_index]);
-	if (_index < weight_lists.size())
-		strListWeight = dataPool::str2list(weight_lists[_index]);
+	
+	strListR0Real = dataPool::str2list(_R0_real_lists[_index]);
+	strListR0imag = dataPool::str2list(_R0_image_lists[_index]);
+	strListReturnLossType = dataPool::str2list(_return_loss_type_lists[_index]);
+	strListOptimaltype = dataPool::str2list(_optimal_type_lists[_index]);
+	strListDeltaReal = dataPool::str2list(_delta_real_lists[_index]);
+	strListDeltaImag = dataPool::str2list(_delta_image_lists[_index]);
+	strListVswrobj = dataPool::str2list(_vswr_obj_lists[_index]);
+	strListS11 = dataPool::str2list(_s11_obj_lists[_index]);
+	strListR1Real = dataPool::str2list(_R1_real_lists[_index]);
+	strListR1Imag = dataPool::str2list(_R1_image_lists[_index]);
+	strListWeight = dataPool::str2list(_weight_lists[_index]);
 
-	_loss_table->setRowCount(strListR0Real.length());
+	unsigned int length2 = strListR0Real.size();
+	if (strListR0imag.size() != length2 || strListReturnLossType.size() != length2 || strListOptimaltype.size() != length2
+		|| strListDeltaReal.size() != length2 || strListDeltaImag.size() != length2 || strListVswrobj.size() != length2
+		|| strListS11.size() != length2 || strListR1Real.size() != length2 || strListR1Imag.size() != length2
+		|| strListWeight.size() != length2) {
+		qCritical("问题json文件回波损失数据设置有误, 请仔细核对。");
+		return;
+	}
+	_loss_table->setRowCount(length2);
 	QList<int> line_edit_columns{ cz0real, cz0imag, cdeltareal, cdeltaimag, cobjreal, cobjimag, clossweight };
 	_loss_table->setItemDelegate(new lineEditDelegate(line_edit_columns));
 
-	for (int i = 0; i < strListR0Real.length(); i++) {
+	for (int i = 0; i < length2; i++) {
 		_loss_table->insert2table(i, cz0real, strListR0Real[i]);
 		_loss_table->insert2table(i, cz0imag, strListR0imag[i]);
 
@@ -231,6 +234,14 @@ bool lossTemplate::checkInputValid() {
 
 //update json obj
 void lossTemplate::updateJObj() {
+	unsigned int length = _R0_real_lists.size();
+	if (_R0_image_lists.size() != length || _return_loss_type_lists.size() != length || _optimal_type_lists.size() != length
+		|| _delta_real_lists.size() != length || _delta_image_lists.size() != length || _vswr_obj_lists.size() != length
+		|| _s11_obj_lists.size() != length || _R1_real_lists.size() != length || _R1_image_lists.size() != length
+		|| _weight_lists.size() != length || _index >= length) {
+		qCritical("<保存失败>问题json文件回波损失数据设置有误, 请仔细核对。");
+		return;
+	}
 	QJsonObject mloss_obj;
 	//update loss obj
 	QStringList lossStr[11];
@@ -287,17 +298,29 @@ void lossTemplate::updateJObj() {
 		}
 		lossStr[10] << _loss_table->item(i, clossweight)->text().trimmed();
 	}
-	mloss_obj.insert("R0_real", QString("[[%1]]").arg(lossStr[0].join(",")));
-	mloss_obj.insert("R0_imag", QString("[[%1]]").arg(lossStr[1].join(",")));
-	mloss_obj.insert("ReturnLossType", QString("[[%1]]").arg(lossStr[2].join(",")));
-	mloss_obj.insert("optimaltype_vswr", QString("[[%1]]").arg(lossStr[3].join(",")));
-	mloss_obj.insert("delta_real", QString("[[%1]]").arg(lossStr[4].join(",")));
-	mloss_obj.insert("delta_imag", QString("[[%1]]").arg(lossStr[5].join(",")));
-	mloss_obj.insert("vswrobj", QString("[[%1]]").arg(lossStr[6].join(",")));
-	mloss_obj.insert("S11", QString("[[%1]]").arg(lossStr[7].join(",")));
-	mloss_obj.insert("R1_real", QString("[[%1]]").arg(lossStr[8].join(",")));
-	mloss_obj.insert("R1_imag", QString("[[%1]]").arg(lossStr[9].join(",")));
-	mloss_obj.insert("weight_vswr", QString("[[%1]]").arg(lossStr[10].join(",")));
+	_R0_real_lists[_index] = QString("[%1]").arg(lossStr[0].join(","));
+	_R0_image_lists[_index] = QString("[%1]").arg(lossStr[1].join(","));
+	_return_loss_type_lists[_index] = QString("[%1]").arg(lossStr[2].join(","));
+	_optimal_type_lists[_index] = QString("[%1]").arg(lossStr[3].join(","));
+	_delta_real_lists[_index] = QString("[%1]").arg(lossStr[4].join(","));
+	_delta_image_lists[_index] = QString("[%1]").arg(lossStr[5].join(","));
+	_vswr_obj_lists[_index] = QString("[%1]").arg(lossStr[6].join(","));
+	_s11_obj_lists[_index] = QString("[%1]").arg(lossStr[7].join(","));
+	_R1_real_lists[_index] = QString("[%1]").arg(lossStr[8].join(","));
+	_R1_image_lists[_index] = QString("[%1]").arg(lossStr[9].join(","));
+	_weight_lists[_index] = QString("[%1]").arg(lossStr[10].join(","));
+
+	mloss_obj.insert("R0_real", QString("[%1]").arg(_R0_real_lists.join(",")));
+	mloss_obj.insert("R0_imag", QString("[%1]").arg(_R0_image_lists.join(",")));
+	mloss_obj.insert("ReturnLossType", QString("[%1]").arg(_return_loss_type_lists.join(",")));
+	mloss_obj.insert("optimaltype_vswr", QString("[%1]").arg(_optimal_type_lists.join(",")));
+	mloss_obj.insert("delta_real", QString("[%1]").arg(_delta_real_lists.join(",")));
+	mloss_obj.insert("delta_imag", QString("[%1]").arg(_delta_image_lists.join(",")));
+	mloss_obj.insert("vswrobj", QString("[%1]").arg(_vswr_obj_lists.join(",")));
+	mloss_obj.insert("S11", QString("[%1]").arg(_s11_obj_lists.join(",")));
+	mloss_obj.insert("R1_real", QString("[%1]").arg(_R1_real_lists.join(",")));
+	mloss_obj.insert("R1_imag", QString("[%1]").arg(_R1_image_lists.join(",")));
+	mloss_obj.insert("weight_vswr", QString("[%1]").arg(_weight_lists.join(",")));
 	_obj->insert("VSWRSetting", mloss_obj);
 }
 

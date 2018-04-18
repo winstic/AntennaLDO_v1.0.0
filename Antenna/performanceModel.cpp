@@ -5,7 +5,7 @@
 #include "performanceModel.h"
 
 performanceTab::performanceTab(parsProblem* atn_problem, unsigned int index, bool is_running, QWidget *parent)	: QDialog(parent),
-_atn_problem(atn_problem), _is_running(is_running) {
+_atn_problem(atn_problem), _is_running(is_running){
 	setWindowTitle("天线优化");
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 	//remove help menu

@@ -11,7 +11,7 @@ public:
 	void setModelData(QWidget *editor, QAbstractItemModel *model, const QModelIndex &index) const;
 
 private slots:
-	void slot_commitAndCloseEditor();
+	void slot_commitAndCloseEditor(QString);
 
 private:
 	iTemplate* _itemplate;

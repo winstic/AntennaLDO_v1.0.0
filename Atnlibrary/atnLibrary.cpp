@@ -111,6 +111,14 @@ void atnLibrary::newProject() {
 			if (_atn_problem->type == "HFSS") {
 				dir->mkdir(QString("%1/outhfsspath").arg(working_path));
 			}
+			if (_atn_problem->type == "FEKO") {
+				if (!dataPool::copyFile(QString("%1/%2.cfx").arg(_atn_problem->path).arg(_atn_problem->name),
+					QString("%1/outfilepath/%2.cfx").arg(working_path).arg(_atn_problem->name))) {
+					qCritical("缺失feko模型文件。");
+					QMessageBox::critical(0, QString("Error"), QString("缺失feko模型文件。"));
+					return;
+				}
+			}
 			//writen project file(.rel)
 			QFile inFile(working_path + "/" + rel_file);
 			inFile.open(QIODevice::WriteOnly);

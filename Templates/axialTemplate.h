@@ -44,4 +44,13 @@ public:
 	double _phi_end;
 	double _phi_step;
 	unsigned int _index;
+
+	QStringList _theta_lower_lists;
+	QStringList _theta_upper_lists;
+	QStringList _phi_lower_lists;
+	QStringList _phi_upper_lists;
+	QStringList _optimal_type_lists;
+	QStringList _delta_lists;
+	QStringList _axial_lists;
+	QStringList _weight_lists;
 };

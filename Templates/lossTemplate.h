@@ -34,4 +34,16 @@ public:
 	QLayout* _layout;
 	tableTemplate* _loss_table;
 	unsigned int _index;
+
+	QStringList _R0_real_lists;
+	QStringList _R0_image_lists;
+	QStringList _return_loss_type_lists;
+	QStringList _optimal_type_lists;
+	QStringList _delta_real_lists;
+	QStringList _delta_image_lists;
+	QStringList _vswr_obj_lists;
+	QStringList _s11_obj_lists;
+	QStringList _R1_real_lists;
+	QStringList _R1_image_lists;
+	QStringList _weight_lists;
 };

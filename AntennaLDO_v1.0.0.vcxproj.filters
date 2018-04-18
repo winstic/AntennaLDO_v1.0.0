@@ -1,4 +1,295 @@
-<?xml version="1.0" encoding="utf-8"?>
+﻿<?xml version="1.0" encoding="utf-8"?>
 <Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
-  <ItemGroup />
+  <ItemGroup>
+    <ClCompile Include="Antenna\problem.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_algorithmModel.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_algorithmTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_atnLibrary.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_axialTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_frequencyTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_gainAxialDelegateTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_gainTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_geometryModel.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_iTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_lineEditDelegateTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_lossTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_mainwindow.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_modeInfo.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_parallelTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_performanceModel.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_problemManage.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_projectWizard.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_QArelated.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_sliderTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_tableTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_thetaPhiTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_treeView.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_variablesTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_varsDefaultValueTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardAddSetting.cpp" />
+    <ClCompile Include="GeneratedFiles\Debug\moc_wizardIntroduce.cpp" />
+    <ClCompile Include="GeneratedFiles\qrc_mainwindow.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_algorithmModel.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_algorithmTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_atnLibrary.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_axialTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_frequencyTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_gainAxialDelegateTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_gainTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_geometryModel.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_iTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_lineEditDelegateTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_lossTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_mainwindow.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_modeInfo.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_parallelTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_performanceModel.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_problemManage.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_projectWizard.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_QArelated.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_sliderTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_tableTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_thetaPhiTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_treeView.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_variablesTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_varsDefaultValueTemplate.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardAddSetting.cpp" />
+    <ClCompile Include="GeneratedFiles\Release\moc_wizardIntroduce.cpp" />
+    <ClCompile Include="Antenna\algorithmModel.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Atnlibrary\antennaCell.cpp">
+      <Filter>Atnlibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Atnlibrary\atnLibrary.cpp">
+      <Filter>Atnlibrary</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\algorithmTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\axialTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\commonStyle.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\frequencyTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\gainAxialDelegateTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\gainTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\geometryModel.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\global.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\goRun.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\iTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\lineEditDelegateTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\lossTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\main.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\mainwindow.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\modelInfo.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\parallelTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Utility\parseJson.cpp">
+      <Filter>Utility</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\performanceModel.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\problemManage.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\QArelated.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Antenna\searchWidget.cpp">
+      <Filter>Antenna</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\projectWizard.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardAddSetting.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="Wizard\wizardIntroduce.cpp">
+      <Filter>Wizard</Filter>
+    </ClCompile>
+    <ClCompile Include="TreeView\treeView.cpp">
+      <Filter>TreeView</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\sliderTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\tableTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\thetaPhiTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\variablesTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+    <ClCompile Include="Templates\varsDefaultValueTemplate.cpp">
+      <Filter>Templates</Filter>
+    </ClCompile>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="Antenna\problem.h" />
+    <ClInclude Include="GeneratedFiles\ui_mainwindow.h" />
+    <ClInclude Include="Utility\aRun.h" />
+    <ClInclude Include="Utility\global.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\goRun.h">
+      <Filter>Antenna</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\initialization.h">
+      <Filter>Antenna</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\macrodefined.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Utility\parseJson.h">
+      <Filter>Utility</Filter>
+    </ClInclude>
+    <ClInclude Include="Antenna\searchWidget.h">
+      <Filter>Antenna</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <CustomBuild Include="Antenna\mainwindow.ui" />
+    <CustomBuild Include="Resources\mainwindow.qrc" />
+    <CustomBuild Include="Antenna\algorithmModel.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Atnlibrary\antennaCell.h">
+      <Filter>Atnlibrary</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Atnlibrary\atnLibrary.h">
+      <Filter>Atnlibrary</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\algorithmTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\axialTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Utility\commonStyle.h">
+      <Filter>Utility</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\frequencyTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\gainAxialDelegateTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\gainTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\geometryModel.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\iTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\lineEditDelegateTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\lossTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\mainwindow.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\modeInfo.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\parallelTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\performanceModel.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\problemManage.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Antenna\QArelated.h">
+      <Filter>Antenna</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\projectWizard.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardAddSetting.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Wizard\wizardIntroduce.h">
+      <Filter>Wizard</Filter>
+    </CustomBuild>
+    <CustomBuild Include="TreeView\treeView.h">
+      <Filter>TreeView</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\sliderTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\tableTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\thetaPhiTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\variablesTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+    <CustomBuild Include="Templates\varsDefaultValueTemplate.h">
+      <Filter>Templates</Filter>
+    </CustomBuild>
+  </ItemGroup>
+  <ItemGroup>
+    <ResourceCompile Include="Resources\AntennaLDO_v1.0.0.rc" />
+  </ItemGroup>
+  <ItemGroup>
+    <Image Include="Resources\AntennaLDO_v1.0.0.ico" />
+  </ItemGroup>
+  <ItemGroup>
+    <Filter Include="Antenna">
+      <UniqueIdentifier>{9e0c6c84-839c-4709-90d6-056c890cf3d6}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Atnlibrary">
+      <UniqueIdentifier>{b3dc3757-98b9-48e3-bbe9-cb89c597269a}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Templates">
+      <UniqueIdentifier>{d9f1036a-d7c5-4ba1-90d5-1cc6d2b595ea}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Utility">
+      <UniqueIdentifier>{97041f0f-a687-4f52-b0bc-959c350bbb57}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="TreeView">
+      <UniqueIdentifier>{6ce1a39e-1c30-46bf-ba28-9c7a237e585b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Wizard">
+      <UniqueIdentifier>{c15d0223-e416-4d0c-a157-9bd065478b60}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
 </Project>

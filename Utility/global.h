@@ -77,6 +77,6 @@ namespace dataPool{
 	};
 	bool copyFile(QString source_file, QString target_file, bool cover_file_if_exist = true);
 	QStringList str2list(QString str);
-	QStringList strlist2list(QString str);
+	QStringList stack2list(QString str);
 	QString getInfoFromRelFile(const QString &path, const QString &key);
 }

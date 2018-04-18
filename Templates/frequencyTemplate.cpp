@@ -53,24 +53,25 @@ void frequencyTemplate::initDefaultData() {
 	if (frequency_obj.isEmpty()) {
 		return;
 	}
-	QStringList fre_start_list, fre_end_list, fre_number_list, pm_list, sweep_type_list;
 	QString fre_start = "", fre_end = "", fre_number = "";
 	int pm_int = 0, sweep_type_int = 0;
-	fre_start_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
-	fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
-	fre_number_list = dataPool::str2list(frequency_obj.value("FreNumber").toString().trimmed());
-	pm_list = dataPool::str2list(frequency_obj.value("PM").toString().trimmed());
-	sweep_type_list = dataPool::str2list(frequency_obj.value("SweepType").toString().trimmed());
-	if (_index < fre_start_list.size())
-		fre_start = fre_start_list[_index];
-	if (_index < fre_end_list.size())
-		fre_end = fre_end_list[_index];
-	if (_index < fre_number_list.size())
-		fre_number = fre_number_list[_index];
-	if (_index < pm_list.size())
-		pm_int = pm_list[_index].toInt();
-	if (_index < sweep_type_list.size())
-		sweep_type_int = sweep_type_list[_index].toInt();
+	_fre_start_list = dataPool::str2list(frequency_obj.value("FreStart").toString().simplified());
+	_fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().simplified());
+	_fre_number_list = dataPool::str2list(frequency_obj.value("FreNumber").toString().simplified());
+	_pm_list = dataPool::str2list(frequency_obj.value("PM").toString().simplified());
+	_sweep_type_list = dataPool::str2list(frequency_obj.value("SweepType").toString().simplified());
+	unsigned int length = _fre_start_list.size();
+	if (_fre_end_list.size() != length || _fre_number_list.size() != length || _pm_list.size() != length
+		|| _sweep_type_list.size() != length || _index >= length) {
+		qCritical("问题json文件频率数据设置有误, 请仔细核对。");
+		return;
+	}
+
+	fre_start = _fre_start_list[_index];
+	fre_end = _fre_end_list[_index];
+	fre_number = _fre_number_list[_index];
+	pm_int = _pm_list[_index].toInt();
+	sweep_type_int = _sweep_type_list[_index].toInt();
 
 	_frequency_low_edit->setText(fre_start);
 	_frequency_up_edit->setText(fre_end);
@@ -142,12 +143,24 @@ bool frequencyTemplate::checkInputValid() {
 
 //update json obj
 void frequencyTemplate::updateJObj() {
+	unsigned int length = _fre_start_list.size();
+	if (_fre_end_list.size() != length || _fre_number_list.size() != length || _pm_list.size() != length
+		|| _sweep_type_list.size() != length || _index >= length) {
+		qCritical("<保存失败>问题json文件频率数据设置有误, 请仔细核对。");
+		return;
+	}
+	_fre_start_list[_index] = _frequency_low_edit->text().trimmed();
+	_fre_end_list[_index] = _frequency_up_edit->text().trimmed();
+	_fre_number_list[_index] = _frequency_num_edit->text().trimmed();
+	_pm_list[_index] = QString::number(_polarization_combox->currentIndex());
+	_sweep_type_list[_index] = QString::number(_sweep_type_combox->currentIndex());
+
 	QJsonObject mfrequency_obj;
-	mfrequency_obj.insert("FreStart", QString("[%1]").arg(_frequency_low_edit->text().trimmed()));
-	mfrequency_obj.insert("FreEnd", QString("[%1]").arg(_frequency_up_edit->text().trimmed()));
-	mfrequency_obj.insert("FreNumber", QString("[%1]").arg(_frequency_num_edit->text().trimmed()));
-	mfrequency_obj.insert("SweepType", QString("[%1]").arg(_sweep_type_combox->currentIndex()));
-	mfrequency_obj.insert("PM", QString("[%1]").arg(_polarization_combox->currentIndex()));
+	mfrequency_obj.insert("FreStart", QString("[%1]").arg(_fre_start_list.join(",")));
+	mfrequency_obj.insert("FreEnd", QString("[%1]").arg(_fre_end_list.join(",")));
+	mfrequency_obj.insert("FreNumber", QString("[%1]").arg(_fre_number_list.join(",")));
+	mfrequency_obj.insert("PM", QString("[%1]").arg(_pm_list.join(",")));
+	mfrequency_obj.insert("SweepType", QString("[%1]").arg(_sweep_type_list.join(",")));
 	_obj->insert("FreSetting", mfrequency_obj);
 }
 

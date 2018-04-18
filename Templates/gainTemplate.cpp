@@ -34,38 +34,42 @@ void gainTemplate::initDefaultData() {
 		return;
 	}
 	QSignalMapper* gain_signals_map = new QSignalMapper;
-	QStringList theta_lower_lists, theta_upper_lists, phi_lower_lists, phi_upper_lists, optimal_type_lists, delta_lists, gain_lists, weight_lists;
-	theta_lower_lists = dataPool::strlist2list(gain_obj.value("Theta_Lower_gain").toString());
-	theta_upper_lists = dataPool::strlist2list(gain_obj.value("Theta_Upper_gain").toString());
-	phi_lower_lists = dataPool::strlist2list(gain_obj.value("Phi_Lower_gain").toString());
-	phi_upper_lists = dataPool::strlist2list(gain_obj.value("Phi_Upper_gain").toString());
-	optimal_type_lists = dataPool::strlist2list(gain_obj.value("optimaltype_gain").toString());
-	delta_lists = dataPool::strlist2list(gain_obj.value("delta_gain").toString());
-	gain_lists = dataPool::strlist2list(gain_obj.value("gainobj").toString());
-	weight_lists = dataPool::strlist2list(gain_obj.value("weight_gain").toString());
+	_theta_lower_lists = dataPool::stack2list(gain_obj.value("Theta_Lower_gain").toString());
+	_theta_upper_lists = dataPool::stack2list(gain_obj.value("Theta_Upper_gain").toString());
+	_phi_lower_lists = dataPool::stack2list(gain_obj.value("Phi_Lower_gain").toString());
+	_phi_upper_lists = dataPool::stack2list(gain_obj.value("Phi_Upper_gain").toString());
+	_optimal_type_lists = dataPool::stack2list(gain_obj.value("optimaltype_gain").toString());
+	_delta_lists = dataPool::stack2list(gain_obj.value("delta_gain").toString());
+	_gain_lists = dataPool::stack2list(gain_obj.value("gainobj").toString());
+	_weight_lists = dataPool::stack2list(gain_obj.value("weight_gain").toString());
+	unsigned int length = _theta_lower_lists.size();
+	if (_theta_upper_lists.size() != length || _phi_lower_lists.size() != length || _phi_upper_lists.size() != length 
+		|| _optimal_type_lists.size() != length || _delta_lists.size() != length || _gain_lists.size() != length 
+		|| _weight_lists.size() != length || _index >= length) {
+		qCritical("问题json文件增益数据设置有误, 请仔细核对。");
+		return;
+	}
 
 	QStringList str_list_theta_lower, str_list_theta_upper, str_list_phi_lower, str_list_phi_upper, str_list_optimal_type,
 		str_list_delta, str_list_gain, str_list_weight;
 
-	if(_index < theta_lower_lists.size())
-		str_list_theta_lower = dataPool::str2list(theta_lower_lists[_index]);
-	if(_index < theta_upper_lists.size())
-		str_list_theta_upper = dataPool::str2list(theta_upper_lists[_index]);
-	if(_index < phi_lower_lists.size())
-		str_list_phi_lower = dataPool::str2list(phi_lower_lists[_index]);
-	if(_index < phi_upper_lists.size())
-		str_list_phi_upper = dataPool::str2list(phi_upper_lists[_index]);
-	if (_index < optimal_type_lists.size())
-		str_list_optimal_type = dataPool::str2list(optimal_type_lists[_index]);
-	if (_index < delta_lists.size())
-		str_list_delta = dataPool::str2list(delta_lists[_index]);
-	if (_index < gain_lists.size())
-		str_list_gain = dataPool::str2list(gain_lists[_index]);
-	if (_index < weight_lists.size())
-		str_list_weight = dataPool::str2list(weight_lists[_index]);
-
-	_gain_table->setRowCount(str_list_theta_lower.length());
-	for (int i = 0; i < str_list_theta_lower.length(); i++) {
+	str_list_theta_lower = dataPool::str2list(_theta_lower_lists[_index]);
+	str_list_theta_upper = dataPool::str2list(_theta_upper_lists[_index]);
+	str_list_phi_lower = dataPool::str2list(_phi_lower_lists[_index]);
+	str_list_phi_upper = dataPool::str2list(_phi_upper_lists[_index]);
+	str_list_optimal_type = dataPool::str2list(_optimal_type_lists[_index]);
+	str_list_delta = dataPool::str2list(_delta_lists[_index]);
+	str_list_gain = dataPool::str2list(_gain_lists[_index]);
+	str_list_weight = dataPool::str2list(_weight_lists[_index]);
+	unsigned int length2 = str_list_theta_lower.size();
+	if (str_list_theta_upper.size() != length2 || str_list_phi_lower.size() != length2 || str_list_phi_upper.size() != length2
+		|| str_list_optimal_type.size() != length2 || str_list_delta.size() != length2 || str_list_gain.size() != length2
+		|| str_list_weight.size() != length2) {
+		qCritical("问题json文件增益数据设置有误, 请仔细核对。");
+		return;
+	}
+	_gain_table->setRowCount(length2);
+	for (int i = 0; i < length2; i++) {
 		_gain_table->insert2table(i, cthetalower, str_list_theta_lower[i]);
 		_gain_table->insert2table(i, cthetaupper, str_list_theta_upper[i]);
 		_gain_table->insert2table(i, cphilower, str_list_phi_lower[i]);
@@ -225,6 +229,13 @@ bool gainTemplate::checkInputValid() {
 
 //update json obj
 void gainTemplate::updateJObj() {
+	unsigned int length = _theta_lower_lists.size();
+	if (_theta_upper_lists.size() != length || _phi_lower_lists.size() != length || _phi_upper_lists.size() != length
+		|| _optimal_type_lists.size() != length || _delta_lists.size() != length || _gain_lists.size() != length
+		|| _weight_lists.size() != length || _index >= length) {
+		qCritical("<保存失败>问题json文件增益数据设置有误, 请仔细核对。");
+		return;
+	}
 	QJsonObject mgain_obj;
 	int i;
 	//update gain obj
@@ -248,14 +259,23 @@ void gainTemplate::updateJObj() {
 		gain_str[6] << _gain_table->item(i, cobjvalue)->text().trimmed();
 		gain_str[7] << _gain_table->item(i, cweight)->text().trimmed();
 	}
-	mgain_obj.insert("Theta_Lower_gain", QString("[[%1]]").arg(gain_str[0].join(",")));
-	mgain_obj.insert("Theta_Upper_gain", QString("[[%1]]").arg(gain_str[1].join(",")));
-	mgain_obj.insert("Phi_Lower_gain", QString("[[%1]]").arg(gain_str[2].join(",")));
-	mgain_obj.insert("Phi_Upper_gain", QString("[[%1]]").arg(gain_str[3].join(",")));
-	mgain_obj.insert("optimaltype_gain", QString("[[%1]]").arg(gain_str[4].join(",")));
-	mgain_obj.insert("delta_gain", QString("[[%1]]").arg(gain_str[5].join(",")));
-	mgain_obj.insert("gainobj", QString("[[%1]]").arg(gain_str[6].join(",")));
-	mgain_obj.insert("weight_gain", QString("[[%1]]").arg(gain_str[7].join(",")));
+	_theta_lower_lists[_index] = QString("[%1]").arg(gain_str[0].join(","));
+	_theta_upper_lists[_index] = QString("[%1]").arg(gain_str[1].join(","));
+	_phi_lower_lists[_index] = QString("[%1]").arg(gain_str[2].join(","));
+	_phi_upper_lists[_index] = QString("[%1]").arg(gain_str[3].join(","));
+	_optimal_type_lists[_index] = QString("[%1]").arg(gain_str[4].join(","));
+	_delta_lists[_index] = QString("[%1]").arg(gain_str[5].join(","));
+	_gain_lists[_index] = QString("[%1]").arg(gain_str[6].join(","));
+	_weight_lists[_index] = QString("[%1]").arg(gain_str[7].join(","));
+
+	mgain_obj.insert("Theta_Lower_gain", QString("[%1]").arg(_theta_lower_lists.join(",")));
+	mgain_obj.insert("Theta_Upper_gain", QString("[%1]").arg(_theta_upper_lists.join(",")));
+	mgain_obj.insert("Phi_Lower_gain", QString("[%1]").arg(_phi_lower_lists.join(",")));
+	mgain_obj.insert("Phi_Upper_gain", QString("[%1]").arg(_phi_upper_lists.join(",")));
+	mgain_obj.insert("optimaltype_gain", QString("[%1]").arg(_optimal_type_lists.join(",")));
+	mgain_obj.insert("delta_gain", QString("[%1]").arg(_delta_lists.join(",")));
+	mgain_obj.insert("gainobj", QString("[%1]").arg(_gain_lists.join(",")));
+	mgain_obj.insert("weight_gain", QString("[%1]").arg(_weight_lists.join(",")));
 	_obj->insert("GainSetting", mgain_obj);
 }
 

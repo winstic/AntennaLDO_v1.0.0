@@ -65,7 +65,7 @@ void registerProblems(QString text_file, QString DEA4AD_path) {
 					//设置默认频率为最大频点（如果有）
 					QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(tmp.path).arg(tmp.name));
 					QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
-					QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().trimmed());
+					QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().simplified());
 					double fre_end = 0.01;
 					for (int i = 0; i < fre_end_list.size(); ++i) {
 						if (fre_end < fre_end_list[i].toDouble())

@@ -4,7 +4,7 @@
 #include "thetaPhiTemplate.h"
 
 thetaPhiTemplate::thetaPhiTemplate(parsProblem* atn_problem, QJsonObject* obj, unsigned int index, iTemplate *parent) : iTemplate(parent),
-_atn_problem(atn_problem), _obj(obj){
+_atn_problem(atn_problem), _obj(obj), _index(index) {
 
 	_far_field_table = new tableTemplate(this);
 	_far_field_table->setColumnCount(6);
@@ -67,19 +67,26 @@ void thetaPhiTemplate::initDefaultData() {
 	}
 	_far_field_table->setRowCount(1);
 
-	QStringList str_list;
-	str_list = dataPool::str2list(far_field_obj.value("ThetaLower").toString().trimmed());
-	_theta_low_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(far_field_obj.value("ThetaUpper").toString().trimmed());
-	_theta_up_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(far_field_obj.value("ThetaStep").toString().trimmed());
-	_theta_step_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(far_field_obj.value("PhiLower").toString().trimmed());
-	_phi_low_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(far_field_obj.value("PhiUpper").toString().trimmed());
-	_phi_up_edit->setText(str_list[0]);
-	str_list = dataPool::str2list(far_field_obj.value("PhiStep").toString().trimmed());
-	_phi_step_edit->setText(str_list[0]);
+	_theta_low_list = dataPool::str2list(far_field_obj.value("ThetaLower").toString().simplified());
+	_theta_up_list = dataPool::str2list(far_field_obj.value("ThetaUpper").toString().simplified());
+	_theta_step_list = dataPool::str2list(far_field_obj.value("ThetaStep").toString().simplified());
+	_phi_low_list = dataPool::str2list(far_field_obj.value("PhiLower").toString().simplified());
+	_phi_up_list = dataPool::str2list(far_field_obj.value("PhiUpper").toString().simplified());
+	_phi_step_list = dataPool::str2list(far_field_obj.value("PhiStep").toString().simplified());
+	unsigned int length = _theta_low_list.size();
+	if (_theta_up_list.size() != length || _theta_step_list.size() != length || _phi_low_list.size() != length
+		|| _phi_up_list.size() != length || _phi_step_list.size() != length || _index >= length) {
+		qCritical("问题json文件远场范围数据设置有误, 请仔细核对。");
+		return;
+	}
+	
+	_theta_low_edit->setText(_theta_low_list[_index]);
+	_theta_up_edit->setText(_theta_up_list[_index]);
+	_theta_step_edit->setText(_theta_step_list[_index]);
+	_phi_low_edit->setText(_phi_low_list[_index]);
+	_phi_up_edit->setText(_phi_up_list[_index]);
+	_phi_step_edit->setText(_phi_step_list[_index]);
+
 	_far_field_table->setCellWidget(0, fthetastart, _theta_low_edit);
 	_far_field_table->setCellWidget(0, fthetaend, _theta_up_edit);
 	_far_field_table->setCellWidget(0, fthetastep, _theta_step_edit);
@@ -167,13 +174,26 @@ bool thetaPhiTemplate::checkInputValid() {
 
 //update json obj
 void thetaPhiTemplate::updateJObj() {
+	unsigned int length = _theta_low_list.size();
+	if (_theta_up_list.size() != length || _theta_step_list.size() != length || _phi_low_list.size() != length
+		|| _phi_up_list.size() != length || _phi_step_list.size() != length || _index >= length) {
+		qCritical("<保存失败>问题json文件远场范围数据设置有误, 请仔细核对。");
+		return;
+	}
+	_theta_low_list[_index] = _theta_low_edit->text().trimmed();
+	_theta_up_list[_index] = _theta_up_edit->text().trimmed();
+	_theta_step_list[_index] = _theta_step_edit->text().trimmed();
+	_phi_low_list[_index] = _phi_low_edit->text().trimmed();
+	_phi_up_list[_index] = _phi_up_edit->text().trimmed();
+	_phi_step_list[_index] = _phi_step_edit->text().trimmed();
+
 	QJsonObject mfar_fiel_obj;
-	mfar_fiel_obj.insert("ThetaLower", QString("[%1]").arg(_theta_low_edit->text().trimmed()));
-	mfar_fiel_obj.insert("ThetaUpper", QString("[%1]").arg(_theta_up_edit->text().trimmed()));
-	mfar_fiel_obj.insert("ThetaStep", QString("[%1]").arg(_theta_step_edit->text().trimmed()));
-	mfar_fiel_obj.insert("PhiLower", QString("[%1]").arg(_phi_low_edit->text().trimmed()));
-	mfar_fiel_obj.insert("PhiUpper", QString("[%1]").arg(_phi_up_edit->text().trimmed()));
-	mfar_fiel_obj.insert("PhiStep", QString("[%1]").arg(_phi_step_edit->text().trimmed()));
+	mfar_fiel_obj.insert("ThetaLower", QString("[%1]").arg(_theta_low_list.join(",")));
+	mfar_fiel_obj.insert("ThetaUpper", QString("[%1]").arg(_theta_up_list.join(",")));
+	mfar_fiel_obj.insert("ThetaStep", QString("[%1]").arg(_theta_step_list.join(",")));
+	mfar_fiel_obj.insert("PhiLower", QString("[%1]").arg(_phi_low_list.join(",")));
+	mfar_fiel_obj.insert("PhiUpper", QString("[%1]").arg(_phi_up_list.join(",")));
+	mfar_fiel_obj.insert("PhiStep", QString("[%1]").arg(_phi_step_list.join(",")));
 	_obj->insert("ThetaPhiStep", mfar_fiel_obj);
 }
 

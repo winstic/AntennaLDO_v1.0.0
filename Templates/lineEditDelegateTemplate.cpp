@@ -15,7 +15,7 @@ QWidget* lineEditDelegate::createEditor(QWidget* parent, const QStyleOptionViewI
 		QLineEdit *edit = new QLineEdit(parent);
 		QRegExpValidator* floatValidReg = _itemplate->getFloatReg();    //float
 		edit->setValidator(floatValidReg);
-		connect(edit, SIGNAL(textChanged()), this, SLOT(slot_commitAndCloseEditor()));
+		connect(edit, SIGNAL(textChanged(QString)), this, SLOT(slot_commitAndCloseEditor(QString)));
 		return edit;
 	}
 	else {
@@ -45,7 +45,7 @@ void lineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 	}
 }
 
-void lineEditDelegate::slot_commitAndCloseEditor() {
+void lineEditDelegate::slot_commitAndCloseEditor(QString) {
 	QLineEdit *edit = qobject_cast<QLineEdit *>(sender());
 	emit commitData(edit);
 	emit closeEditor(edit);

@@ -33,37 +33,43 @@ void axialTemplate::initDefaultData() {
 		return;
 	}
 	QSignalMapper* axial_signals_map = new QSignalMapper;
-	QStringList theta_lower_lists, theta_upper_lists, phi_lower_lists, phi_upper_lists, optimal_type_lists, delta_lists, axial_lists, weight_lists;
-	theta_lower_lists = dataPool::strlist2list(axial_obj.value("Theta_Lower_axial").toString());
-	theta_upper_lists = dataPool::strlist2list(axial_obj.value("Theta_Upper_axial").toString());
-	phi_lower_lists = dataPool::strlist2list(axial_obj.value("Phi_Lower_axial").toString());
-	phi_upper_lists = dataPool::strlist2list(axial_obj.value("Phi_Upper_axial").toString());
-	optimal_type_lists = dataPool::strlist2list(axial_obj.value("optimaltype_axial").toString());
-	delta_lists = dataPool::strlist2list(axial_obj.value("delta_axial").toString());
-	axial_lists = dataPool::strlist2list(axial_obj.value("axialobj").toString());
-	weight_lists = dataPool::strlist2list(axial_obj.value("weight_axial").toString());
-
+	//利用栈结构解析
+	_theta_lower_lists = dataPool::stack2list(axial_obj.value("Theta_Lower_axial").toString());
+	_theta_upper_lists = dataPool::stack2list(axial_obj.value("Theta_Upper_axial").toString());
+	_phi_lower_lists = dataPool::stack2list(axial_obj.value("Phi_Lower_axial").toString());
+	_phi_upper_lists = dataPool::stack2list(axial_obj.value("Phi_Upper_axial").toString());
+	_optimal_type_lists = dataPool::stack2list(axial_obj.value("optimaltype_axial").toString());
+	_delta_lists = dataPool::stack2list(axial_obj.value("delta_axial").toString());
+	_axial_lists = dataPool::stack2list(axial_obj.value("axialobj").toString());
+	_weight_lists = dataPool::stack2list(axial_obj.value("weight_axial").toString());
+	unsigned int length = _theta_lower_lists.size();
+	if (_theta_upper_lists.size() != length || _phi_lower_lists.size() != length || _phi_upper_lists.size() != length 
+		|| _optimal_type_lists.size() != length || _delta_lists.size() != length || _axial_lists.size() != length 
+		|| _weight_lists.size() != length || _index >= length) {
+		qCritical("问题json文件轴比数据设置有误, 请仔细核对。");
+		return;
+	}
+	
 	QStringList str_list_theta_lower, str_list_theta_upper, str_list_phi_lower, str_list_phi_upper, str_list_optimal_type,
 		str_list_delta, str_list_axial, str_list_weight;
-	if (_index < theta_lower_lists.size())
-		str_list_theta_lower = dataPool::str2list(theta_lower_lists[_index]);
-	if (_index < theta_upper_lists.size())
-		str_list_theta_upper = dataPool::str2list(theta_upper_lists[_index]);
-	if (_index < phi_lower_lists.size())
-		str_list_phi_lower = dataPool::str2list(phi_lower_lists[_index]);
-	if (_index < phi_upper_lists.size())
-		str_list_phi_upper = dataPool::str2list(phi_upper_lists[_index]);
-	if (_index < optimal_type_lists.size())
-		str_list_optimal_type = dataPool::str2list(optimal_type_lists[_index]);
-	if (_index < delta_lists.size())
-		str_list_delta = dataPool::str2list(delta_lists[_index]);
-	if (_index < axial_lists.size())
-		str_list_axial = dataPool::str2list(axial_lists[_index]);
-	if (_index < weight_lists.size())
-		str_list_weight = dataPool::str2list(weight_lists[_index]);
-
-	_axial_table->setRowCount(str_list_theta_lower.length());
-	for (int i = 0; i < str_list_theta_lower.length(); i++) {
+	str_list_theta_lower = dataPool::str2list(_theta_lower_lists[_index]);
+	str_list_theta_upper = dataPool::str2list(_theta_upper_lists[_index]);
+	str_list_phi_lower = dataPool::str2list(_phi_lower_lists[_index]);
+	str_list_phi_upper = dataPool::str2list(_phi_upper_lists[_index]);
+	str_list_optimal_type = dataPool::str2list(_optimal_type_lists[_index]);
+	str_list_delta = dataPool::str2list(_delta_lists[_index]);
+	str_list_axial = dataPool::str2list(_axial_lists[_index]);
+	str_list_weight = dataPool::str2list(_weight_lists[_index]);
+	
+	unsigned int length2 = str_list_theta_lower.size();
+	if (str_list_theta_upper.size() != length2 || str_list_phi_lower.size() != length2 || str_list_phi_upper.size() != length2
+		|| str_list_optimal_type.size() != length2 || str_list_delta.size() != length2 || str_list_axial.size() != length2
+		|| str_list_weight.size() != length2) {
+		qCritical("问题json文件轴比数据设置有误, 请仔细核对。");
+		return;
+	}
+	_axial_table->setRowCount(length2);
+	for (int i = 0; i < length2; i++) {
 		_axial_table->insert2table(i, cthetalower, str_list_theta_lower[i]);
 		_axial_table->insert2table(i, cthetaupper, str_list_theta_upper[i]);
 		_axial_table->insert2table(i, cphilower, str_list_phi_lower[i]);
@@ -216,6 +222,13 @@ bool axialTemplate::checkInputValid() {
 
 //update json obj
 void axialTemplate::updateJObj() {
+	unsigned int length = _theta_lower_lists.size();
+	if (_theta_upper_lists.size() != length || _phi_lower_lists.size() != length || _phi_upper_lists.size() != length
+		|| _optimal_type_lists.size() != length || _delta_lists.size() != length || _axial_lists.size() != length
+		|| _weight_lists.size() != length || _index >= length) {
+		qCritical("<保存失败>问题json文件轴比数据设置有误, 请仔细核对。");
+		return;
+	}
 	QJsonObject maxial_obj;
 	//update axial obj
 	QStringList axialStr[8];
@@ -238,14 +251,23 @@ void axialTemplate::updateJObj() {
 		axialStr[6] << _axial_table->item(i, cobjvalue)->text().trimmed();
 		axialStr[7] << _axial_table->item(i, cweight)->text().trimmed();
 	}
-	maxial_obj.insert("Theta_Lower_axial", QString("[[%1]]").arg(axialStr[0].join(",")));
-	maxial_obj.insert("Theta_Upper_axial", QString("[[%1]]").arg(axialStr[1].join(",")));
-	maxial_obj.insert("Phi_Lower_axial", QString("[[%1]]").arg(axialStr[2].join(",")));
-	maxial_obj.insert("Phi_Upper_axial", QString("[[%1]]").arg(axialStr[3].join(",")));
-	maxial_obj.insert("optimaltype_axial", QString("[[%1]]").arg(axialStr[4].join(",")));
-	maxial_obj.insert("delta_axial", QString("[[%1]]").arg(axialStr[5].join(",")));
-	maxial_obj.insert("axialobj", QString("[[%1]]").arg(axialStr[6].join(",")));
-	maxial_obj.insert("weight_axial", QString("[[%1]]").arg(axialStr[7].join(",")));
+	_theta_lower_lists[_index] = QString("[%1]").arg(axialStr[0].join(","));
+	_theta_upper_lists[_index] = QString("[%1]").arg(axialStr[1].join(","));
+	_phi_lower_lists[_index] = QString("[%1]").arg(axialStr[2].join(","));
+	_phi_upper_lists[_index] = QString("[%1]").arg(axialStr[3].join(","));
+	_optimal_type_lists[_index] = QString("[%1]").arg(axialStr[4].join(","));
+	_delta_lists[_index] = QString("[%1]").arg(axialStr[5].join(","));
+	_axial_lists[_index] = QString("[%1]").arg(axialStr[6].join(","));
+	_weight_lists[_index] = QString("[%1]").arg(axialStr[7].join(","));
+
+	maxial_obj.insert("Theta_Lower_axial", QString("[%1]").arg(_theta_lower_lists.join(",")));
+	maxial_obj.insert("Theta_Upper_axial", QString("[%1]").arg(_theta_upper_lists.join(",")));
+	maxial_obj.insert("Phi_Lower_axial", QString("[%1]").arg(_phi_lower_lists.join(",")));
+	maxial_obj.insert("Phi_Upper_axial", QString("[%1]").arg(_phi_upper_lists.join(",")));
+	maxial_obj.insert("optimaltype_axial", QString("[%1]").arg(_optimal_type_lists.join(",")));
+	maxial_obj.insert("delta_axial", QString("[%1]").arg(_delta_lists.join(",")));
+	maxial_obj.insert("axialobj", QString("[%1]").arg(_axial_lists.join(",")));
+	maxial_obj.insert("weight_axial", QString("[%1]").arg(_weight_lists.join(",")));
 	_obj->insert("AxialratioSetting", maxial_obj);
 }
 
