@@ -93,7 +93,7 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 }
 
 //外部接口
-bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *item, const QStandardItem *child) {
+bool treeModel::updateXMLFile(const QString &file_name, const QString &node_attribute, const QStandardItem *item, const QString &oper) {
 	//!get xml root node
 	QFile in_file(file_name);
 	if (!in_file.open(QFile::ReadOnly | QFile::Text)) {
@@ -114,23 +114,22 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 		return false;
 	}
 	//!
-	
-	QDomNode root_child = xml_root.firstChild();
-	QDomElement root_child_element;
-	while (!root_child.isNull()) {
-		root_child_element = root_child.toElement();
-		if (("node" == root_child_element.tagName()) && root_child_element.hasAttribute("flag")) {
-			if (MARK_NODE_DESIGN == item->data(ROLE_MARK_NODE) && "performance" == root_child_element.attribute("flag")) {
-				QDomElement design_element = doc.createElement("item");
-				QDomText design_text = doc.createTextNode(child->text());
-				design_element.appendChild(design_text);
-				root_child_element.appendChild(design_element);
-				break;
-			}
-		}
-		root_child = root_child.nextSibling();
+	QDomElement target;
+	findXMLNodeElement(xml_root, target, node_attribute);
+	if (target.isNull()) {
+		qCritical("没有找到待插入的node结点（结点属性值不对应，请检查xml文件中具体的flag值）。");
+		return false;
 	}
-
+	if (oper == "i") {
+		QDomElement add_element = doc.createElement("item");
+		QDomText add_text = doc.createTextNode(item->text());
+		add_element.appendChild(add_text);
+		target.appendChild(add_element);
+	}
+	if (oper == "d") {
+		target.removeChild(target.lastChild());
+	}
+	
 
 	QFile out_file(file_name);
 	if (!out_file.open(QIODevice::WriteOnly))
@@ -138,8 +137,24 @@ bool treeModel::updateXMLFile(const QString &file_name, const QStandardItem *ite
 	QTextStream out(&out_file);
 	out.setCodec("utf-8");
 	doc.save(out, 4);
-	qInfo("update something in xml file.");
 	return true;
+}
+void treeModel::findXMLNodeElement(QDomElement &element, QDomElement &target, const QString &node_attribute){	
+	//traverse node
+	QDomNode child = element.firstChild();
+	QDomElement child_element;
+	while (!child.isNull()) {
+		child_element = child.toElement();
+		QString test1 = child_element.tagName();
+		if ((child_element.tagName().compare("node") == 0) && child_element.hasAttribute("flag")) {
+			QString test_flag = child_element.attribute("flag");
+			if(child_element.attribute("flag").compare(node_attribute) == 0)
+				target = child_element;
+			else
+				findXMLNodeElement(child_element, target, node_attribute);
+		}
+		child = child.nextSibling();
+	}
 }
 
 //外部接口
@@ -263,9 +278,10 @@ void treeModel::initMenu() {
 	act_design_del->setEnabled(false);
 
 	QAction* act_performance_add = new QAction("新增", _pro_tree);
-	act_performance_add->setEnabled(false);
+	connect(act_performance_add, &QAction::triggered, this, &treeModel::slot_addPerFormanceSetting);
 
 	QAction* act_performance_item_del = new QAction("删除", _pro_tree);
+	connect(act_performance_item_del, &QAction::triggered, this, &treeModel::slot_delPerFormanceSetting);
 
 	_project_menu->addAction(act_close);
 	_project_menu->addAction(act_del);
@@ -383,6 +399,48 @@ void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
 
 void treeModel::slot_clicked(const QModelIndex& item_index) {
 	_curr_item_index = const_cast<QModelIndex*>(&item_index);
+}
+
+void treeModel::slot_addPerFormanceSetting() {
+	QStandardItemModel *itemModel = const_cast<QStandardItemModel *>(
+		static_cast<const QStandardItemModel *>(_curr_item_index->model()));
+	QStandardItem *item = itemModel->itemFromIndex(*_curr_item_index);
+	QVariant var_node = (*_curr_item_index).data(ROLE_MARK_NODE);
+	if (var_node.isValid()) {
+		if (var_node.toInt() == MARK_NODE_PERFORMANCE) {
+			QString performance_name = QString("频段%1").arg(item->rowCount() + 1);
+			QStandardItem *child = new QStandardItem(_icon_map[QStringLiteral("treeItem")], performance_name);
+			child->setData(MARK_ITEM, ROLE_MARK);
+			child->setData(MARK_ITEM_PERFORMANCEDESIGN, ROLE_MARK_ITEM);
+			item->appendRow(child);
+			if (updateXMLFile(QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName()), "performance", child, "i")) {
+				qInfo("更新工程目录结构到xml文件。");
+				//添加频段后，更新问题json文件，默认复制上次设计的数据
+			}
+			else {
+				qCritical("更新工程目录结构到xml文件失败。");
+			}
+		}
+	}
+}
+
+void treeModel::slot_delPerFormanceSetting() {
+	QStandardItemModel *itemModel = const_cast<QStandardItemModel *>(
+		static_cast<const QStandardItemModel *>(_curr_item_index->model()));
+	QStandardItem *item = itemModel->itemFromIndex(*_curr_item_index);
+	QStandardItem *del_parent = item->parent();
+	int counts = del_parent->rowCount();
+	int del_row = _curr_item_index->row();
+	if (counts <= 1) {
+		qWarning("必须设置频段，只有一个频段参数不能删除");
+		return;
+	}
+	//删除时每次将最后的一个编号删除，以此来同步工程树结构下的编号
+	del_parent->removeRow(counts- 1);
+	if (updateXMLFile(QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName()), "performance", item, "d"))
+		qInfo("更新工程目录结构到xml文件。");
+	else
+		qCritical("更新工程目录结构到xml文件失败。");
 }
 
 void treeModel::slot_run() {

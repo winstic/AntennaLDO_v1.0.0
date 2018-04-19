@@ -16,7 +16,8 @@ class treeModel : public QTreeView {
 public:
 	explicit treeModel(QWidget* parent = 0);
 	QTreeView* getTreeWidget();
-	bool updateXMLFile(const QString &fileName, const QStandardItem *item, const QStandardItem *child);
+	//oper = "i" means add new item; oper = "d" means delete item;
+	bool updateXMLFile(const QString &file_name, const QString &node_attribute, const QStandardItem *item, const QString &oper);
 	bool parseXML(const QString& file_name, parsProblem* atn_problem);
 	~treeModel() {}
 
@@ -25,6 +26,7 @@ private:
 	void parseNodeElement(const QDomElement &element, QStandardItem *parent);
 	void parseItemElement(const QDomElement &element, QStandardItem *parent);	
 	bool writeXMLFile(const QString& file_name, parsProblem* atn_problem);
+	void findXMLNodeElement(QDomElement &element, QDomElement &target, const QString &node_attribute);
 
 	void initMenu();
 	void initIcon();
@@ -44,6 +46,8 @@ public slots:
 	void slot_hideAll();
 	void slot_stopRun();
 	void slot_run();
+	void slot_addPerFormanceSetting();
+	void slot_delPerFormanceSetting();
 	
 
 	//实时读取标准输出
