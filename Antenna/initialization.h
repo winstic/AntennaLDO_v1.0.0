@@ -1,5 +1,6 @@
 ﻿#pragma once
 #pragma execution_character_set("utf-8")
+#include <QtAlgorithms>
 #include "../Utility/macrodefined.h"
 #include "../Utility/global.h"
 #include "../Utility/parseJson.h"
@@ -85,6 +86,9 @@ void registerProblems(QString text_file, QString DEA4AD_path) {
 		line = in.readLine();
 	}
 	file.close();
+	qSort(dataPool::global::g_problems.begin(), 
+		dataPool::global::g_problems.end(),
+		[](parsProblem a, parsProblem b) {return a.name.toUpper() < b.name.toUpper(); });
 }
 
 void registerAlgorithms(QString text_file, QString DEA4AD_path) {
@@ -152,6 +156,9 @@ void registerAlgorithms(QString text_file, QString DEA4AD_path) {
 		line = in.readLine();
 	}
 	file.close();
+	qSort(dataPool::global::g_algorithms.begin(),
+		dataPool::global::g_algorithms.end(),
+		[](parsAlgorithm a, parsAlgorithm b) {return a.name.toUpper() < b.name.toUpper(); });
 }
 
 /*void setProblemParameters(QJsonObject& obj) {		
