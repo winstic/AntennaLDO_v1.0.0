@@ -28,6 +28,9 @@ private:
 	bool writeXMLFile(const QString& file_name, parsProblem* atn_problem);
 	void findXMLNodeElement(QDomElement &element, QDomElement &target, const QString &node_attribute);
 
+	bool addDelAntennaPerformanceCore(QJsonObject& obj, const QStringList fre_end_list, const int flag, const QString oper, const int index = -1);
+	void addDelAntennaPerformance(const QString oper, const int index = -1);
+
 	void initMenu();
 	void initIcon();
 
