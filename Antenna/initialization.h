@@ -66,13 +66,18 @@ void registerProblems(QString text_file, QString DEA4AD_path) {
 					//设置默认频率为最大频点（如果有）
 					QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(tmp.path).arg(tmp.name));
 					QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
+					QStringList fre_start_list = dataPool::str2list(frequency_obj.value("FreStart").toString().simplified());
 					QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().simplified());
-					double fre_end = 0.01;
-					for (int i = 0; i < fre_end_list.size(); ++i) {
-						if (fre_end < fre_end_list[i].toDouble())
-							fre_end = fre_end_list[i].toDouble();
+					int length = fre_start_list.size();
+					if (fre_end_list.size() != length) {
+						qCritical("%s天线问题json文件频率数据设置有误, 请仔细核对。", qUtf8Printable(name));
+						return;
 					}
-					tmp.max_frequency = fre_end;
+					for (int i = 0; i < length; ++i) {
+						freRange fr(fre_start_list[i].toDouble(), fre_end_list[i].toDouble());
+						tmp.frequencyRanges.append(fr);
+					}
+					tmp.fillMaxFrequency();
 					dataPool::global::g_problems.push_back(tmp);
 				}
 				else {
@@ -197,13 +202,17 @@ void setProNdAlgAssociateParameters(QJsonObject& obj) {
 	QJsonObject mbind_obj;
 	for (QJsonObject::iterator iter = obj.begin(); iter != obj.end(); ++iter) {
 		mbind_obj = iter.value().toObject();
-		QString alg_name = mbind_obj.value("algorithm").toString().trimmed();
-		QString pro_name = mbind_obj.value("problem").toString().trimmed();
+		QString alg_name = mbind_obj.value("algorithm").toString().simplified();
+		QString pro_name = mbind_obj.value("problem").toString().simplified();
 		parsAlgorithm* algorithm = dataPool::global::getAlgorithmByName(alg_name);
 		parsProblem* problem = dataPool::global::getProblemByName(pro_name);
-		if(algorithm->oper == "i" && problem->oper == "i")
+		if (problem == nullptr || algorithm == nullptr) {
+			continue;
+		}
+		if (algorithm->oper == "i" && problem->oper == "i") {
 			massociate = qMakePair(alg_name, pro_name);
-		dataPool::global::g_associates[massociate] = iter.key();
+			dataPool::global::g_associates[massociate] = iter.key();
+		}
 	}
 }
 

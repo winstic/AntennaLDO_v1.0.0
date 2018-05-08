@@ -106,7 +106,7 @@ void performanceTab::slot_confirmButton(bool) {
 
 
 	if (parseJson::write(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name), &_problem_obj))
-		this->close();
+		this->accept();
 	else {
 		qCritical("save failed in freformance tabWidget.");
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
@@ -114,7 +114,7 @@ void performanceTab::slot_confirmButton(bool) {
 }
 
 void performanceTab::slot_cancelButton(bool) {
-	this->close();
+	this->reject();
 }
 
 performanceTab::~performanceTab() {

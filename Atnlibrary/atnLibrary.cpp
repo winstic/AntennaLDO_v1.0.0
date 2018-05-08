@@ -87,10 +87,12 @@ void atnLibrary::newProject() {
 			QString project_name = dataPool::global::getGProjectName();
 
 			QString rel_file = QString("%1.rel").arg(project_name);
+			QString default_spec_path = QString("%1/Spec1").arg(working_path);
 
 			//create project dir
 			QDir *dir = new QDir();
 			dir->mkdir(working_path);
+			dir->mkdir(default_spec_path);
 
 			if (! dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()),
 				QString("%1/global_conf.json").arg(working_path))) {
@@ -126,14 +128,14 @@ void atnLibrary::newProject() {
 			out << PROBLEM_NAME << ":" << _atn_problem->name << endl;			
 			inFile.close();
 		
-			QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(working_path));
+			QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
 			if (global_obj.isEmpty()) {
 				return;
 			}
 			global_obj.insert("PROBLEM_NAME", _atn_problem->name);
 			global_obj.insert("outfilepath", QString("%1/outfilepath").arg(dataPool::global::getGWorkingProjectPath()));
 			global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(dataPool::global::getGWorkingProjectPath()));
-			if (!parseJson::write(QString("%1/global_conf.json").arg(working_path), &global_obj)){
+			if (!parseJson::write(dataPool::global::getGCurrentGlobalJsonPath(), &global_obj)){
 				qCritical("save failed in global json.");
 				QMessageBox::critical(0, QString("Error"), QString("global_json 格式错误。"));
 				delete dir;

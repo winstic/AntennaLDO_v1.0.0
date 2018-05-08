@@ -29,7 +29,9 @@ private:
 	void findXMLNodeElement(QDomElement &element, QDomElement &target, const QString &node_attribute);
 
 	bool addDelAntennaPerformanceCore(QJsonObject& obj, const QStringList fre_end_list, const int flag, const QString oper, const int index = -1);
-	void addDelAntennaPerformance(const QString oper, const int index = -1);
+	bool addDelAntennaPerformance(const QString oper, const int index = -1);
+
+	int modifyPerformanceParameters(unsigned int index = 0);
 
 	void initMenu();
 	void initIcon();
@@ -38,7 +40,6 @@ public:
 	void openFile();
 	void modifyGeometryVariables();
 	void modefyAlgorithmParameters();
-	void modifyPerformanceParameters(unsigned int index = 0);
 
 signals:
 	void signal_outputMessage(QString);

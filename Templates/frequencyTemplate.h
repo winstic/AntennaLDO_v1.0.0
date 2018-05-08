@@ -26,6 +26,7 @@ private:
 	void initRegex();
 	void initDefaultData();
 	void initLayout();
+	bool checkMutiFrequencyCross(QVector<freRange> mutiFre);
 
 
 public:

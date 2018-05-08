@@ -6,6 +6,7 @@
 #include <qpair.h>
 
 typedef QPair<QString, QString> alg4pro;
+typedef QPair<double, double> freRange;
 
 struct parsProblem {
 	QString name;
@@ -14,8 +15,17 @@ struct parsProblem {
 	QString info;
 	QString type;
 	QString oper;
+	QVector<freRange> frequencyRanges;
 	double max_frequency;
 	parsProblem() : name(""), path(""), pImage("./images/antenna.png"), info(""), type(""), oper("i"), max_frequency(0.001){}
+	void fillMaxFrequency() {
+		max_frequency = 0.01;
+		QVector<freRange>::iterator iter = frequencyRanges.begin();
+		for (; iter != frequencyRanges.end(); ++iter) {
+			if (iter->second > max_frequency)
+				max_frequency = iter->second;
+		}
+	}
 };
 
 struct parsAlgorithm {

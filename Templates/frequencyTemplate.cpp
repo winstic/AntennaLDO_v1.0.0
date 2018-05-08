@@ -111,6 +111,15 @@ QLayout* frequencyTemplate::getLayout() {
 
 //check input
 bool frequencyTemplate::checkInputValid() {
+	unsigned int length = _fre_start_list.size();
+	if (_fre_end_list.size() != length || _fre_number_list.size() != length || _pm_list.size() != length
+		|| _sweep_type_list.size() != length || _index >= length) {
+		checkInfo->code = eInvalid;
+		checkInfo->message = "问题json文件频率数据设置有误, 请仔细核对。";
+		qCritical("问题json文件频率数据设置有误, 请仔细核对。");
+		return false;
+	}
+
 	QString frequency_low = _frequency_low_edit->text().trimmed();
 	QString frequency_up = _frequency_up_edit->text().trimmed();
 	QString frequency_num = _frequency_num_edit->text().trimmed();
@@ -133,28 +142,54 @@ bool frequencyTemplate::checkInputValid() {
 		commonStyle::setLineEditWarningStyle(_frequency_up_edit);
 		return false;
 	}
-	//更新设置的最大频率
-	_atn_problem->max_frequency = frequency_up_d;
-	commonStyle::clearLineEditWarningStyle(_frequency_low_edit);
-	commonStyle::clearLineEditWarningStyle(_frequency_up_edit);
-	commonStyle::clearLineEditWarningStyle(_frequency_num_edit);
-	return true;
-}
 
-//update json obj
-void frequencyTemplate::updateJObj() {
-	unsigned int length = _fre_start_list.size();
-	if (_fre_end_list.size() != length || _fre_number_list.size() != length || _pm_list.size() != length
-		|| _sweep_type_list.size() != length || _index >= length) {
-		qCritical("<保存失败>问题json文件频率数据设置有误, 请仔细核对。");
-		return;
-	}
 	_fre_start_list[_index] = _frequency_low_edit->text().trimmed();
 	_fre_end_list[_index] = _frequency_up_edit->text().trimmed();
 	_fre_number_list[_index] = _frequency_num_edit->text().trimmed();
 	_pm_list[_index] = QString::number(_polarization_combox->currentIndex());
 	_sweep_type_list[_index] = QString::number(_sweep_type_combox->currentIndex());
 
+	//更新设置的最大频率
+	QVector<freRange> tfr;
+	_atn_problem->frequencyRanges.swap(tfr);
+	for (int i = 0; i < length; ++i) {
+		freRange tmpfr(_fre_start_list[i].toDouble(), _fre_end_list[i].toDouble());
+		_atn_problem->frequencyRanges.append(tmpfr);
+	}
+	if (!checkMutiFrequencyCross(_atn_problem->frequencyRanges)) {
+		checkInfo->code = eInvalid;
+		checkInfo->message = "当前频段与已设置频段有交叉。";
+		commonStyle::setLineEditWarningStyle(_frequency_low_edit);
+		commonStyle::setLineEditWarningStyle(_frequency_up_edit);
+		_atn_problem->frequencyRanges.swap(tfr);
+		return false;
+	}
+	_atn_problem->fillMaxFrequency();
+	commonStyle::clearLineEditWarningStyle(_frequency_low_edit);
+	commonStyle::clearLineEditWarningStyle(_frequency_up_edit);
+	commonStyle::clearLineEditWarningStyle(_frequency_num_edit);
+	return true;
+}
+
+bool frequencyTemplate::checkMutiFrequencyCross(QVector<freRange> mutiFre) {
+	auto comp = [](freRange a, freRange b) {
+		if (qAbs(a.first - b.first) <= 0.000001) 
+			return (a.second < b.second);
+		else if (a.first < b.first) 
+			return true;
+		else 
+			return false;
+	};
+	qSort(mutiFre.begin(), mutiFre.end(), comp);
+	for (size_t i = 0; i < mutiFre.size() - 1; ++i) {
+		if ((mutiFre[i + 1].first - mutiFre[i].second) < 0.000001)
+			return false;
+	}
+	return true;
+}
+
+//update json obj
+void frequencyTemplate::updateJObj() {
 	QJsonObject mfrequency_obj;
 	mfrequency_obj.insert("FreStart", QString("[%1]").arg(_fre_start_list.join(",")));
 	mfrequency_obj.insert("FreEnd", QString("[%1]").arg(_fre_end_list.join(",")));

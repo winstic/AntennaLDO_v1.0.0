@@ -55,7 +55,7 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 	root.appendChild(element);
 
 	design_element = doc.createElement("node");
-	design_element.setAttribute("name", "设计");
+	design_element.setAttribute("name", "Spec1");
 	design_element.setAttribute("flag", "design");
 	root.appendChild(design_element);
 
@@ -324,17 +324,22 @@ void treeModel::modefyAlgorithmParameters() {
 	algorithm_model = nullptr;
 }
 
-void treeModel::modifyPerformanceParameters(unsigned int index) {
+int treeModel::modifyPerformanceParameters(unsigned int index) {
 	performanceTab* performance_tab = new performanceTab(_atn_problem, index, _is_running);
-	performance_tab->exec();
+	int exe_id = performance_tab->exec();
 	delete performance_tab;
 	performance_tab = nullptr;
+	return exe_id;
 }
 
 bool treeModel::addDelAntennaPerformanceCore(QJsonObject& obj, const QStringList fre_end_list, const int flag, const QString oper, const int index) {
 	//用flag标记选择解析设置参数方法
 	unsigned int length = fre_end_list.size();
-	double new_fre_start = fre_end_list.at(length - 1).toDouble() + 1;
+	if (length < 1) {
+		qCritical("没有设置频段，(至少要设置一个频段).");
+		return false;
+	}
+	double new_fre_start = _atn_problem->max_frequency + 1;
 	for (QJsonObject::iterator iter = obj.begin(); iter != obj.end(); ++iter) {
 		QStringList tmp_list;
 		if (flag == 0) {
@@ -376,16 +381,16 @@ bool treeModel::addDelAntennaPerformanceCore(QJsonObject& obj, const QStringList
 	}
 	return true;
 }
-void treeModel::addDelAntennaPerformance(const QString oper, const int index) {
+bool treeModel::addDelAntennaPerformance(const QString oper, const int index) {
 	QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
-	if (problem_obj.isEmpty()) return;
+	if (problem_obj.isEmpty()) return false;
 	QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
 	QJsonObject far_field_obj = parseJson::getSubJsonObj(problem_obj, "ThetaPhiStep");
 	QJsonObject gain_obj = parseJson::getSubJsonObj(problem_obj, "GainSetting");
 	QJsonObject axial_obj = parseJson::getSubJsonObj(problem_obj, "AxialratioSetting");
 	QJsonObject loss_obj = parseJson::getSubJsonObj(problem_obj, "VSWRSetting");
 	if (frequency_obj.isEmpty() || far_field_obj.isEmpty() || gain_obj.isEmpty() || axial_obj.isEmpty() || loss_obj.isEmpty()) 
-		return;
+		return false;
 	QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().simplified());	
 
 	bool is_update = true;
@@ -402,9 +407,27 @@ void treeModel::addDelAntennaPerformance(const QString oper, const int index) {
 		problem_obj.insert("VSWRSetting", loss_obj);
 		if (!parseJson::write(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name), &problem_obj)){
 			qCritical("无法保存性能参数信息到问题json文件。");
-			QMessageBox::critical(0, QString("警告"), QString("无法保存性能参数信息到问题json文件，详情查阅日志。"));
+			//QMessageBox::critical(0, QString("警告"), QString("无法保存性能参数信息到问题json文件，详情查阅日志。"));
+			return false;
 		}
+		//更新最大频率
+		QStringList fre_start_list = dataPool::str2list(frequency_obj.value("FreStart").toString().simplified());
+		QStringList fre_end_list = dataPool::str2list(frequency_obj.value("FreEnd").toString().simplified());
+		int length = fre_start_list.size();
+		if (fre_end_list.size() != length) {
+			qCritical("%s天线问题json文件频率数据设置有误, 请仔细核对。", qUtf8Printable(_atn_problem->name));
+			return false;
+		}
+		QVector<freRange> tfr;
+		_atn_problem->frequencyRanges.swap(tfr);
+		for (int i = 0; i < length; ++i) {
+			freRange tmpfr(fre_start_list[i].toDouble(), fre_end_list[i].toDouble());
+			_atn_problem->frequencyRanges.append(tmpfr);
+		}
+		_atn_problem->fillMaxFrequency();
+		qInfo("最大频率: '%s'.", qUtf8Printable(QString::number(_atn_problem->max_frequency)));
 	}
+	return is_update;
 }
 
 // slot function
@@ -481,24 +504,37 @@ void treeModel::slot_addPerFormanceSetting() {
 	QStandardItemModel *itemModel = const_cast<QStandardItemModel *>(
 		static_cast<const QStandardItemModel *>(_curr_item_index->model()));
 	QStandardItem *item = itemModel->itemFromIndex(*_curr_item_index);
-	QVariant var_node = (*_curr_item_index).data(ROLE_MARK_NODE);
-	if (var_node.isValid()) {
-		if (var_node.toInt() == MARK_NODE_PERFORMANCE) {
-			QString performance_name = QString("频段%1").arg(item->rowCount() + 1);
-			QStandardItem *child = new QStandardItem(_icon_map[QStringLiteral("treeItem")], performance_name);
-			child->setData(MARK_ITEM, ROLE_MARK);
-			child->setData(MARK_ITEM_PERFORMANCEDESIGN, ROLE_MARK_ITEM);
-			item->appendRow(child);
-			if (updateXMLFile(QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName()), "performance", child, "i")) {
-				qInfo("更新工程目录结构到xml文件。");
-			}
-			else {
-				qCritical("更新工程目录结构到xml文件失败。");
-				return;
+	if (!addDelAntennaPerformance("i")) { 
+		QMessageBox::critical(0, QString("警告"), QString("无法添加新频段，详情查阅日志。"));
+		return; 
+	}
+	bool is_add = false;
+	int curr_index = item->rowCount();
+	if ((modifyPerformanceParameters(curr_index) == QDialog::Accepted)) {
+		QVariant var_node = (*_curr_item_index).data(ROLE_MARK_NODE);
+		if (var_node.isValid()) {
+			if (var_node.toInt() == MARK_NODE_PERFORMANCE) {
+				QString performance_name = QString("频段%1").arg(curr_index + 1);
+				QStandardItem *child = new QStandardItem(_icon_map[QStringLiteral("treeItem")], performance_name);
+				child->setData(MARK_ITEM, ROLE_MARK);
+				child->setData(MARK_ITEM_PERFORMANCEDESIGN, ROLE_MARK_ITEM);				
+				if (updateXMLFile(QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName()), "performance", child, "i")) {
+					item->appendRow(child);
+					is_add = true;
+					qInfo("增加频段 : %s", qUtf8Printable(QString("[%1,%2]").arg(_atn_problem->frequencyRanges[curr_index].first)
+						.arg(_atn_problem->frequencyRanges[curr_index].second)));
+				}
+				else {
+					qCritical("更新工程目录结构到xml文件失败。");		
+					is_add = false;
+					QMessageBox::critical(0, QString("警告"), QString("无法添加新频段，详情查阅日志。"));
+				}
 			}
 		}
+	}	
+	if (!is_add) {
+		addDelAntennaPerformance("d", curr_index);
 	}
-	addDelAntennaPerformance("i");
 }
 
 void treeModel::slot_delPerFormanceSetting() {
@@ -512,16 +548,25 @@ void treeModel::slot_delPerFormanceSetting() {
 		qWarning("必须设置频段，只有一个频段参数不能删除");
 		return;
 	}
-	//删除时每次将最后的一个编号删除，以此来同步工程树结构下的编号
-	del_parent->removeRow(counts - 1);
-	if (updateXMLFile(QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName()), "performance", item, "d")) {
-		qInfo("更新工程目录结构到xml文件。");
+	double delete_pre_start = _atn_problem->frequencyRanges[del_row].first;
+	double delete_pre_end = _atn_problem->frequencyRanges[del_row].second;
+	QMessageBox::StandardButton rb = QMessageBox::question(NULL, "删除", QString("删除频段[%1,%2]?").arg(delete_pre_start).arg(delete_pre_end), QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+	if (rb == QMessageBox::Yes) {
+		if (updateXMLFile(QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName()), "performance", item, "d")) {
+			if (!addDelAntennaPerformance("d", del_row)) {
+				QMessageBox::critical(0, QString("警告"), QString("无法删除该频段，详情查阅日志。"));
+				return;
+			}
+			qInfo("删除频段 : %s", qUtf8Printable(QString("[%1,%2]").arg(delete_pre_start).arg(delete_pre_end)));
+			//删除时每次将最后的一个编号删除，以此来同步工程树结构下的编号
+			del_parent->removeRow(counts - 1);
+		}
+		else {
+			qCritical("更新工程目录结构到xml文件失败。");
+			QMessageBox::critical(0, QString("警告"), QString("无法删除该频段，详情查阅日志。"));
+			return;
+		}
 	}
-	else {
-		qCritical("更新工程目录结构到xml文件失败。");
-		return;
-	}
-	addDelAntennaPerformance("d", del_row);
 }
 
 void treeModel::slot_run() {

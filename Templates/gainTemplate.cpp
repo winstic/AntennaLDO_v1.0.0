@@ -113,6 +113,16 @@ QLayout* gainTemplate::getLayout() {
 }
 
 bool gainTemplate::checkInputValid() {
+	unsigned int length = _theta_lower_lists.size();
+	if (_theta_upper_lists.size() != length || _phi_lower_lists.size() != length || _phi_upper_lists.size() != length
+		|| _optimal_type_lists.size() != length || _delta_lists.size() != length || _gain_lists.size() != length
+		|| _weight_lists.size() != length || _index >= length) {
+		checkInfo->code = eInvalid;
+		checkInfo->message = "问题json文件增益数据设置有误, 请仔细核对。";
+		qCritical("问题json文件增益数据设置有误, 请仔细核对。");
+		emit signal_checkValid();
+		return false;
+	}
 	_gain_table->clearSelection();
 	for (int i = 0; i < _gain_table->rowCount(); ++i) {
 		_gain_table->item(i, cthetalower)->setBackgroundColor(QColor(255, 255, 255));
@@ -229,13 +239,6 @@ bool gainTemplate::checkInputValid() {
 
 //update json obj
 void gainTemplate::updateJObj() {
-	unsigned int length = _theta_lower_lists.size();
-	if (_theta_upper_lists.size() != length || _phi_lower_lists.size() != length || _phi_upper_lists.size() != length
-		|| _optimal_type_lists.size() != length || _delta_lists.size() != length || _gain_lists.size() != length
-		|| _weight_lists.size() != length || _index >= length) {
-		qCritical("<保存失败>问题json文件增益数据设置有误, 请仔细核对。");
-		return;
-	}
 	QJsonObject mgain_obj;
 	int i;
 	//update gain obj

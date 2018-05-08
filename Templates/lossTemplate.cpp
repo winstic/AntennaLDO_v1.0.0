@@ -154,6 +154,17 @@ QLayout* lossTemplate::getLayout() {
 }
 
 bool lossTemplate::checkInputValid() {
+	unsigned int length = _R0_real_lists.size();
+	if (_R0_image_lists.size() != length || _return_loss_type_lists.size() != length || _optimal_type_lists.size() != length
+		|| _delta_real_lists.size() != length || _delta_image_lists.size() != length || _vswr_obj_lists.size() != length
+		|| _s11_obj_lists.size() != length || _R1_real_lists.size() != length || _R1_image_lists.size() != length
+		|| _weight_lists.size() != length || _index >= length) {
+		checkInfo->code = eInvalid;
+		checkInfo->message = "问题json文件回波损失数据设置有误, 请仔细核对。";
+		qCritical("问题json文件回波损失数据设置有误, 请仔细核对。");
+		emit signal_checkValid();
+		return false;
+	}
 	for (int i = 0; i < _loss_table->rowCount(); i++) {
 		QComboBox *lossType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, closstype));
 		QComboBox *loType = qobject_cast<QComboBox *>(_loss_table->cellWidget(i, clossoptimaltype));
@@ -234,14 +245,6 @@ bool lossTemplate::checkInputValid() {
 
 //update json obj
 void lossTemplate::updateJObj() {
-	unsigned int length = _R0_real_lists.size();
-	if (_R0_image_lists.size() != length || _return_loss_type_lists.size() != length || _optimal_type_lists.size() != length
-		|| _delta_real_lists.size() != length || _delta_image_lists.size() != length || _vswr_obj_lists.size() != length
-		|| _s11_obj_lists.size() != length || _R1_real_lists.size() != length || _R1_image_lists.size() != length
-		|| _weight_lists.size() != length || _index >= length) {
-		qCritical("<保存失败>问题json文件回波损失数据设置有误, 请仔细核对。");
-		return;
-	}
 	QJsonObject mloss_obj;
 	//update loss obj
 	QStringList lossStr[11];

@@ -98,8 +98,9 @@ void quickSort(QVector<rectParameter>& datas, int start, int finish) {
 
 bool tableTemplate::checkRectangleCross(const double theta_step, const double phi_step) {
 	//bool is_valid = true;
-	QVector<rectParameter> datas;
 	int rect_size = this->rowCount();
+	if (rect_size <= 1) return true;
+	QVector<rectParameter> datas;
 	for (int i = 0; i < rect_size; ++i) {
 		rectParameter tmp;
 		tmp.row_number = i;
