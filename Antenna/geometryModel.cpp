@@ -10,7 +10,7 @@ _atn_problem(atn_problem), _is_running(is_running) {
 	this->setWindowFlags(windowFlags() &~Qt::WindowContextHelpButtonHint);
 	setMinimumSize(SUBWINDOW_WIDTH, SUBWINDOW_HEIGHT);
 	//setStyleSheet("background-color: white");
-	_problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
+	_problem_obj = parseJson::getJsonObj(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name));
 	if (!_problem_obj.isEmpty()) {
 		_variables_widget = new variablesTemplate(_atn_problem, &_problem_obj);
 
@@ -57,8 +57,8 @@ void geometryModel::slot_confirmButton(bool) {
 	for (iTemplate* iter : templates)
 		iter->updateJObj();
 
-	if (parseJson::write(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name), &_problem_obj))
-		this->close();
+	if (parseJson::write(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name), &_problem_obj))
+		this->accept();
 	else {
 		qCritical("save failed in geometry variables tabWidget.");
 		QMessageBox::critical(0, QString("Error"), QString("save failed."));
@@ -66,7 +66,7 @@ void geometryModel::slot_confirmButton(bool) {
 }
 
 void geometryModel::slot_cancelButton(bool) {
-	this->close();
+	this->reject();
 }
 
 geometryModel::~geometryModel() {

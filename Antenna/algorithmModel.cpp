@@ -57,7 +57,7 @@ void algorithmModel::slot_confirmButton(bool) {
 		iter->updateJObj();
 
 	if (parseJson::write(QString("%1/%2_conf.json").arg(_algorithm->path).arg(_algorithm->name), _algorithm_obj) 
-		&& parseJson::write(dataPool::global::getGCurrentGlobalJsonPath(), &_global_obj))
+		&& parseJson::write(QString("%1/%2/global_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()), &_global_obj))
 		this->close();
 	else {
 		qCritical("save failed in algorithm tabWidget.");

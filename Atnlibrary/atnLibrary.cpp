@@ -86,8 +86,9 @@ void atnLibrary::newProject() {
 			QString working_path = dataPool::global::getGWorkingProjectPath();
 			QString project_name = dataPool::global::getGProjectName();
 
-			QString rel_file = QString("%1.rel").arg(project_name);
-			QString default_spec_path = QString("%1/Spec1").arg(working_path);
+			QString rel_file = QString("%1.rel").arg(project_name);			
+			dataPool::global::setGCurrentSpecName("Spec1");
+			QString default_spec_path = QString("%1/%2").arg(working_path).arg(dataPool::global::getGCurrentSpecName());
 
 			//create project dir
 			QDir *dir = new QDir();
@@ -95,27 +96,26 @@ void atnLibrary::newProject() {
 			dir->mkdir(default_spec_path);
 
 			if (! dataPool::copyFile(QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()),
-				QString("%1/global_conf.json").arg(working_path))) {
+				QString("%1/global_conf.json").arg(default_spec_path))) {
 				qCritical("loss global_json file.");
 				QMessageBox::critical(0, QString("Error"), QString("缺失global_json.json文件。"));
 				return;
 			}
-			/*if (!dataPool::copyFile(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name),
-				QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name))) {
-				qCritical("loss problem_json file.");
-				QMessageBox::critical(0, QString("Error"), QString("缺失problem_json.json文件。"));
+			if (!dataPool::copyFile(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name),
+				QString("%1/%2_conf.json").arg(default_spec_path).arg(_atn_problem->name))) {
+				qCritical("loss antenna problem json file.");
+				QMessageBox::critical(0, QString("Error"), QString("缺失antenna problem json.json文件。"));
 				return;
-			}*/
-			dataPool::global::setGCurrentGlobalJsonPath(QString("%1/global_conf.json").arg(working_path));
+			}
 			//dataPool::global::setGCurrentProblemJsonPath(QString("%1/%2_conf.json").arg(working_path).arg(_atn_problem->name));
 
-			dir->mkdir(QString("%1/outfilepath").arg(working_path));
+			dir->mkdir(QString("%1/outfilepath").arg(default_spec_path));
 			if (_atn_problem->type == "HFSS") {
-				dir->mkdir(QString("%1/outhfsspath").arg(working_path));
+				dir->mkdir(QString("%1/outhfsspath").arg(default_spec_path));
 			}
 			if (_atn_problem->type == "FEKO") {
 				if (!dataPool::copyFile(QString("%1/%2.cfx").arg(_atn_problem->path).arg(_atn_problem->name),
-					QString("%1/outfilepath/%2.cfx").arg(working_path).arg(_atn_problem->name))) {
+					QString("%1/outfilepath/%2.cfx").arg(default_spec_path).arg(_atn_problem->name))) {
 					qCritical("缺失feko模型文件。");
 					QMessageBox::critical(0, QString("Error"), QString("缺失feko模型文件。"));
 					return;
@@ -128,14 +128,14 @@ void atnLibrary::newProject() {
 			out << PROBLEM_NAME << ":" << _atn_problem->name << endl;			
 			inFile.close();
 		
-			QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
+			QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(default_spec_path));
 			if (global_obj.isEmpty()) {
 				return;
 			}
 			global_obj.insert("PROBLEM_NAME", _atn_problem->name);
-			global_obj.insert("outfilepath", QString("%1/outfilepath").arg(dataPool::global::getGWorkingProjectPath()));
-			global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(dataPool::global::getGWorkingProjectPath()));
-			if (!parseJson::write(dataPool::global::getGCurrentGlobalJsonPath(), &global_obj)){
+			global_obj.insert("outfilepath", QString("%1/outfilepath").arg(default_spec_path));
+			global_obj.insert("outhfsspath", QString("%1/outhfsspath").arg(default_spec_path));
+			if (!parseJson::write(QString("%1/global_conf.json").arg(default_spec_path), &global_obj)){
 				qCritical("save failed in global json.");
 				QMessageBox::critical(0, QString("Error"), QString("global_json 格式错误。"));
 				delete dir;

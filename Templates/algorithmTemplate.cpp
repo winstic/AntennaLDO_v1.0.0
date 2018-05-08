@@ -44,7 +44,7 @@ algorithmTemplate::algorithmTemplate(parsProblem* atn_problem, QJsonObject* glob
 
 bool algorithmTemplate::undateDefaultGlobalJson() {
 	//用默认选择的算法更新global_conf.json文件
-	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
+	QJsonObject global_obj = parseJson::getJsonObj(QString("%1/%2/global_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()));
 	if (global_obj.isEmpty()) {
 		return false;
 	}
@@ -52,7 +52,7 @@ bool algorithmTemplate::undateDefaultGlobalJson() {
 	if ((*_algorithm) == nullptr) algorithm_name = "";
 	else algorithm_name = (*_algorithm)->name;
 	global_obj.insert("ALGORITHM_NAME", algorithm_name);
-	if (!parseJson::write(dataPool::global::getGCurrentGlobalJsonPath(), &global_obj)){
+	if (!parseJson::write(QString("%1/%2/global_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()), &global_obj)){
 		qCritical("save failed in global json.");
 		QMessageBox::critical(0, QString("Error"), QString("global_json 格式错误。"));
 		return false;
@@ -87,8 +87,9 @@ void algorithmTemplate::initDefaultData() {
 	for (QJsonObject::iterator iter = alg_obj.begin(); iter != alg_obj.end(); ++iter) {
 		var_key = iter.key();
 		var_obj = iter.value().toObject();
-		var_value = var_obj.value(var_key).toString().trimmed();
+		if(!var_obj.contains("note")) continue;
 		value_note = var_obj.value("note").toString().trimmed();
+		var_value = var_obj.value(var_key).toString().trimmed();		
 		//valueInstruction = varObj.value("instruction").toString().trimmed();
 
 		_alg_vars_table->insert2table(row_number, keyFlag, value_note);

@@ -21,7 +21,7 @@ _atn_problem(atn_problem), _is_running(is_running){
 	_hint = new QLabel(this);
 	commonStyle::setHintStyle(_hint);
 
-	_problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
+	_problem_obj = parseJson::getJsonObj(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name));
 	if (!_problem_obj.isEmpty()) {
 		_frequency_widget = new frequencyTemplate(_atn_problem, &_problem_obj, index);
 		_theta_phi_widget = new thetaPhiTemplate(_atn_problem, &_problem_obj, index);
@@ -105,7 +105,7 @@ void performanceTab::slot_confirmButton(bool) {
 		iter->updateJObj();
 
 
-	if (parseJson::write(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name), &_problem_obj))
+	if (parseJson::write(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name), &_problem_obj))
 		this->accept();
 	else {
 		qCritical("save failed in freformance tabWidget.");

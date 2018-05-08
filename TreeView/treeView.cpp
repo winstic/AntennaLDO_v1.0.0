@@ -55,7 +55,7 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 	root.appendChild(element);
 
 	design_element = doc.createElement("node");
-	design_element.setAttribute("name", "Spec1");
+	design_element.setAttribute("name", dataPool::global::getGCurrentSpecName());
 	design_element.setAttribute("flag", "design");
 	root.appendChild(design_element);
 
@@ -76,7 +76,7 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 	element.appendChild(text);
 	design_element.appendChild(element);
 
-	QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
+	QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name));
 	QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
 	QStringList str_list = dataPool::str2list(frequency_obj.value("FreStart").toString().trimmed());
 	for (int i = 0; i < str_list.size(); ++i) {
@@ -313,7 +313,7 @@ void treeModel::modifyGeometryVariables() {
 }
 
 void treeModel::modefyAlgorithmParameters() {
-	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
+	QJsonObject global_obj = parseJson::getJsonObj(QString("%1/%2/global_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()));
 	if (global_obj.isEmpty()) {
 		return;
 	}
@@ -382,7 +382,7 @@ bool treeModel::addDelAntennaPerformanceCore(QJsonObject& obj, const QStringList
 	return true;
 }
 bool treeModel::addDelAntennaPerformance(const QString oper, const int index) {
-	QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name));
+	QJsonObject problem_obj = parseJson::getJsonObj(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name));
 	if (problem_obj.isEmpty()) return false;
 	QJsonObject frequency_obj = parseJson::getSubJsonObj(problem_obj, "FreSetting");
 	QJsonObject far_field_obj = parseJson::getSubJsonObj(problem_obj, "ThetaPhiStep");
@@ -405,7 +405,7 @@ bool treeModel::addDelAntennaPerformance(const QString oper, const int index) {
 		problem_obj.insert("GainSetting", gain_obj);
 		problem_obj.insert("AxialratioSetting", axial_obj);
 		problem_obj.insert("VSWRSetting", loss_obj);
-		if (!parseJson::write(QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name), &problem_obj)){
+		if (!parseJson::write(QString("%1/%2/%3_conf.json").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName()).arg(_atn_problem->name), &problem_obj)){
 			qCritical("无法保存性能参数信息到问题json文件。");
 			//QMessageBox::critical(0, QString("警告"), QString("无法保存性能参数信息到问题json文件，详情查阅日志。"));
 			return false;
@@ -570,11 +570,23 @@ void treeModel::slot_delPerFormanceSetting() {
 }
 
 void treeModel::slot_run() {
+	QString current_spec_path = QString("%1/%2").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName());
 	//校验global_conf.json
-	QJsonObject global_obj = parseJson::getJsonObj(dataPool::global::getGCurrentGlobalJsonPath());
+	QJsonObject global_obj = parseJson::getJsonObj(QString("%1/global_conf.json").arg(current_spec_path));
 	if (global_obj.isEmpty() || global_obj.value("ALGORITHM_NAME").toString().isEmpty()) {
 		qCritical("请先设置算法。");
 		QMessageBox::critical(0, QString("警告"), QString("请先设置算法。"));
+		return;
+	}
+	//更新global_conf.json
+	if (!dataPool::copyFile(QString("%1/global_conf.json").arg(current_spec_path), QString("%1/global_conf.json").arg(dataPool::global::getGDEA4ADPath()))) {
+		qCritical("update global_json file failed.");
+		return;
+	}
+	//更新proble json
+	if (!dataPool::copyFile(QString("%1/%2_conf.json").arg(current_spec_path).arg(_atn_problem->name),
+		QString("%1/%2_conf.json").arg(_atn_problem->path).arg(_atn_problem->name))) {
+		qCritical("update global_json file failed.");
 		return;
 	}
 	optRunProcess = new QProcess();
