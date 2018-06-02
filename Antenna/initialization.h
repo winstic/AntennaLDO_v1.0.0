@@ -153,7 +153,6 @@ void registerAlgorithms(QString text_file, QString DEA4AD_path) {
 				else {
 					qCritical("<algorithms.txt> wrong register infomation %s", qUtf8Printable(line));
 				}
-
 				line = in.readLine();
 			}
 			if (line.isNull()) break;

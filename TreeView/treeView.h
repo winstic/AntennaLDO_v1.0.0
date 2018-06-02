@@ -36,6 +36,8 @@ private:
 	void initMenu();
 	void initIcon();
 
+	void updateSpecName(QModelIndex* model_index);
+
 public:
 	void openFile();
 	void modifyGeometryVariables();
@@ -50,6 +52,9 @@ public slots:
 	void slot_hideAll();
 	void slot_stopRun();
 	void slot_run();
+	void slot_rename_spec();
+	void slot_copy_spec();
+	void slot_delet_spec();	
 	void slot_addPerFormanceSetting();
 	void slot_delPerFormanceSetting();
 	
@@ -66,6 +71,7 @@ public slots:
 private:
 	parsProblem* _atn_problem;
 	QTreeView *_pro_tree;
+	QStandardItemModel* _tree_model;
 	modelInfo* _model_info;
 	QMap<QString, QIcon> _icon_map;
 	//different menu can respond different right click

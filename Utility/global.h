@@ -80,6 +80,7 @@ namespace dataPool{
 		static QString g_currend_spec_name;
 	};
 	bool copyFile(QString source_file, QString target_file, bool cover_file_if_exist = true);
+	bool deleteDir(QString dir_path);
 	QStringList str2list(QString str);
 	QStringList stack2list(QString str);
 	QString getInfoFromRelFile(const QString &path, const QString &key);

@@ -67,10 +67,10 @@ void gainAxialDelegate::setModelData(QWidget *editor, QAbstractItemModel *model,
 void gainAxialDelegate::slot_comboBoxCommitAndCloseEditor(int) {
 	QComboBox *comb = qobject_cast<QComboBox *>(sender());
 	emit commitData(comb);
-	emit closeEditor(comb);
+	//emit closeEditor(comb);
 }
 void gainAxialDelegate::slot_lineEditCommitAndCloseEditor(QString) {
 	QLineEdit *edit = qobject_cast<QLineEdit *>(sender());
 	emit commitData(edit);
-	emit closeEditor(edit);
+	//emit closeEditor(edit);
 }

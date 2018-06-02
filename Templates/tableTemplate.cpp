@@ -13,7 +13,7 @@ tableTemplate::tableTemplate(QWidget* parent) : QTableWidget(parent) {
 	//this->verticalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}");
 	//this->horizontalHeader()->setStyleSheet("QHeaderView::section{background:skyblue;}"); 
 	//this->setStyleSheet("QTableCornerButton::section{background:skyblue;}");
-	//this->setFocusPolicy(Qt::NoFocus);
+	this->setFocusPolicy(Qt::NoFocus);
 	this->verticalHeader()->setFixedWidth(30);
 	//this->setFrameShape(QFrame::NoFrame);                   //setting no frame
 															  //_table->setShowGrid(false);                               //setting no grid line

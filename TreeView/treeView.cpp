@@ -13,6 +13,7 @@ treeModel::treeModel(QWidget* parent) : QTreeView(parent), _model_info(nullptr),
 	_act_design_run = nullptr;
 	_act_design_stop = nullptr;
 	_curr_item_index = new QModelIndex();
+	_tree_model = new QStandardItemModel(_pro_tree);
 	
 	initMenu();
 	initIcon();
@@ -57,6 +58,7 @@ bool treeModel::writeXMLFile(const QString &file_name, parsProblem* atn_problem)
 	design_element = doc.createElement("node");
 	design_element.setAttribute("name", dataPool::global::getGCurrentSpecName());
 	design_element.setAttribute("flag", "design");
+	design_element.setAttribute("copyTimes", 0);
 	root.appendChild(design_element);
 
 	performance_element = doc.createElement("node");
@@ -179,18 +181,18 @@ bool treeModel::parseXML(const QString &file_name, parsProblem* atn_problem) {
 		return false;
 	}
 
-	QStandardItemModel* tree_model = new QStandardItemModel(_pro_tree);
+	_tree_model->clear();
 	QStringList header;
 	header << xml_root.attribute("name");
-	tree_model->setHorizontalHeaderLabels(header);
+	_tree_model->setHorizontalHeaderLabels(header);
 
 	QString project_name = dataPool::global::getGProjectName();
 	QStandardItem* tree_root = new QStandardItem(_icon_map[QStringLiteral("treeNode")], project_name);
 	tree_root->setData(MARK_PROJECT, ROLE_MARK);
-	tree_model->appendRow(tree_root);
+	_tree_model->appendRow(tree_root);
 	parseProjectElement(xml_root, tree_root);
 
-	_pro_tree->setModel(tree_model);
+	_pro_tree->setModel(_tree_model);
 	_pro_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 	_pro_tree->setContextMenuPolicy(Qt::CustomContextMenu);        //设置右键菜单
 	_pro_tree->expandAll();
@@ -268,14 +270,16 @@ void treeModel::initMenu() {
 	//connect(act_del, &QAction::triggered, this, &treeModel::slot_del);
 
 	QAction* act_design_copy = new QAction("复制", _pro_tree);
-	act_design_copy->setEnabled(false);
+	connect(act_design_copy, &QAction::triggered, this, &treeModel::slot_copy_spec);
+	QAction* act_deaign_rename = new QAction("重命名", _pro_tree);
+	connect(act_deaign_rename, &QAction::triggered, this, &treeModel::slot_rename_spec);
 	_act_design_run = new QAction("运行", _pro_tree);	
 	connect(_act_design_run, &QAction::triggered, this, &treeModel::slot_run);
 	_act_design_stop = new QAction("停止", _pro_tree);
 	_act_design_stop->setEnabled(false);
 	connect(_act_design_stop, &QAction::triggered, this, &treeModel::slot_stopRun);
 	QAction* act_design_del = new QAction("删除", _pro_tree);
-	act_design_del->setEnabled(false);
+	connect(act_design_del, &QAction::triggered, this, &treeModel::slot_delet_spec);
 
 	QAction* act_performance_add = new QAction("新增", _pro_tree);
 	connect(act_performance_add, &QAction::triggered, this, &treeModel::slot_addPerFormanceSetting);
@@ -287,6 +291,7 @@ void treeModel::initMenu() {
 	_project_menu->addAction(act_del);
 
 	_atn_design_menu->addAction(act_design_copy);
+	_atn_design_menu->addAction(act_deaign_rename);
 	_atn_design_menu->addAction(_act_design_run);
 	_atn_design_menu->addAction(_act_design_stop);
 	_atn_design_menu->addSeparator();
@@ -439,9 +444,36 @@ void treeModel::slot_creatProTreeByXML(QString& path, parsProblem* atn_problem) 
 	qInfo("create project tree.");
 }
 
+void treeModel::updateSpecName(QModelIndex* model_index) {
+	QModelIndex* curr_model_index = model_index;
+	while (1) {
+		QVariant var_node = curr_model_index->data(ROLE_MARK);
+		QVariant var_folder = curr_model_index->data(ROLE_MARK_NODE);
+		QVariant var_item = curr_model_index->data(ROLE_MARK_ITEM);
+		if (var_node.isValid()) {
+			if (var_node.toInt() == MARK_PROJECT)
+				break;
+			else if (var_folder.isValid() && var_folder.toInt() == MARK_NODE_DESIGN) {
+				QStandardItemModel *itemModel = const_cast<QStandardItemModel *>(
+					static_cast<const QStandardItemModel *>(curr_model_index->model()));
+				QStandardItem *item = itemModel->itemFromIndex(*curr_model_index);
+				dataPool::global::setGCurrentSpecName(item->text().simplified());
+				//qDebug(qUtf8Printable(item->text()));
+				break;
+			}
+			else
+				curr_model_index = &(curr_model_index->parent());
+		}
+		else
+			break;
+	}
+}
+
 //mouse right click
 void treeModel::slot_customContextMenuRequested(const QPoint &pos) {
 	_curr_item_index = &_pro_tree->indexAt(pos);
+	updateSpecName(_curr_item_index);
+
 	//qDebug() << currentIndex.data().toString();
 	QVariant var_node = _curr_item_index->data(ROLE_MARK);
 	QVariant var_folder = _curr_item_index->data(ROLE_MARK_NODE);
@@ -473,6 +505,9 @@ void treeModel::slot_hideAll() {
 }
 
 void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
+	_curr_item_index = const_cast<QModelIndex*>(&item_index);
+	updateSpecName(_curr_item_index);
+
 	QVariant var_item = item_index.data(ROLE_MARK_ITEM);
 	int index = item_index.row();
 	if (var_item.isValid()) {
@@ -498,6 +533,7 @@ void treeModel::slot_doubleClicked(const QModelIndex& item_index) {
 
 void treeModel::slot_clicked(const QModelIndex& item_index) {
 	_curr_item_index = const_cast<QModelIndex*>(&item_index);
+	updateSpecName(_curr_item_index);
 }
 
 void treeModel::slot_addPerFormanceSetting() {
@@ -569,6 +605,131 @@ void treeModel::slot_delPerFormanceSetting() {
 	}
 }
 
+void treeModel::slot_copy_spec() {
+	QString file_name = QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName());
+	QFile in_file(file_name);
+	if (!in_file.open(QFile::ReadOnly | QFile::Text)) {
+		qCritical("cannot read file: '%s'.", qUtf8Printable(file_name));
+		return;
+	}
+	QDomDocument doc;
+	QString error;
+	int row, column;
+	if (!doc.setContent(&in_file, false, &error, &row, &column)) {
+		qCritical("error parse xml file: '%s' at row-%d, column-%d: %s.", qUtf8Printable(file_name), row, column, qUtf8Printable(error));
+		return;
+	}
+	in_file.close();
+	QDomElement xml_root = doc.documentElement();
+	if ("project" != xml_root.tagName()) {
+		qCritical("its not a project root node.");
+		return;
+	}
+	QString spqc_name = dataPool::global::getGCurrentSpecName();
+	QString new_spec_name;
+	QDomNodeList node_list = xml_root.childNodes();
+	for (unsigned int i = 0; i < node_list.size(); ++i) {
+		if (node_list.at(i).toElement().attribute("name") == spqc_name) {
+			QDomNode origion_node = node_list.at(i);
+			QDomNode newNode = origion_node.cloneNode(true);
+			int copy_times = origion_node.toElement().attribute("copyTimes").toInt() + 1;
+			origion_node.toElement().setAttribute("copyTimes", copy_times);
+			new_spec_name = QString("%1_%2").arg(spqc_name).arg(copy_times);
+			newNode.toElement().setAttribute("name", new_spec_name);
+			newNode.toElement().setAttribute("copyTimes", 0);
+			origion_node.parentNode().appendChild(newNode);
+		}			
+	}
+	QFile out_file(file_name);
+	if (!out_file.open(QIODevice::WriteOnly))
+		return;
+	QTextStream out(&out_file);
+	out.setCodec("utf-8");
+	doc.save(out, 4);
+	if (parseXML(file_name, _atn_problem)) {
+		//复制子问题相关文件		
+		QString origion_spec_path = QString("%1/%2").arg(dataPool::global::getGWorkingProjectPath()).arg(spqc_name);
+		QString new_spec_path = QString("%1/%2").arg(dataPool::global::getGWorkingProjectPath()).arg(new_spec_name);
+		QDir source_dir(origion_spec_path);
+		QDir target_dir(new_spec_path);
+		target_dir.mkdir(target_dir.absolutePath());
+		QFileInfoList file_info_list = source_dir.entryInfoList();
+		foreach(QFileInfo sub_file, file_info_list) {
+			if (sub_file.isFile()) {
+				if (!dataPool::copyFile(sub_file.filePath(), target_dir.filePath(sub_file.fileName()))) {
+					QMessageBox::critical(0, QString("警告"), QString("无法复制当前子问题，详情查阅日志。"));
+					return;
+				}
+			}
+		}
+		target_dir.mkdir(QString("%1/outfilepath").arg(new_spec_path));
+		if (_atn_problem->type == "HFSS") {
+			target_dir.mkdir(QString("%1/outhfsspath").arg(new_spec_path));
+		}
+		if (_atn_problem->type == "FEKO") {
+			if (!dataPool::copyFile(QString("%1/%2.cfx").arg(_atn_problem->path).arg(_atn_problem->name),
+				QString("%1/outfilepath/%2.cfx").arg(new_spec_path).arg(_atn_problem->name))) {
+				qCritical("缺失feko模型文件。");
+				QMessageBox::critical(0, QString("Error"), QString("缺失feko模型文件。"));
+				return;
+			}
+		}
+	}
+	qInfo("add antenna problem : '%s'", qUtf8Printable(new_spec_name));
+}
+
+void treeModel::slot_delet_spec() {
+	QString file_name = QString("%1/%2.xml").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGProjectName());
+	QFile in_file(file_name);
+	if (!in_file.open(QFile::ReadOnly | QFile::Text)) {
+		qCritical("cannot read file: '%s'.", qUtf8Printable(file_name));
+		return;
+	}
+	QDomDocument doc;
+	QString error;
+	int row, column;
+	if (!doc.setContent(&in_file, false, &error, &row, &column)) {
+		qCritical("error parse xml file: '%s' at row-%d, column-%d: %s.", qUtf8Printable(file_name), row, column, qUtf8Printable(error));
+		return;
+	}
+	in_file.close();
+	QDomElement xml_root = doc.documentElement();
+	if ("project" != xml_root.tagName()) {
+		qCritical("its not a project root node.");
+		return;
+	}
+	QString spqc_name = dataPool::global::getGCurrentSpecName();
+	QDomNodeList node_list = xml_root.childNodes();
+	if (node_list.size() <= 2) {
+		qCritical("must have one probelm.");
+		return;
+	}
+	//删除选中行
+	QMessageBox::StandardButton rb = QMessageBox::question(NULL, "删除", "删除选中问题?（注意不可恢复）", QMessageBox::Yes | QMessageBox::No, QMessageBox::No);
+	if (rb == QMessageBox::No) {
+		return;
+	}
+	for (unsigned int i = 0; i < node_list.size(); ++i) {
+		if (node_list.at(i).toElement().attribute("name") == spqc_name) {
+			QDomNode origion_node = node_list.at(i);
+			origion_node.parentNode().removeChild(origion_node);
+		}
+	}
+	QFile out_file(file_name);
+	if (!out_file.open(QIODevice::WriteOnly))
+		return;
+	QTextStream out(&out_file);
+	out.setCodec("utf-8");
+	doc.save(out, 4);
+	if (parseXML(file_name, _atn_problem)) {
+		//删除子问题相关文件		
+		QString origion_spec_path = QString("%1/%2").arg(dataPool::global::getGWorkingProjectPath()).arg(spqc_name);
+		QDir source_dir(origion_spec_path);
+		dataPool::deleteDir(source_dir.absolutePath());
+	}
+	qInfo("delete antenna problem : '%s'", qUtf8Printable(spqc_name));
+}
+
 void treeModel::slot_run() {
 	QString current_spec_path = QString("%1/%2").arg(dataPool::global::getGWorkingProjectPath()).arg(dataPool::global::getGCurrentSpecName());
 	//校验global_conf.json
@@ -597,6 +758,11 @@ void treeModel::slot_run() {
 	emit signal_calculate(true);
 	goRun *oRun = new goRun(optRunProcess);
 	oRun->start();
+}
+
+void treeModel::slot_rename_spec() {
+	//_pro_tree->setEditTriggers(QAbstractItemView::SelectedClicked);
+	//_pro_tree->setEditTriggers(QAbstractItemView::NoEditTriggers);
 }
 
 void treeModel::slot_stopRun() {

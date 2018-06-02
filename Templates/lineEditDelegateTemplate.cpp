@@ -48,5 +48,5 @@ void lineEditDelegate::setModelData(QWidget *editor, QAbstractItemModel *model, 
 void lineEditDelegate::slot_commitAndCloseEditor(QString) {
 	QLineEdit *edit = qobject_cast<QLineEdit *>(sender());
 	emit commitData(edit);
-	emit closeEditor(edit);
+	//emit closeEditor(edit);
 }
